@@ -8,7 +8,7 @@ app.mount('#app');  // 挂载到 DOM 元素上
 
 console.log(router.getRoutes());  // 打印路由信息
 
-const ws = new WebSocket('ws://localhost:8000/ws');
+const ws = new WebSocket('ws://localhost:8001/ws');
 
 ws.onopen = () => { console.log('WebSocket connection opened'); };
 ws.onmessage = (event) => { console.log('Message from server:', event.data); };

@@ -33,7 +33,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI, WebSocket
 from starlette.websockets import WebSocketDisconnect
-
+import os
+import uvicorn
+from dotenv import load_dotenv
 
 import random
 
@@ -88,3 +90,9 @@ async def read_warehouse_user():
 @app.get("/api/warehouse/manage")
 async def read_warehouse_manage():
     return {"message": "录入物品信息页"}
+
+if __name__ == "__main__":
+    host = os.getenv("HOST", "127.0.0.1")
+    port = int(os.getenv("PORT", 18808))  # Default to 8000 if not set
+    print("port is ",port)
+    uvicorn.run(app, host=host, port=port)
