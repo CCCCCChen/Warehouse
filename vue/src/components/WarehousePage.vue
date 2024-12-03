@@ -1,42 +1,37 @@
 <template>
-  <div>
-    <!-- PC端显示为2x2布局 -->
-    <!-- 移动端显示为1x4布局 -->
-    <div class="iframe-container">
-      <iframe v-bind:src='`/warehouse/notice`' title="Component A" class="iframe"></iframe>
-      <iframe v-bind:src="iframe02Url" title="Component B" class="iframe"></iframe>
-      <iframe v-bind:src="iframe03Url" title="Component C" class="iframe"></iframe>
-      <iframe v-bind:src="iframe04Url" title="Component D" class="iframe"></iframe>
+  <div class="warehouse-page">
+    <h2 class="page-title">{{ msg }}</h2>
+    <div class="grid-container">
+      <div class="grid-item">
+        <WarehouseNotice />
+      </div>
+      <div class="grid-item">
+        <RandomNumbers />
+      </div>
+      <div class="grid-item">
+        <HelloWorld msg="Welcome to Warehouse Component" />
+      </div>
+      <div class="grid-item">
+        <DataComponent />
+      </div>
     </div>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
+import WarehouseNotice from './WarehouseNotice.vue';
+import RandomNumbers from './RandomNumbers.vue';
+import HelloWorld from './HelloWorld.vue';
+import DataComponent from './Data.vue';
+
 export default {
-  name: 'WarehousePage',  // 使用多词名称
-  computed: {
-    isPc() {
-      return window.innerWidth >= 768; // 根据窗口宽度判断是否为PC端
-    },
-    iframe01Url() {
-      // URL for loading A.vue asynchronously
-      return `/warehouse/notice`;
-    },
-    iframe02Url() {
-      // URL for loading B.vue asynchronously
-      return `${window.location.origin}/random_numbers`;
-    },
-    iframe03Url() {
-      // URL for loading B.vue asynchronously
-      return `${window.location.origin}/`;
-    },
-    iframe04Url() {
-      // URL for loading B.vue asynchronously
-      return "http://10.12.3.6";
-      
-      //return `${window.location.origin}/component-b`;
-    }
+  name: 'WarehousePage',
+  components: {
+    WarehouseNotice,
+    RandomNumbers,
+    HelloWorld,
+    DataComponent
   },
   data() {
     return {
@@ -44,42 +39,51 @@ export default {
     };
   },
   created() {
-    axios.get('http://localhost:8000/api/warehouse')
+    // 修复硬编码，使用环境变量或默认的本地后端地址
+    const apiBaseUrl = process.env.VUE_APP_API_BASE_URL || 'http://127.0.0.1:18808';
+    axios.get(`${apiBaseUrl}/api/warehouse`)
       .then(response => {
-        console.log(response.data);
-        this.msg = 'Hello, '+ response.data.message +'!';
-        //msg = response.data;
+        this.msg = response.data.message;
       })
       .catch(error => {
-        console.error(error);
+        console.error('Failed to fetch warehouse info:', error);
       });
   },
 };
 </script>
 
-
-<style>
-.iframe-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px; /* 根据需要调整间距 */
+<style scoped>
+.warehouse-page {
+  padding: 20px;
 }
 
-.iframe {
-  width: 100%;
-  height: 50vh; /* 高度为页面高度除以2，可以根据需要调整 */
-  border: none; /* 移除边框 */
-  border-radius: 5px; /* 设置圆角 */
-  overflow: hidden; /* 确保内容不会超出圆角边界 */
-    /* 设置背景色为粉色渐变*/
-  background: linear-gradient(to right, #ff7e5f, #feb47b);
+.page-title {
+  text-align: center;
+  margin-bottom: 20px;
+  color: #333;
+}
 
+.grid-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 15px;
+}
+
+.grid-item {
+  width: 100%;
+  height: 50vh;
+  border-radius: 8px;
+  overflow: auto;
+  background: linear-gradient(to right, #ff7e5f, #feb47b);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  padding: 15px;
+  box-sizing: border-box;
 }
 
 /* 媒体查询，针对移动端设备 */
 @media (max-width: 768px) {
-  .iframe-container {
-    grid-template-columns: repeat(1, 1fr);
+  .grid-container {
+    grid-template-columns: 1fr;
   }
 }
 </style>
