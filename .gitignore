@@ -1,2 +1,11 @@
 WarehouseApp/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+.env
+.venv/
+venv/
+node_modules/
 warehouse-app/

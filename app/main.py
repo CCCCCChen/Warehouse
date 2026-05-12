@@ -8,7 +8,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocketDisconnect
 import os
 import uvicorn
-from dotenv import load_dotenv
 import random
 from sqlalchemy.orm import Session
 from typing import List

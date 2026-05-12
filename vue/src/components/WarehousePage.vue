@@ -1,6 +1,12 @@
 <template>
   <div class="warehouse-page">
     <h2 class="page-title">{{ msg }}</h2>
+    <div class="quick-nav">
+      <router-link class="nav-btn" to="/warehouse/items">物品管理</router-link>
+      <router-link class="nav-btn" to="/warehouse/manage">录入/管理</router-link>
+      <router-link class="nav-btn" to="/warehouse/user">用户管理</router-link>
+      <router-link class="nav-btn" to="/warehouse/notice">公告</router-link>
+    </div>
     <div class="grid-container">
       <div class="grid-item">
         <WarehouseNotice />
@@ -19,7 +25,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { api } from '@/api/http';
 import WarehouseNotice from './WarehouseNotice.vue';
 import RandomNumbers from './RandomNumbers.vue';
 import HelloWorld from './HelloWorld.vue';
@@ -39,9 +45,7 @@ export default {
     };
   },
   created() {
-    // 修复硬编码，使用环境变量或默认的本地后端地址
-    const apiBaseUrl = process.env.VUE_APP_API_BASE_URL || 'http://127.0.0.1:18808';
-    axios.get(`${apiBaseUrl}/api/warehouse`)
+    api.get('/api/warehouse')
       .then(response => {
         this.msg = response.data.message;
       })
@@ -61,6 +65,22 @@ export default {
   text-align: center;
   margin-bottom: 20px;
   color: #333;
+}
+
+.quick-nav {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.nav-btn {
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #111827;
+  color: white;
+  text-decoration: none;
 }
 
 .grid-container {

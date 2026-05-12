@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import axios from 'axios';
+import { api } from '@/api/http';
 
 export default {
   name: 'RandomNumbers',  
@@ -21,8 +21,7 @@ export default {
   },
   methods: {
     fetchData() {
-      const apiBaseUrl = process.env.VUE_APP_API_BASE_URL || 'http://127.0.0.1:18808';
-      axios.get(`${apiBaseUrl}/api/random_numbers`)
+      api.get('/api/random_numbers')
         .then(response => {
           // 后端返回的是 {"numbers": [...]}
           this.randomNumbers = response.data.numbers;
