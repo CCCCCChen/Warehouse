@@ -8,10 +8,32 @@ from fastapi import UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocketDisconnect
 import os
+from pathlib import Path
 import uvicorn
 import random
 from sqlalchemy.orm import Session
 from typing import List
+
+def _load_env_file():
+    env_path = Path(__file__).resolve().parent.parent / ".env"
+    if not env_path.exists():
+        return
+    try:
+        for line in env_path.read_text(encoding="utf-8").splitlines():
+            s = line.strip()
+            if not s or s.startswith("#") or "=" not in s:
+                continue
+            k, v = s.split("=", 1)
+            k = k.strip()
+            v = v.strip()
+            if len(v) >= 2 and ((v[0] == v[-1] == '"') or (v[0] == v[-1] == "'")):
+                v = v[1:-1]
+            if k and k not in os.environ:
+                os.environ[k] = v
+    except Exception:
+        return
+
+_load_env_file()
 
 from app.database import engine, Base, SessionLocal
 from app import crud, models, schemas
@@ -140,12 +162,17 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
 @app.post("/api/ocr/item_extract")
 async def ocr_item_extract(file: UploadFile = File(...), prompt: str = Form(default="")):
     image_bytes = await file.read()
-    extracted, raw = await extract_item_from_image(
-        image_bytes=image_bytes,
-        filename=file.filename or "image.jpg",
-        prompt_override=prompt.strip() or None,
-    )
-    return {"extracted": extracted, "raw": raw}
+    try:
+        extracted, raw = await extract_item_from_image(
+            image_bytes=image_bytes,
+            filename=file.filename or "image.jpg",
+            prompt_override=prompt.strip() or None,
+        )
+        return {"extracted": extracted, "raw": raw}
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail={"error": str(e), "provider": "ark"})
+    except Exception as e:
+        raise HTTPException(status_code=502, detail={"error": "OCR provider call failed", "provider": "ark", "hint": str(e)})
 
 
 if __name__ == "__main__":

@@ -3,9 +3,6 @@ import base64
 import json
 from typing import Any, Dict, Optional, Tuple
 
-import httpx
-
-
 def _get_env(name: str, default: Optional[str] = None) -> Optional[str]:
     v = os.getenv(name)
     if v is None:
@@ -84,6 +81,11 @@ async def extract_item_from_image(
     filename: str,
     prompt_override: Optional[str] = None,
 ) -> Tuple[Dict[str, Any], str]:
+    try:
+        import httpx
+    except Exception as e:
+        raise RuntimeError("Missing dependency: httpx. Install it with: pip install httpx") from e
+
     model = _get_env("ARK_MODEL", "doubao-seed-2-0-code-preview-260215")
     base_url = _get_env("ARK_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3")
     api_key = _get_env("ARK_API_KEY")
@@ -125,10 +127,22 @@ async def extract_item_from_image(
     }
 
     headers = {"Authorization": f"Bearer {api_key}"}
-    async with httpx.AsyncClient(base_url=base_url, timeout=60.0, headers=headers) as client:
-        resp = await client.post("/chat/completions", json=payload)
-        resp.raise_for_status()
-        data = resp.json()
+    try:
+        async with httpx.AsyncClient(base_url=base_url, timeout=60.0, headers=headers) as client:
+            resp = await client.post("/chat/completions", json=payload)
+            resp.raise_for_status()
+            data = resp.json()
+    except httpx.HTTPStatusError as e:
+        try:
+            body = e.response.text
+        except Exception:
+            body = ""
+        body = (body or "").strip()
+        if len(body) > 2000:
+            body = body[:2000] + "..."
+        raise RuntimeError(f"Ark returned {e.response.status_code}: {body or 'No response body'}") from e
+    except httpx.RequestError as e:
+        raise RuntimeError(f"Ark request failed: {str(e)}") from e
 
     content = (
         (((data or {}).get("choices") or [{}])[0].get("message") or {}).get("content") or ""
