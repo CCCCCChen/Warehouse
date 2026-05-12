@@ -1,23 +1,13 @@
 const { defineConfig } = require('@vue/cli-service')
-module.exports = defineConfig({
-  transpileDependencies: true
-})
 
-module.exports = {
+module.exports = defineConfig({
+  transpileDependencies: [],
   devServer: {
+    host: '127.0.0.1',
     port: 3030,
     historyApiFallback: true,
-    client: {
-      webSocketURL: {
-        hostname: 'localhost',
-        port: 8000,
-        pathname: '/ws',
-        protocol: 'ws',
-      },
-    },
-
-  }
-}
+  },
+})
 
 /* proxy: {
   '/': {

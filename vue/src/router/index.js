@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { defineAsyncComponent } from 'vue';
 // import App from '../App.vue';
-import HelloWorld from '@/components/HelloWorld.vue';
 
 const routes = [
-  { path: '/', component: HelloWorld },
+  { path: '/', redirect: '/warehouse' },
   { path: '/random_numbers', component: () => import('@/components/RandomNumbers.vue')},
   { path: '/warehouse', component: () => import('@/components/WarehousePage.vue')},
   { path: '/warehouse/notice', component: defineAsyncComponent(() => import('@/components/WarehouseNotice.vue'))},
