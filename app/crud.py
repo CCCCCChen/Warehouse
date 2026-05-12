@@ -2,7 +2,7 @@
 from typing import List, Optional
 from sqlalchemy.orm import Session
 from app.models import Item
-from app.schemas import ItemCreate, ItemBase
+from app.schemas import ItemCreate, ItemBase, ItemUpdate
 
 def create_item(db: Session, item: ItemCreate) -> Item:
     # 创建新物品
@@ -20,11 +20,11 @@ def get_item_by_id(db: Session, item_id: int) -> Optional[Item]:
     # 根据 ID 获取物品
     return db.query(Item).filter(Item.id == item_id).first()
 
-def update_item(db: Session, item_id: int, item: ItemBase) -> Optional[Item]:
+def update_item(db: Session, item_id: int, item: ItemUpdate) -> Optional[Item]:
     # 更新物品
     db_item = db.query(Item).filter(Item.id == item_id).first()
     if db_item:
-        for key, value in item.model_dump().items():
+        for key, value in item.model_dump(exclude_unset=True).items():
             setattr(db_item, key, value)
         db.commit()
         db.refresh(db_item)

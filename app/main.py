@@ -4,6 +4,7 @@ uvicorn main:app --reload
 """
 
 from fastapi import FastAPI, WebSocket, Depends, HTTPException
+from fastapi import UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.websockets import WebSocketDisconnect
 import os
@@ -14,9 +15,36 @@ from typing import List
 
 from app.database import engine, Base, SessionLocal
 from app import crud, models, schemas
+from sqlalchemy import inspect, text
+from app.ark_ocr import extract_item_from_image
+
+def ensure_items_table_columns():
+    inspector = inspect(engine)
+    if "items" not in inspector.get_table_names():
+        return
+    existing = {c["name"] for c in inspector.get_columns("items")}
+    wanted = {
+        "category": "TEXT",
+        "location": "TEXT",
+        "unit": "TEXT",
+        "brand": "TEXT",
+        "min_quantity": "INTEGER",
+        "purchase_date": "DATE",
+        "expiry_date": "DATE",
+        "barcode": "TEXT",
+        "tags": "TEXT",
+        "notes": "TEXT",
+    }
+    missing = [(name, sql_type) for name, sql_type in wanted.items() if name not in existing]
+    if not missing:
+        return
+    with engine.begin() as conn:
+        for name, sql_type in missing:
+            conn.execute(text(f"ALTER TABLE items ADD COLUMN {name} {sql_type}"))
 
 # Initialize database tables
 Base.metadata.create_all(bind=engine)
+ensure_items_table_columns()
 
 app = FastAPI(title="Warehouse API")
 
@@ -95,7 +123,7 @@ def read_item(item_id: int, db: Session = Depends(get_db)):
     return db_item
 
 @app.put("/api/items/{item_id}", response_model=schemas.Item)
-def update_item(item_id: int, item: schemas.ItemBase, db: Session = Depends(get_db)):
+def update_item(item_id: int, item: schemas.ItemUpdate, db: Session = Depends(get_db)):
     db_item = crud.update_item(db, item_id=item_id, item=item)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
@@ -107,6 +135,17 @@ def delete_item(item_id: int, db: Session = Depends(get_db)):
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
+
+
+@app.post("/api/ocr/item_extract")
+async def ocr_item_extract(file: UploadFile = File(...), prompt: str = Form(default="")):
+    image_bytes = await file.read()
+    extracted, raw = await extract_item_from_image(
+        image_bytes=image_bytes,
+        filename=file.filename or "image.jpg",
+        prompt_override=prompt.strip() or None,
+    )
+    return {"extracted": extracted, "raw": raw}
 
 
 if __name__ == "__main__":

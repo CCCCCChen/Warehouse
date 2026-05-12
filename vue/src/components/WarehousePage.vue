@@ -15,7 +15,7 @@
         <RandomNumbers />
       </div>
       <div class="grid-item">
-        <HelloWorld msg="Welcome to Warehouse Component" />
+        <DashboardSummary />
       </div>
       <div class="grid-item">
         <DataComponent />
@@ -28,7 +28,7 @@
 import { api } from '@/api/http';
 import WarehouseNotice from './WarehouseNotice.vue';
 import RandomNumbers from './RandomNumbers.vue';
-import HelloWorld from './HelloWorld.vue';
+import DashboardSummary from './DashboardSummary.vue';
 import DataComponent from './Data.vue';
 
 export default {
@@ -36,7 +36,7 @@ export default {
   components: {
     WarehouseNotice,
     RandomNumbers,
-    HelloWorld,
+    DashboardSummary,
     DataComponent
   },
   data() {
