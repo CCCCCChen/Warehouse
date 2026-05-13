@@ -907,24 +907,35 @@ export default {
 .row {
   display: flex;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
   flex-wrap: wrap;
 }
 
+.row > label {
+  flex: 1 1 200px;
+}
+
 .row .grow {
-  flex: 1;
-  min-width: 220px;
+  flex: 2 1 300px;
 }
 
 .full {
   display: block;
-  margin-bottom: 10px;
+  width: 100%;
+  margin-bottom: 12px;
 }
 
 label {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+input, select, textarea {
+  box-sizing: border-box;
+  width: 100%;
 }
 
 input {

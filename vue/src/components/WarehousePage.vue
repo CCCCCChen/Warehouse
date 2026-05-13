@@ -7,6 +7,7 @@
       <router-link class="nav-btn" to="/warehouse/manage">录入/管理</router-link>
       <router-link class="nav-btn" to="/warehouse/user">用户管理</router-link>
       <router-link class="nav-btn" to="/warehouse/notice">公告</router-link>
+      <router-link class="nav-btn ghost" to="/warehouse/map-test">区域设置(测试)</router-link>
       <router-link class="nav-btn ghost" to="/warehouse/llm-test">LLM 测试</router-link>
       <router-link class="nav-btn ghost" to="/warehouse/settings">设置中心</router-link>
     </div>

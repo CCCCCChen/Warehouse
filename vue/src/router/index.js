@@ -15,6 +15,7 @@ const routes = [
   { path: '/warehouse/notice', component: defineAsyncComponent(() => import('@/components/WarehouseNotice.vue'))},
   { path: '/warehouse/llm-test', component: () => import('@/components/LlmTestPage.vue')},
   { path: '/warehouse/settings', component: () => import('@/components/SettingsPage.vue')},
+  { path: '/warehouse/map-test', component: () => import('@/components/AreaMapTest.vue')},
   /* 
   { path: '/warehouse/search', component: defineAsyncComponent(() =>  import('@/components/Search.vue'))},
   { path: '/warehouse/data', component: defineAsyncComponent(() => import('@/components/Data.vue'))},

@@ -29,6 +29,10 @@
               <input v-model.trim="ocrPrompt" placeholder="可选" />
             </label>
           </div>
+          <label class="check">
+            <input v-model="ocrUseAsItemImage" type="checkbox" />
+            同时保存为物品图片
+          </label>
           <div v-if="ocrPreviewUrl" class="preview">
             <img :src="ocrPreviewUrl" alt="preview" />
           </div>
@@ -53,43 +57,210 @@
         </div>
 
         <form class="form" @submit.prevent="quickCreate">
-          <div class="row">
-            <label>
-              名称
-              <input v-model.trim="form.name" required />
+          <div class="section">
+            <div class="section-title">核心信息</div>
+            <div class="row">
+              <label>
+                编码
+                <input v-model="form.code" placeholder="创建后自动生成" readonly />
+              </label>
+              <label>
+                大类
+                <select v-model="form.type_l1" @change="onTypeL1Change">
+                  <option value="">未设置</option>
+                  <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
+                </select>
+              </label>
+              <label>
+                子类
+                <select v-model="form.type_l2">
+                  <option value="">未设置</option>
+                  <option v-for="t in typeL2Options" :key="t" :value="t">{{ t }}</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="row">
+              <label class="grow">
+                名称
+                <input v-model.trim="form.name" required />
+              </label>
+              <label>
+                数量
+                <input v-model.number="form.quantity" type="number" min="0" required />
+              </label>
+              <label>
+                单位
+                <select v-model="form.unit">
+                  <option value="">未设置</option>
+                  <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
+                </select>
+              </label>
+              <label>
+                最低库存
+                <input v-model.number="form.min_quantity" type="number" min="0" />
+              </label>
+            </div>
+
+            <label class="full">
+              用途
+              <textarea v-model.trim="form.usage" rows="3" placeholder="可写用途、使用场景、注意事项等"></textarea>
             </label>
-            <label>
-              数量
-              <input v-model.number="form.quantity" type="number" min="0" required />
-            </label>
-            <label>
-              单位
-              <select v-model="form.unit">
-                <option value="">未设置</option>
-                <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
-              </select>
-            </label>
+
+            <div class="row">
+              <label class="grow">
+                物品图片
+                <input type="file" accept="image/*" @change="onPickItemImage" />
+              </label>
+              <label class="grow">
+                图片地址
+                <input v-model.trim="form.image_path" placeholder="上传后自动填充" />
+              </label>
+            </div>
+            <div v-if="form.image_path" class="image-preview">
+              <img :src="form.image_path" alt="item" />
+              <button type="button" class="ghost-btn" @click="clearItemImage">清除图片</button>
+            </div>
           </div>
 
-          <div class="row">
-            <label>
-              分类
-              <select v-model="form.category">
-                <option value="">未设置</option>
-                <option v-for="c in categories" :key="c" :value="c">{{ c }}</option>
-              </select>
-            </label>
-            <label>
-              位置
-              <select v-model="form.location">
-                <option value="">未设置</option>
-                <option v-for="l in locations" :key="l" :value="l">{{ l }}</option>
-              </select>
-            </label>
-            <label>
-              最低库存
-              <input v-model.number="form.min_quantity" type="number" min="0" />
-            </label>
+          <div class="section">
+            <div class="section-title">时间空间信息</div>
+            <div class="row">
+              <label>
+                生产日期
+                <input v-model="form.production_date" type="date" />
+              </label>
+              <label>
+                记录日期
+                <input :value="recordedAtText" readonly />
+              </label>
+              <label>
+                Expire Date
+                <input v-model="form.expiry_date" type="date" />
+              </label>
+              <label>
+                购买日期
+                <input v-model="form.purchase_date" type="date" />
+              </label>
+            </div>
+            <div class="row">
+              <label>
+                房间
+                <select v-model="form.room">
+                  <option value="">未设置</option>
+                  <option v-for="r in roomOptions" :key="r" :value="r">{{ r }}</option>
+                </select>
+              </label>
+              <label class="grow">
+                位置
+                <select v-model="form.spot">
+                  <option value="">未设置</option>
+                  <option v-for="s in spotOptions" :key="s" :value="s">{{ s }}</option>
+                </select>
+              </label>
+              <label class="grow">
+                位置补充
+                <input v-model.trim="form.location_free" placeholder="例如：东侧墙-第三层 / 床底-左侧" />
+              </label>
+            </div>
+          </div>
+
+          <div class="section fold">
+            <button class="section-toggle" type="button" @click="toggle('status')">
+              <span class="section-title">状态属性信息</span>
+              <span class="toggle-text">{{ uiFold.status ? '展开' : '收起' }}</span>
+            </button>
+            <div v-if="!uiFold.status" class="section-body">
+              <div class="row">
+                <label>
+                  使用状态
+                  <select v-model="form.usage_status">
+                    <option value="">未设置</option>
+                    <option v-for="s in usageStatusOptions" :key="s" :value="s">{{ s }}</option>
+                  </select>
+                </label>
+                <label>
+                  所有权
+                  <select v-model="form.ownership">
+                    <option value="">未设置</option>
+                    <option v-for="o in ownershipOptions" :key="o" :value="o">{{ o }}</option>
+                  </select>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="section fold">
+            <button class="section-toggle" type="button" @click="toggle('finance')">
+              <span class="section-title">财务价值（非必填）</span>
+              <span class="toggle-text">{{ uiFold.finance ? '展开' : '收起' }}</span>
+            </button>
+            <div v-if="!uiFold.finance" class="section-body">
+              <div class="row">
+                <label>
+                  价格
+                  <input v-model.number="form.price" type="number" min="0" step="0.01" />
+                </label>
+                <label>
+                  使用价值
+                  <input v-model.number="form.value_score" type="number" min="0" step="0.1" />
+                </label>
+                <label>
+                  建议更换周期（天）
+                  <input v-model.number="form.replacement_cycle_days" type="number" min="0" />
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="section fold">
+            <button class="section-toggle" type="button" @click="toggle('dynamic')">
+              <span class="section-title">动态维度</span>
+              <span class="toggle-text">{{ uiFold.dynamic ? '展开' : '收起' }}</span>
+            </button>
+            <div v-if="!uiFold.dynamic" class="section-body">
+              <div class="row">
+                <label>
+                  使用频率
+                  <select v-model="form.usage_frequency">
+                    <option value="">未设置</option>
+                    <option v-for="f in usageFrequencyOptions" :key="f" :value="f">{{ f }}</option>
+                  </select>
+                </label>
+                <label class="grow">
+                  责任人
+                  <input v-model.trim="form.responsible_person" placeholder="可选" />
+                </label>
+              </div>
+              <label class="full">
+                关联物品
+                <select v-model="form.related_item_ids_arr" multiple>
+                  <option v-for="it in relatedCandidates" :key="it.id" :value="String(it.id)">
+                    {{ it.code ? `${it.code} ` : '' }}{{ it.name }}
+                  </option>
+                </select>
+              </label>
+            </div>
+          </div>
+
+          <div class="section fold">
+            <button class="section-toggle" type="button" @click="toggle('custom')">
+              <span class="section-title">其他属性（允许自定义）</span>
+              <span class="toggle-text">{{ uiFold.custom ? '展开' : '收起' }}</span>
+            </button>
+            <div v-if="!uiFold.custom" class="section-body">
+              <div class="kv-head">
+                <div>键</div>
+                <div>值</div>
+                <div></div>
+              </div>
+              <div v-for="(p, idx) in customPairs" :key="idx" class="kv-row">
+                <input v-model.trim="p.k" placeholder="例如：保修期" />
+                <input v-model.trim="p.v" placeholder="例如：2年" />
+                <button type="button" class="ghost-btn" @click="removePair(idx)">移除</button>
+              </div>
+              <button type="button" class="ghost-btn" @click="addPair">新增一行</button>
+            </div>
           </div>
 
           <div class="row">
@@ -101,17 +272,6 @@
               条码
               <input v-model.trim="form.barcode" placeholder="可选" />
             </label>
-          </div>
-
-          <div class="row">
-            <label>
-              采购日期
-              <input v-model="form.purchase_date" type="date" />
-            </label>
-            <label>
-              到期日
-              <input v-model="form.expiry_date" type="date" />
-            </label>
             <label>
               标签
               <input v-model.trim="form.tags" placeholder="厨房,常用" />
@@ -120,7 +280,7 @@
 
           <label class="full">
             备注
-            <input v-model.trim="form.notes" placeholder="可选" />
+            <textarea v-model.trim="form.notes" rows="2" placeholder="可选"></textarea>
           </label>
           <label class="full">
             描述
@@ -165,6 +325,26 @@
 import { api } from '@/api/http';
 import { DEFAULT_CATEGORIES, DEFAULT_LOCATIONS, DEFAULT_UNITS } from '@/config/defaults';
 
+const TYPE_TREE = {
+  家电: ['大家电', '小家电', '厨卫电器', '环境电器'],
+  家具: ['客厅家具', '餐厅家具', '卧室家具', '书房家具', '储物家具'],
+  家纺: ['床品', '毯子', '毛巾浴巾', '地毯地垫', '其他'],
+  厨具餐具: ['炊具', '刀具砧板', '餐具', '水具', '烘焙工具'],
+  食品: ['主食', '调味料', '零食', '饮料', '冷冻食品', '干货'],
+  日化清洁: ['个人洗护', '家庭清洁', '卫浴用品', '其他'],
+  工具五金: ['手动工具', '电动工具', '五金耗材', '维修配件'],
+  电子产品: ['数码设备', '影音设备', '网络设备', '存储设备', '充电设备'],
+  书籍: ['文学小说', '社科历史', '专业书籍', '生活艺术', '儿童绘本', '期刊杂志'],
+  药品: ['内服药', '外用药', '医疗器械', '保健品', '家庭急救包'],
+  文件证件: ['身份证明', '学历证明', '资产证明', '合同票据', '医疗档案'],
+  纪念品: ['旅行纪念', '礼物收藏', '手工DIY', '奖杯证书'],
+  宠物用品: ['食品', '餐具', '寝具', '清洁', '出行', '玩具'],
+  其他: ['其他'],
+};
+
+const DEFAULT_ROOMS = ['玄关', '厨房', '客厅', '过道', '厕所', '房间1', '房间2', '房间3', '阳台', '其他'];
+const DEFAULT_SPOTS = ['整面墙', '柜子', '抽屉', '台面', '床底', '冰箱', '收纳箱', '置物架', '其他'];
+
 export default {
   name: 'WarehouseManagePage',
   data() {
@@ -181,16 +361,32 @@ export default {
       ocrPrompt: '',
       ocrLast: null,
       ocrRaw: '',
+      ocrUseAsItemImage: true,
       categories: [...DEFAULT_CATEGORIES],
       locations: [...DEFAULT_LOCATIONS],
       units: [...DEFAULT_UNITS],
+      uiFold: {
+        status: true,
+        finance: true,
+        dynamic: true,
+        custom: true,
+      },
+      uploadingImage: false,
+      customPairs: [{ k: '', v: '' }],
       form: {
+        code: '',
+        type_l1: '',
+        type_l2: '',
         name: '',
         quantity: 1,
         unit: '件',
         category: '',
         location: '',
+        room: '',
+        spot: '',
+        location_free: '',
         min_quantity: 0,
+        production_date: '',
         purchase_date: '',
         expiry_date: '',
         brand: '',
@@ -198,6 +394,18 @@ export default {
         tags: '',
         notes: '',
         description: '',
+        usage: '',
+        image_path: '',
+        usage_status: '',
+        ownership: '',
+        price: null,
+        value_score: null,
+        replacement_cycle_days: null,
+        usage_frequency: '',
+        related_item_ids_arr: [],
+        responsible_person: '',
+        custom_json: '',
+        recorded_at: '',
       },
     };
   },
@@ -207,6 +415,34 @@ export default {
     this.fetchItems();
   },
   computed: {
+    typeL1Options() {
+      return Object.keys(TYPE_TREE);
+    },
+    typeL2Options() {
+      const l1 = this.form.type_l1 || '';
+      return TYPE_TREE[l1] || [];
+    },
+    roomOptions() {
+      return DEFAULT_ROOMS;
+    },
+    spotOptions() {
+      return DEFAULT_SPOTS;
+    },
+    usageStatusOptions() {
+      return ['在用', '备用（囤货）', '待维修', '待处理'];
+    },
+    ownershipOptions() {
+      return ['自有', '借用'];
+    },
+    usageFrequencyOptions() {
+      return ['高', '中', '低', '很少'];
+    },
+    relatedCandidates() {
+      return this.items || [];
+    },
+    recordedAtText() {
+      return this.form.recorded_at || new Date().toISOString();
+    },
     lowStockItems() {
       return this.items
         .filter(it => (it.min_quantity ?? 0) > 0 && (it.quantity ?? 0) <= (it.min_quantity ?? 0))
@@ -273,12 +509,19 @@ export default {
     reset() {
       this.hint = '';
       this.form = {
+        code: '',
+        type_l1: '',
+        type_l2: '',
         name: '',
         quantity: 1,
         unit: '件',
         category: '',
         location: '',
+        room: '',
+        spot: '',
+        location_free: '',
         min_quantity: 0,
+        production_date: '',
         purchase_date: '',
         expiry_date: '',
         brand: '',
@@ -286,7 +529,24 @@ export default {
         tags: '',
         notes: '',
         description: '',
+        usage: '',
+        image_path: '',
+        usage_status: '',
+        ownership: '',
+        price: null,
+        value_score: null,
+        replacement_cycle_days: null,
+        usage_frequency: '',
+        related_item_ids_arr: [],
+        responsible_person: '',
+        custom_json: '',
+        recorded_at: '',
       };
+      this.customPairs = [{ k: '', v: '' }];
+      this.uiFold.status = true;
+      this.uiFold.finance = true;
+      this.uiFold.dynamic = true;
+      this.uiFold.custom = true;
     },
     onPickImage(e) {
       const f = (e.target && e.target.files && e.target.files[0]) || null;
@@ -327,30 +587,68 @@ export default {
       if (!obj || typeof obj !== 'object') return 0;
       const next = { ...this.form };
       const keys = [
+        'code',
+        'type_l1',
+        'type_l2',
         'name',
         'description',
+        'usage',
+        'image_path',
         'quantity',
-        'category',
         'location',
+        'room',
+        'spot',
         'unit',
         'brand',
         'min_quantity',
+        'production_date',
         'purchase_date',
         'expiry_date',
         'barcode',
         'tags',
         'notes',
+        'usage_status',
+        'ownership',
+        'price',
+        'value_score',
+        'replacement_cycle_days',
+        'usage_frequency',
+        'responsible_person',
+        'related_item_ids',
+        'custom_json',
       ];
       let applied = 0;
       keys.forEach(k => {
         const v = obj[k];
         if (v !== undefined && v !== null && String(v).trim() !== '') {
+          if (k === 'related_item_ids') {
+            next.related_item_ids_arr = String(v).split(',').map(s => s.trim()).filter(Boolean);
+            applied += 1;
+            return;
+          }
           next[k] = v;
           applied += 1;
         }
       });
+      if (!next.type_l1 && next.category) next.type_l1 = next.category;
+      if (!next.type_l2) next.type_l2 = '';
+      if (!next.room && typeof next.location === 'string' && next.location.includes('-')) {
+        const parts = next.location.split('-').map(s => s.trim()).filter(Boolean);
+        if (parts.length >= 2) {
+          next.room = parts[0];
+          next.spot = parts.slice(1).join('-');
+        }
+      }
       if (typeof next.quantity === 'string') next.quantity = Number(next.quantity) || 0;
       if (typeof next.min_quantity === 'string') next.min_quantity = Number(next.min_quantity) || 0;
+      if (typeof next.price === 'string') next.price = Number(next.price) || null;
+      if (typeof next.value_score === 'string') next.value_score = Number(next.value_score) || null;
+      if (typeof next.replacement_cycle_days === 'string') next.replacement_cycle_days = Number(next.replacement_cycle_days) || null;
+      this.customPairs = this.parseCustomPairs(next.custom_json);
+      this.uiFold.status = !(next.usage_status || next.ownership);
+      this.uiFold.finance = !(next.price != null || next.value_score != null || next.replacement_cycle_days != null);
+      this.uiFold.dynamic = !(next.usage_frequency || (next.related_item_ids_arr && next.related_item_ids_arr.length > 0) || next.responsible_person);
+      this.uiFold.custom = !(next.custom_json && String(next.custom_json).trim());
       this.form = next;
       return applied;
     },
@@ -370,6 +668,9 @@ export default {
         this.ocrLast = extracted;
         this.ocrRaw = raw;
         const applied = this.applyExtracted(extracted);
+        if (this.ocrUseAsItemImage) {
+          await this.uploadImage(this.ocrFile);
+        }
         this.ocrHint = applied > 0
           ? '已自动填充表单，请核对后点击“保存”。'
           : '识别成功但未匹配到字段，请查看识别结果并调整提示词。';
@@ -381,16 +682,92 @@ export default {
         this.ocrLoading = false;
       }
     },
+    toggle(key) {
+      this.uiFold[key] = !this.uiFold[key];
+    },
+    onTypeL1Change() {
+      const l1 = this.form.type_l1 || '';
+      const list = TYPE_TREE[l1] || [];
+      if (list.length > 0 && this.form.type_l2 && !list.includes(this.form.type_l2)) {
+        this.form.type_l2 = '';
+      }
+    },
+    async onPickItemImage(e) {
+      const file = (e.target && e.target.files && e.target.files[0]) || null;
+      if (!file) return;
+      await this.uploadImage(file);
+      e.target.value = '';
+    },
+    clearItemImage() {
+      this.form.image_path = '';
+    },
+    async uploadImage(file) {
+      this.uploadingImage = true;
+      try {
+        const fd = new FormData();
+        fd.append('file', file);
+        const res = await api.post('/api/items/upload_image', fd);
+        const url = res.data && res.data.image_url ? res.data.image_url : '';
+        if (url) this.form.image_path = url;
+      } catch (e) {
+        console.error('Failed to upload item image:', e);
+      } finally {
+        this.uploadingImage = false;
+      }
+    },
+    parseCustomPairs(text) {
+      const raw = (text || '').trim();
+      if (!raw) return [{ k: '', v: '' }];
+      try {
+        const obj = JSON.parse(raw);
+        if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return [{ k: '', v: '' }];
+        const pairs = Object.entries(obj).map(([k, v]) => ({ k: String(k), v: v == null ? '' : String(v) }));
+        return pairs.length > 0 ? pairs : [{ k: '', v: '' }];
+      } catch (e) {
+        return [{ k: '', v: '' }];
+      }
+    },
+    addPair() {
+      this.customPairs.push({ k: '', v: '' });
+    },
+    removePair(idx) {
+      this.customPairs.splice(idx, 1);
+      if (this.customPairs.length === 0) this.customPairs.push({ k: '', v: '' });
+    },
+    pairsToJson() {
+      const obj = {};
+      for (const p of this.customPairs) {
+        const k = (p.k || '').trim();
+        if (!k) continue;
+        obj[k] = (p.v || '').trim();
+      }
+      const keys = Object.keys(obj);
+      return keys.length > 0 ? JSON.stringify(obj) : '';
+    },
     async quickCreate() {
       this.hint = '';
       try {
+        const customJson = this.pairsToJson();
+        const room = (this.form.room || '').trim();
+        const spot = (this.form.spot || '').trim();
+        const free = (this.form.location_free || '').trim();
+        const location = room && spot ? `${room}-${spot}${free ? `-${free}` : ''}` : (this.form.location || '');
+        const category = this.form.type_l1
+          ? `${this.form.type_l1}${this.form.type_l2 ? `-${this.form.type_l2}` : ''}`
+          : (this.form.category || null);
         const payload = {
+          code: this.form.code || null,
+          type_l1: this.form.type_l1 || null,
+          type_l2: this.form.type_l2 || null,
           name: this.form.name,
           quantity: this.form.quantity,
           unit: this.form.unit || null,
-          category: this.form.category || null,
-          location: this.form.location || null,
+          category,
+          location: location || null,
+          room: room || null,
+          spot: spot || null,
           min_quantity: Number.isFinite(Number(this.form.min_quantity)) ? Number(this.form.min_quantity) : 0,
+          production_date: this.form.production_date || null,
           purchase_date: this.form.purchase_date || null,
           expiry_date: this.form.expiry_date || null,
           brand: this.form.brand || null,
@@ -398,6 +775,17 @@ export default {
           tags: this.form.tags || null,
           notes: this.form.notes || null,
           description: this.form.description || null,
+          usage: this.form.usage || null,
+          image_path: this.form.image_path || null,
+          usage_status: this.form.usage_status || null,
+          ownership: this.form.ownership || null,
+          price: this.form.price == null || this.form.price === '' ? null : Number(this.form.price),
+          value_score: this.form.value_score == null || this.form.value_score === '' ? null : Number(this.form.value_score),
+          replacement_cycle_days: this.form.replacement_cycle_days == null || this.form.replacement_cycle_days === '' ? null : Number(this.form.replacement_cycle_days),
+          usage_frequency: this.form.usage_frequency || null,
+          related_item_ids: (this.form.related_item_ids_arr || []).join(',') || null,
+          responsible_person: this.form.responsible_person || null,
+          custom_json: customJson || null,
         };
         await api.post('/api/items', payload);
         this.hint = '已保存';
@@ -551,20 +939,30 @@ export default {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+}
+
+.row > label {
+  flex: 1 1 200px;
 }
 
 .full {
   display: block;
-  margin-bottom: 10px;
+  width: 100%;
+  margin-bottom: 12px;
 }
 
 label {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  min-width: 160px;
-  flex: 1;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+input, select, textarea {
+  box-sizing: border-box;
+  width: 100%;
 }
 
 input,
@@ -574,11 +972,98 @@ select {
   border: 1px solid rgba(0, 0, 0, 0.15);
 }
 
+textarea {
+  padding: 8px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  resize: vertical;
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 0;
+}
+
 .ghost-btn {
   background: transparent;
   border: 1px solid rgba(0, 0, 0, 0.25);
   padding: 6px 10px;
   border-radius: 8px;
+}
+
+.section {
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 10px;
+  padding: 12px;
+  margin-bottom: 12px;
+  background: rgba(255, 255, 255, 0.65);
+}
+
+.section-title {
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.section.fold {
+  padding: 0;
+  overflow: hidden;
+}
+
+.section-toggle {
+  width: 100%;
+  border: none;
+  background: rgba(255, 255, 255, 0.65);
+  padding: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+}
+
+.toggle-text {
+  color: rgba(0, 0, 0, 0.55);
+  font-size: 12px;
+}
+
+.section-body {
+  padding: 12px;
+}
+
+.row .grow {
+  flex: 1;
+  min-width: 220px;
+}
+
+.image-preview {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.image-preview img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.kv-head,
+.kv-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.kv-head {
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.6);
 }
 
 .hint {
