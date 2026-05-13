@@ -41,6 +41,15 @@
             </button>
           </div>
           <div v-if="ocrHint" class="muted">{{ ocrHint }}</div>
+          <details v-if="ocrLast" class="details">
+            <summary>查看识别结果</summary>
+            <div class="details-body">
+              <div class="details-title">extracted</div>
+              <pre class="pre">{{ ocrLastText }}</pre>
+              <div v-if="ocrRaw" class="details-title">raw</div>
+              <pre v-if="ocrRaw" class="pre">{{ ocrRaw }}</pre>
+            </div>
+          </details>
         </div>
 
         <form class="form" @submit.prevent="quickCreate">
@@ -154,6 +163,7 @@
 
 <script>
 import { api } from '@/api/http';
+import { DEFAULT_CATEGORIES, DEFAULT_LOCATIONS, DEFAULT_UNITS } from '@/config/defaults';
 
 export default {
   name: 'WarehouseManagePage',
@@ -169,28 +179,11 @@ export default {
       ocrLoading: false,
       ocrHint: '',
       ocrPrompt: '',
-      categories: [
-        '厨房-食材',
-        '厨房-调味',
-        '厨房-饮品',
-        '清洁-洗护',
-        '清洁-家务',
-        '卫浴-洗漱',
-        '卫浴-纸品',
-        '日用-收纳',
-        '药品-常备',
-        '其他',
-      ],
-      locations: [
-        '厨房-冰箱',
-        '厨房-橱柜',
-        '卫生间-柜子',
-        '客厅-柜子',
-        '阳台-储物',
-        '杂物间',
-        '其他',
-      ],
-      units: ['个', '件', '袋', '瓶', '盒', '包', '卷', '罐', '支', '片', 'kg', 'g', 'L', 'ml'],
+      ocrLast: null,
+      ocrRaw: '',
+      categories: [...DEFAULT_CATEGORIES],
+      locations: [...DEFAULT_LOCATIONS],
+      units: [...DEFAULT_UNITS],
       form: {
         name: '',
         quantity: 1,
@@ -209,6 +202,7 @@ export default {
     };
   },
   created() {
+    this.loadConfig();
     this.fetchMessage();
     this.fetchItems();
   },
@@ -235,8 +229,24 @@ export default {
         .sort((a, b) => (a.expiry_date || '').localeCompare(b.expiry_date || ''))
         .slice(0, 8);
     },
+    ocrLastText() {
+      return this.ocrLast ? JSON.stringify(this.ocrLast, null, 2) : '';
+    },
   },
   methods: {
+    async loadConfig() {
+      try {
+        const res = await api.get('/api/config');
+        this.categories = Array.isArray(res.data.categories) ? res.data.categories : [...DEFAULT_CATEGORIES];
+        this.locations = Array.isArray(res.data.locations) ? res.data.locations : [...DEFAULT_LOCATIONS];
+        this.units = Array.isArray(res.data.units) ? res.data.units : [...DEFAULT_UNITS];
+        if (!this.form.unit) this.form.unit = this.units[0] || '';
+      } catch (e) {
+        this.categories = [...DEFAULT_CATEGORIES];
+        this.locations = [...DEFAULT_LOCATIONS];
+        this.units = [...DEFAULT_UNITS];
+      }
+    },
     async fetchMessage() {
       this.loadingMessage = true;
       try {
@@ -295,9 +305,26 @@ export default {
       }
       this.ocrPreviewUrl = '';
       this.ocrPrompt = '';
+      this.ocrLast = null;
+      this.ocrRaw = '';
     },
     applyExtracted(extracted) {
-      if (!extracted || typeof extracted !== 'object') return;
+      let obj = extracted;
+      if (!obj) return 0;
+      if (typeof obj === 'string') {
+        try {
+          obj = JSON.parse(obj);
+        } catch (e) {
+          return 0;
+        }
+      }
+      if (Array.isArray(obj)) {
+        obj = obj[0];
+      }
+      if (obj && typeof obj === 'object' && obj.extracted && typeof obj.extracted === 'object') {
+        obj = obj.extracted;
+      }
+      if (!obj || typeof obj !== 'object') return 0;
       const next = { ...this.form };
       const keys = [
         'name',
@@ -314,30 +341,42 @@ export default {
         'tags',
         'notes',
       ];
+      let applied = 0;
       keys.forEach(k => {
-        if (extracted[k] !== undefined && extracted[k] !== null && String(extracted[k]).trim() !== '') {
-          next[k] = extracted[k];
+        const v = obj[k];
+        if (v !== undefined && v !== null && String(v).trim() !== '') {
+          next[k] = v;
+          applied += 1;
         }
       });
       if (typeof next.quantity === 'string') next.quantity = Number(next.quantity) || 0;
       if (typeof next.min_quantity === 'string') next.min_quantity = Number(next.min_quantity) || 0;
       this.form = next;
+      return applied;
     },
     async runOcr() {
       if (!this.ocrFile || this.ocrLoading) return;
       this.ocrLoading = true;
       this.ocrHint = '';
+      this.ocrLast = null;
+      this.ocrRaw = '';
       try {
         const fd = new FormData();
         fd.append('file', this.ocrFile);
         fd.append('prompt', this.ocrPrompt || '');
         const res = await api.post('/api/ocr/item_extract', fd);
         const extracted = (res.data || {}).extracted || null;
-        this.applyExtracted(extracted);
-        this.ocrHint = '已自动填充表单，请核对后点击“保存”。';
+        const raw = (res.data || {}).raw || '';
+        this.ocrLast = extracted;
+        this.ocrRaw = raw;
+        const applied = this.applyExtracted(extracted);
+        this.ocrHint = applied > 0
+          ? '已自动填充表单，请核对后点击“保存”。'
+          : '识别成功但未匹配到字段，请查看识别结果并调整提示词。';
       } catch (e) {
         console.error('OCR failed:', e);
-        this.ocrHint = '识别失败，请检查后端配置与网络';
+        const detail = (e && e.response && e.response.data) ? e.response.data : null;
+        this.ocrHint = detail ? `识别失败：${JSON.stringify(detail)}` : '识别失败，请检查后端配置与网络';
       } finally {
         this.ocrLoading = false;
       }
@@ -351,7 +390,7 @@ export default {
           unit: this.form.unit || null,
           category: this.form.category || null,
           location: this.form.location || null,
-          min_quantity: this.form.min_quantity ?? 0,
+          min_quantity: Number.isFinite(Number(this.form.min_quantity)) ? Number(this.form.min_quantity) : 0,
           purchase_date: this.form.purchase_date || null,
           expiry_date: this.form.expiry_date || null,
           brand: this.form.brand || null,
@@ -471,6 +510,31 @@ export default {
   max-height: 260px;
   object-fit: contain;
   background: rgba(255, 255, 255, 0.6);
+}
+
+.details {
+  margin-top: 10px;
+}
+
+.details-body {
+  margin-top: 8px;
+}
+
+.details-title {
+  font-weight: 800;
+  margin: 10px 0 6px;
+}
+
+.pre {
+  margin: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: rgba(17, 24, 39, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 320px;
+  overflow: auto;
 }
 
 .sub-title {

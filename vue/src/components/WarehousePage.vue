@@ -6,6 +6,8 @@
       <router-link class="nav-btn" to="/warehouse/manage">录入/管理</router-link>
       <router-link class="nav-btn" to="/warehouse/user">用户管理</router-link>
       <router-link class="nav-btn" to="/warehouse/notice">公告</router-link>
+      <router-link class="nav-btn ghost" to="/warehouse/llm-test">LLM 测试</router-link>
+      <router-link class="nav-btn ghost" to="/warehouse/settings">设置中心</router-link>
     </div>
     <div class="grid-container">
       <div class="grid-item">
@@ -45,12 +47,13 @@ export default {
     };
   },
   created() {
-    api.get('/api/warehouse')
+    api.get('/api/me')
       .then(response => {
-        this.msg = response.data.message;
+        const name = response.data.household_name || response.data.household_id;
+        this.msg = `家庭：${name}`;
       })
-      .catch(error => {
-        console.error('Failed to fetch warehouse info:', error);
+      .catch(() => {
+        this.msg = 'Warehouse';
       });
   },
 };
@@ -81,6 +84,10 @@ export default {
   background: #111827;
   color: white;
   text-decoration: none;
+}
+
+.nav-btn.ghost {
+  background: #1f6feb;
 }
 
 .grid-container {

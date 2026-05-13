@@ -181,6 +181,7 @@
 
 <script>
 import { api } from '@/api/http';
+import { DEFAULT_CATEGORIES, DEFAULT_LOCATIONS, DEFAULT_UNITS } from '@/config/defaults';
 
 export default {
   name: 'ItemsPage',
@@ -196,35 +197,9 @@ export default {
         onlyExpiring: false,
         sort: 'updated',
       },
-      categories: [
-        '厨房-食材',
-        '厨房-调味',
-        '厨房-饮品',
-        '清洁-洗护',
-        '清洁-家务',
-        '卫浴-洗漱',
-        '卫浴-纸品',
-        '日用-收纳',
-        '日用-文具',
-        '家电-耗材',
-        '药品-常备',
-        '母婴-用品',
-        '宠物-用品',
-        '其他',
-      ],
-      locations: [
-        '厨房-冰箱',
-        '厨房-橱柜',
-        '厨房-台面',
-        '客厅-柜子',
-        '卧室-衣柜',
-        '卫生间-柜子',
-        '阳台-储物',
-        '杂物间',
-        '车里',
-        '其他',
-      ],
-      units: ['个', '件', '袋', '瓶', '盒', '包', '卷', '罐', '支', '片', 'kg', 'g', 'L', 'ml'],
+      categories: [...DEFAULT_CATEGORIES],
+      locations: [...DEFAULT_LOCATIONS],
+      units: [...DEFAULT_UNITS],
       form: {
         id: null,
         name: '',
@@ -244,6 +219,7 @@ export default {
     };
   },
   created() {
+    this.loadConfig();
     this.refresh();
   },
   computed: {
@@ -294,6 +270,18 @@ export default {
     },
   },
   methods: {
+    async loadConfig() {
+      try {
+        const res = await api.get('/api/config');
+        this.categories = Array.isArray(res.data.categories) ? res.data.categories : [...DEFAULT_CATEGORIES];
+        this.locations = Array.isArray(res.data.locations) ? res.data.locations : [...DEFAULT_LOCATIONS];
+        this.units = Array.isArray(res.data.units) ? res.data.units : [...DEFAULT_UNITS];
+      } catch (e) {
+        this.categories = [...DEFAULT_CATEGORIES];
+        this.locations = [...DEFAULT_LOCATIONS];
+        this.units = [...DEFAULT_UNITS];
+      }
+    },
     isLowStock(it) {
       const minq = Number(it.min_quantity ?? 0);
       const q = Number(it.quantity ?? 0);
@@ -371,7 +359,7 @@ export default {
           location: this.form.location || null,
           unit: this.form.unit || null,
           brand: this.form.brand || null,
-          min_quantity: this.form.min_quantity ?? 0,
+          min_quantity: Number.isFinite(Number(this.form.min_quantity)) ? Number(this.form.min_quantity) : 0,
           purchase_date: this.form.purchase_date || null,
           expiry_date: this.form.expiry_date || null,
           barcode: this.form.barcode || null,

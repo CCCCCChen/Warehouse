@@ -12,7 +12,9 @@ from pathlib import Path
 import uvicorn
 import random
 from sqlalchemy.orm import Session
-from typing import List
+from typing import List, Tuple
+from datetime import datetime, timedelta
+from uuid import uuid4
 
 def _load_env_file():
     env_path = Path(__file__).resolve().parent.parent / ".env"
@@ -38,7 +40,10 @@ _load_env_file()
 from app.database import engine, Base, SessionLocal
 from app import crud, models, schemas
 from sqlalchemy import inspect, text
-from app.ark_ocr import extract_item_from_image
+from app.ark_ocr import extract_item_from_image, ark_chat
+from app.security import generate_token, hash_token
+from app.defaults import default_config_json
+from app.deps import get_current_member, require_owner, get_db as deps_get_db
 
 def ensure_items_table_columns():
     inspector = inspect(engine)
@@ -46,6 +51,7 @@ def ensure_items_table_columns():
         return
     existing = {c["name"] for c in inspector.get_columns("items")}
     wanted = {
+        "household_id": "TEXT",
         "category": "TEXT",
         "location": "TEXT",
         "unit": "TEXT",
@@ -63,10 +69,35 @@ def ensure_items_table_columns():
     with engine.begin() as conn:
         for name, sql_type in missing:
             conn.execute(text(f"ALTER TABLE items ADD COLUMN {name} {sql_type}"))
+        if "household_id" in {n for n, _ in missing}:
+            conn.execute(text("UPDATE items SET household_id = 'default' WHERE household_id IS NULL"))
+
+
+def ensure_default_household():
+    inspector = inspect(engine)
+    if "households" not in inspector.get_table_names():
+        return
+    with engine.begin() as conn:
+        conn.execute(
+            text(
+                "INSERT OR IGNORE INTO households(id, name, created_at) VALUES(:id, :name, :created_at)"
+            ),
+            {"id": "default", "name": "默认家庭", "created_at": datetime.utcnow().isoformat()},
+        )
+        if "household_config" in inspector.get_table_names():
+            categories_json, locations_json, units_json = default_config_json()
+            conn.execute(
+                text(
+                    "INSERT OR IGNORE INTO household_config(household_id, categories_json, locations_json, units_json, updated_at, updated_by_member_id) "
+                    "VALUES(:hid, :c, :l, :u, :t, NULL)"
+                ),
+                {"hid": "default", "c": categories_json, "l": locations_json, "u": units_json, "t": datetime.utcnow().isoformat()},
+            )
 
 # Initialize database tables
 Base.metadata.create_all(bind=engine)
 ensure_items_table_columns()
+ensure_default_household()
 
 app = FastAPI(title="Warehouse API")
 
@@ -78,13 +109,7 @@ app.add_middleware(
     allow_headers=["*"],  # 允许所有头
 )
 
-# Dependency to get DB session
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
+get_db = deps_get_db
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -129,34 +154,287 @@ async def read_warehouse_manage():
 # ================= CRUD API Endpoints =================
 
 @app.post("/api/items", response_model=schemas.Item)
-def create_item(item: schemas.ItemCreate, db: Session = Depends(get_db)):
-    return crud.create_item(db=db, item=item)
+def create_item(item: schemas.ItemCreate, db: Session = Depends(get_db), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    return crud.create_item(db=db, household_id=household.id, item=item)
 
 @app.get("/api/items", response_model=List[schemas.Item])
-def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    items = crud.get_items(db, skip=skip, limit=limit)
+def read_items(skip: int = 0, limit: int = 100, db: Session = Depends(get_db), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    items = crud.get_items(db, household_id=household.id, skip=skip, limit=limit)
     return items
 
 @app.get("/api/items/{item_id}", response_model=schemas.Item)
-def read_item(item_id: int, db: Session = Depends(get_db)):
-    db_item = crud.get_item_by_id(db, item_id=item_id)
+def read_item(item_id: int, db: Session = Depends(get_db), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    db_item = crud.get_item_by_id(db, household_id=household.id, item_id=item_id)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
 
 @app.put("/api/items/{item_id}", response_model=schemas.Item)
-def update_item(item_id: int, item: schemas.ItemUpdate, db: Session = Depends(get_db)):
-    db_item = crud.update_item(db, item_id=item_id, item=item)
+def update_item(item_id: int, item: schemas.ItemUpdate, db: Session = Depends(get_db), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    db_item = crud.update_item(db, household_id=household.id, item_id=item_id, item=item)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
 
 @app.delete("/api/items/{item_id}", response_model=schemas.Item)
-def delete_item(item_id: int, db: Session = Depends(get_db)):
-    db_item = crud.delete_item(db, item_id=item_id)
+def delete_item(item_id: int, db: Session = Depends(get_db), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    db_item = crud.delete_item(db, household_id=household.id, item_id=item_id)
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
+
+
+@app.post("/api/init/household", response_model=schemas.InitHouseholdResponse)
+def init_household(payload: schemas.InitHouseholdRequest, db: Session = Depends(get_db)):
+    hid = str(uuid4())
+    household = models.Household(id=hid, name=payload.name)
+    db.add(household)
+    owner_token = generate_token()
+    member = models.HouseholdMember(household_id=hid, role="owner", token_hash=hash_token(owner_token))
+    db.add(member)
+    categories_json, locations_json, units_json = default_config_json()
+    cfg = models.HouseholdConfig(
+        household_id=hid,
+        categories_json=categories_json,
+        locations_json=locations_json,
+        units_json=units_json,
+        updated_at=datetime.utcnow(),
+        updated_by_member_id=None,
+    )
+    db.add(cfg)
+    db.commit()
+    return schemas.InitHouseholdResponse(household_id=hid, owner_token=owner_token)
+
+
+@app.get("/api/init/status", response_model=schemas.InitStatusResponse)
+def init_status(db: Session = Depends(get_db)):
+    default_household = db.query(models.Household).filter(models.Household.id == "default").first()
+    default_items_count = db.query(models.Item).filter(models.Item.household_id == "default").count() if default_household else 0
+    has_any_member = db.query(models.HouseholdMember).count() > 0
+    can_adopt_default = bool(default_household) and (default_items_count > 0) and (not has_any_member)
+    return schemas.InitStatusResponse(
+        default_household_exists=bool(default_household),
+        default_items_count=default_items_count,
+        has_any_member=has_any_member,
+        can_adopt_default=can_adopt_default,
+    )
+
+
+@app.post("/api/init/adopt_default", response_model=schemas.InitHouseholdResponse)
+def adopt_default_household(db: Session = Depends(get_db)):
+    has_any_member = db.query(models.HouseholdMember).count() > 0
+    if has_any_member:
+        raise HTTPException(status_code=403, detail="Adopt default is disabled after setup")
+    household = db.query(models.Household).filter(models.Household.id == "default").first()
+    if not household:
+        raise HTTPException(status_code=404, detail="Default household not found")
+    default_items_count = db.query(models.Item).filter(models.Item.household_id == "default").count()
+    if default_items_count <= 0:
+        raise HTTPException(status_code=400, detail="No items in default household")
+    owner_token = generate_token()
+    member = models.HouseholdMember(household_id="default", role="owner", token_hash=hash_token(owner_token))
+    db.add(member)
+    db.commit()
+    return schemas.InitHouseholdResponse(household_id="default", owner_token=owner_token)
+
+
+@app.post("/api/init/join", response_model=schemas.JoinHouseholdResponse)
+def join_household(payload: schemas.JoinHouseholdRequest, db: Session = Depends(get_db)):
+    household = db.query(models.Household).filter(models.Household.id == payload.household_id).first()
+    if not household:
+        raise HTTPException(status_code=404, detail="Household not found")
+    code_hash = hash_token(payload.invite_code)
+    invite = (
+        db.query(models.HouseholdInvite)
+        .filter(models.HouseholdInvite.household_id == payload.household_id, models.HouseholdInvite.code_hash == code_hash)
+        .first()
+    )
+    if not invite or invite.revoked_at is not None:
+        raise HTTPException(status_code=400, detail="Invalid invite")
+    if invite.expires_at < datetime.utcnow():
+        raise HTTPException(status_code=400, detail="Invite expired")
+    if invite.used_count >= invite.max_uses:
+        raise HTTPException(status_code=400, detail="Invite exhausted")
+    invite.used_count += 1
+    token = generate_token()
+    member = models.HouseholdMember(household_id=payload.household_id, role="user", token_hash=hash_token(token))
+    db.add(member)
+    db.commit()
+    return schemas.JoinHouseholdResponse(household_id=payload.household_id, token=token, role="user")
+
+
+@app.get("/api/me", response_model=schemas.MeResponse)
+def me(member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    return schemas.MeResponse(
+        household_id=household.id,
+        household_name=household.name,
+        member_id=member.id,
+        role=member.role,
+    )
+
+
+@app.get("/api/config", response_model=schemas.HouseholdConfigResponse)
+def get_config(db: Session = Depends(get_db), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    cfg = db.query(models.HouseholdConfig).filter(models.HouseholdConfig.household_id == household.id).first()
+    if not cfg:
+        categories_json, locations_json, units_json = default_config_json()
+        cfg = models.HouseholdConfig(household_id=household.id, categories_json=categories_json, locations_json=locations_json, units_json=units_json, updated_at=datetime.utcnow())
+        db.add(cfg)
+        db.commit()
+    import json
+    return schemas.HouseholdConfigResponse(
+        household_id=household.id,
+        categories=json.loads(cfg.categories_json),
+        locations=json.loads(cfg.locations_json),
+        units=json.loads(cfg.units_json),
+        version=1,
+    )
+
+
+@app.put("/api/config", response_model=schemas.HouseholdConfigResponse)
+def update_config(
+    payload: schemas.HouseholdConfigUpdate,
+    db: Session = Depends(get_db),
+    owner_household: Tuple[models.HouseholdMember, models.Household] = Depends(require_owner),
+):
+    owner, household = owner_household
+    import json
+    cfg = db.query(models.HouseholdConfig).filter(models.HouseholdConfig.household_id == household.id).first()
+    if not cfg:
+        cfg = models.HouseholdConfig(household_id=household.id)
+        db.add(cfg)
+    cfg.categories_json = json.dumps(payload.categories, ensure_ascii=False)
+    cfg.locations_json = json.dumps(payload.locations, ensure_ascii=False)
+    cfg.units_json = json.dumps(payload.units, ensure_ascii=False)
+    cfg.updated_at = datetime.utcnow()
+    cfg.updated_by_member_id = owner.id
+    db.commit()
+    return schemas.HouseholdConfigResponse(household_id=household.id, categories=payload.categories, locations=payload.locations, units=payload.units, version=1)
+
+
+@app.post("/api/household/invites", response_model=schemas.InviteCreateResponse)
+def create_invite(
+    payload: schemas.InviteCreateRequest,
+    db: Session = Depends(get_db),
+    owner_household: Tuple[models.HouseholdMember, models.Household] = Depends(require_owner),
+):
+    owner, household = owner_household
+    code = generate_token()[:12]
+    max_uses = payload.max_uses if payload.max_uses is not None else 10
+    inv = models.HouseholdInvite(
+        household_id=household.id,
+        code_hash=hash_token(code),
+        role="user",
+        max_uses=max_uses,
+        used_count=0,
+        expires_at=datetime.utcnow() + timedelta(days=7),
+        created_at=datetime.utcnow(),
+        created_by_member_id=owner.id,
+    )
+    db.add(inv)
+    db.commit()
+    return schemas.InviteCreateResponse(
+        id=inv.id,
+        invite_code=code,
+        expires_at=inv.expires_at.isoformat(),
+        max_uses=inv.max_uses,
+        used_count=inv.used_count,
+        revoked=inv.revoked_at is not None,
+    )
+
+
+@app.get("/api/household/invites", response_model=list[schemas.InviteResponse])
+def list_invites(
+    db: Session = Depends(get_db),
+    owner_household: Tuple[models.HouseholdMember, models.Household] = Depends(require_owner),
+):
+    owner, household = owner_household
+    rows = (
+        db.query(models.HouseholdInvite)
+        .filter(models.HouseholdInvite.household_id == household.id)
+        .order_by(models.HouseholdInvite.created_at.desc())
+        .all()
+    )
+    return [
+        schemas.InviteResponse(
+            id=r.id,
+            expires_at=r.expires_at.isoformat(),
+            max_uses=r.max_uses,
+            used_count=r.used_count,
+            revoked=r.revoked_at is not None,
+        )
+        for r in rows
+    ]
+
+
+@app.delete("/api/household/invites/{invite_id}", response_model=dict)
+def revoke_invite(
+    invite_id: int,
+    db: Session = Depends(get_db),
+    owner_household: Tuple[models.HouseholdMember, models.Household] = Depends(require_owner),
+):
+    owner, household = owner_household
+    inv = (
+        db.query(models.HouseholdInvite)
+        .filter(models.HouseholdInvite.household_id == household.id, models.HouseholdInvite.id == invite_id)
+        .first()
+    )
+    if not inv:
+        raise HTTPException(status_code=404, detail="Invite not found")
+    inv.revoked_at = datetime.utcnow()
+    db.commit()
+    return {"ok": True}
+
+
+@app.get("/api/household/members", response_model=list[schemas.MemberResponse])
+def list_members(
+    db: Session = Depends(get_db),
+    owner_household: Tuple[models.HouseholdMember, models.Household] = Depends(require_owner),
+):
+    owner, household = owner_household
+    rows = (
+        db.query(models.HouseholdMember)
+        .filter(models.HouseholdMember.household_id == household.id)
+        .order_by(models.HouseholdMember.created_at.desc())
+        .all()
+    )
+    return [
+        schemas.MemberResponse(
+            id=r.id,
+            role=r.role,
+            created_at=r.created_at.isoformat(),
+            revoked=r.revoked_at is not None,
+        )
+        for r in rows
+    ]
+
+
+@app.post("/api/household/members/{member_id}/promote", response_model=dict)
+def promote_member(
+    member_id: int,
+    db: Session = Depends(get_db),
+    owner_household: Tuple[models.HouseholdMember, models.Household] = Depends(require_owner),
+):
+    owner, household = owner_household
+    m = (
+        db.query(models.HouseholdMember)
+        .filter(models.HouseholdMember.household_id == household.id, models.HouseholdMember.id == member_id)
+        .first()
+    )
+    if not m:
+        raise HTTPException(status_code=404, detail="Member not found")
+    if m.revoked_at is not None:
+        raise HTTPException(status_code=400, detail="Member revoked")
+    m.role = "owner"
+    db.commit()
+    return {"ok": True}
 
 
 @app.post("/api/ocr/item_extract")
@@ -173,6 +451,47 @@ async def ocr_item_extract(file: UploadFile = File(...), prompt: str = Form(defa
         raise HTTPException(status_code=400, detail={"error": str(e), "provider": "ark"})
     except Exception as e:
         raise HTTPException(status_code=502, detail={"error": "OCR provider call failed", "provider": "ark", "hint": str(e)})
+
+
+@app.get("/api/llm/status")
+async def llm_status():
+    has_key = bool(os.getenv("ARK_API_KEY"))
+    base_url = os.getenv("ARK_BASE_URL", "https://ark.cn-beijing.volces.com/api/v3")
+    model = os.getenv("ARK_MODEL", "doubao-seed-2-0-lite-260428")
+    has_httpx = True
+    try:
+        import httpx  # noqa: F401
+    except Exception:
+        has_httpx = False
+    return {
+        "provider": "ark",
+        "api": "responses",
+        "base_url": base_url,
+        "model": model,
+        "has_api_key": has_key,
+        "has_httpx": has_httpx,
+    }
+
+
+@app.post("/api/llm/test")
+async def llm_test(prompt: str = Form(...), file: UploadFile = File(default=None)):
+    try:
+        image_bytes = None
+        filename = "image.jpg"
+        if file is not None:
+            image_bytes = await file.read()
+            filename = file.filename or filename
+        content, raw_json = await ark_chat(
+            prompt=prompt,
+            image_bytes=image_bytes,
+            filename=filename,
+            temperature=0.2,
+        )
+        return {"content": content, "raw": raw_json}
+    except RuntimeError as e:
+        raise HTTPException(status_code=400, detail={"error": str(e), "provider": "ark"})
+    except Exception as e:
+        raise HTTPException(status_code=502, detail={"error": "LLM provider call failed", "provider": "ark", "hint": str(e)})
 
 
 if __name__ == "__main__":
