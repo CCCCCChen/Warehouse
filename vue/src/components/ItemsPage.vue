@@ -49,251 +49,14 @@
       </select>
     </div>
 
-    <form class="form" @submit.prevent="onSubmit">
-      <div class="form-title">{{ form.id ? `编辑 #${form.id}` : '新增物品' }}</div>
-
-      <div class="section">
-        <div class="section-title">核心信息</div>
-
-        <div class="row">
-          <label>
-            编码
-            <input v-model="form.code" placeholder="创建后自动生成" readonly />
-          </label>
-          <label>
-            大类
-            <select v-model="form.type_l1" @change="onTypeL1Change">
-              <option value="">未设置</option>
-              <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
-            </select>
-          </label>
-          <label>
-            子类
-            <select v-model="form.type_l2">
-              <option value="">未设置</option>
-              <option v-for="t in typeL2Options" :key="t" :value="t">{{ t }}</option>
-            </select>
-          </label>
-        </div>
-
-        <div class="row">
-          <label class="grow">
-            名称
-            <input v-model.trim="form.name" required />
-          </label>
-          <label>
-            数量
-            <input v-model.number="form.quantity" type="number" min="0" required />
-          </label>
-          <label>
-            单位
-            <select v-model="form.unit">
-              <option value="">未设置</option>
-              <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
-            </select>
-          </label>
-          <label>
-            最低库存
-            <input v-model.number="form.min_quantity" type="number" min="0" />
-          </label>
-        </div>
-
-        <label class="full">
-          用途
-          <textarea v-model.trim="form.usage" rows="3" placeholder="可写用途、使用场景、注意事项等"></textarea>
-        </label>
-
-        <div class="row">
-          <label class="grow">
-            图片
-            <input type="file" accept="image/*" @change="onPickImage" />
-          </label>
-          <label class="grow">
-            图片地址
-            <input v-model.trim="form.image_path" placeholder="上传后自动填充" />
-          </label>
-        </div>
-
-        <div v-if="form.image_path" class="image-preview">
-          <img :src="form.image_path" alt="item" />
-          <button type="button" class="ghost" @click="clearImage">清除图片</button>
-        </div>
+    <div class="entry-wrap">
+      <button class="entry-toggle" type="button" @click="entryOpen = !entryOpen">
+        {{ entryOpen ? '收起录入' : '展开录入' }}
+      </button>
+      <div v-if="entryOpen" class="entry-body">
+        <WarehouseManagePage ref="entry" :embedded="true" @saved="refresh" />
       </div>
-
-      <div class="section">
-        <div class="section-title">时间空间信息</div>
-
-        <div class="row">
-          <label>
-            生产日期
-            <input v-model="form.production_date" type="date" />
-          </label>
-          <label>
-            记录日期
-            <input :value="recordedAtText" readonly />
-          </label>
-          <label>
-            Expire Date
-            <input v-model="form.expiry_date" type="date" />
-          </label>
-          <label>
-            购买日期
-            <input v-model="form.purchase_date" type="date" />
-          </label>
-        </div>
-
-        <div class="row">
-          <label>
-            房间
-            <select v-model="form.room">
-              <option value="">未设置</option>
-              <option v-for="r in roomOptions" :key="r" :value="r">{{ r }}</option>
-            </select>
-          </label>
-          <label class="grow">
-            位置
-            <select v-model="form.spot">
-              <option value="">未设置</option>
-              <option v-for="s in spotOptions" :key="s" :value="s">{{ s }}</option>
-            </select>
-          </label>
-          <label class="grow">
-            位置补充
-            <input v-model.trim="form.location_free" placeholder="例如：东侧墙-第三层 / 床底-左侧" />
-          </label>
-        </div>
-      </div>
-
-      <div class="section fold">
-        <button class="section-toggle" type="button" @click="toggle('status')">
-          <span class="section-title">状态属性信息</span>
-          <span class="toggle-text">{{ uiFold.status ? '展开' : '收起' }}</span>
-        </button>
-        <div v-if="!uiFold.status" class="section-body">
-          <div class="row">
-            <label>
-              使用状态
-              <select v-model="form.usage_status">
-                <option value="">未设置</option>
-                <option v-for="s in usageStatusOptions" :key="s" :value="s">{{ s }}</option>
-              </select>
-            </label>
-            <label>
-              所有权
-              <select v-model="form.ownership">
-                <option value="">未设置</option>
-                <option v-for="o in ownershipOptions" :key="o" :value="o">{{ o }}</option>
-              </select>
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div class="section fold">
-        <button class="section-toggle" type="button" @click="toggle('finance')">
-          <span class="section-title">财务价值（非必填）</span>
-          <span class="toggle-text">{{ uiFold.finance ? '展开' : '收起' }}</span>
-        </button>
-        <div v-if="!uiFold.finance" class="section-body">
-          <div class="row">
-            <label>
-              价格
-              <input v-model.number="form.price" type="number" min="0" step="0.01" />
-            </label>
-            <label>
-              使用价值
-              <input v-model.number="form.value_score" type="number" min="0" step="0.1" />
-            </label>
-            <label>
-              建议更换周期（天）
-              <input v-model.number="form.replacement_cycle_days" type="number" min="0" />
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div class="section fold">
-        <button class="section-toggle" type="button" @click="toggle('dynamic')">
-          <span class="section-title">动态维度</span>
-          <span class="toggle-text">{{ uiFold.dynamic ? '展开' : '收起' }}</span>
-        </button>
-        <div v-if="!uiFold.dynamic" class="section-body">
-          <div class="row">
-            <label>
-              使用频率
-              <select v-model="form.usage_frequency">
-                <option value="">未设置</option>
-                <option v-for="f in usageFrequencyOptions" :key="f" :value="f">{{ f }}</option>
-              </select>
-            </label>
-            <label class="grow">
-              责任人
-              <input v-model.trim="form.responsible_person" placeholder="可选" />
-            </label>
-          </div>
-
-          <label class="full">
-            关联物品
-            <select v-model="form.related_item_ids_arr" multiple>
-              <option v-for="it in relatedCandidates" :key="it.id" :value="String(it.id)">
-                {{ it.code ? `${it.code} ` : '' }}{{ it.name }}
-              </option>
-            </select>
-          </label>
-        </div>
-      </div>
-
-      <div class="section fold">
-        <button class="section-toggle" type="button" @click="toggle('custom')">
-          <span class="section-title">其他属性（允许自定义）</span>
-          <span class="toggle-text">{{ uiFold.custom ? '展开' : '收起' }}</span>
-        </button>
-        <div v-if="!uiFold.custom" class="section-body">
-          <div class="kv-head">
-            <div>键</div>
-            <div>值</div>
-            <div></div>
-          </div>
-          <div v-for="(p, idx) in customPairs" :key="idx" class="kv-row">
-            <input v-model.trim="p.k" placeholder="例如：保修期" />
-            <input v-model.trim="p.v" placeholder="例如：2年" />
-            <button type="button" class="ghost" @click="removePair(idx)">移除</button>
-          </div>
-          <button type="button" class="ghost" @click="addPair">新增一行</button>
-        </div>
-      </div>
-
-      <div class="section">
-        <div class="section-title">其他</div>
-        <div class="row">
-          <label>
-            品牌
-            <input v-model.trim="form.brand" placeholder="可选" />
-          </label>
-          <label>
-            条码
-            <input v-model.trim="form.barcode" placeholder="可选" />
-          </label>
-        </div>
-        <label class="full">
-          标签（用逗号分隔）
-          <input v-model.trim="form.tags" placeholder="例如：厨房,常用,易耗" />
-        </label>
-        <label class="full">
-          备注
-          <textarea v-model.trim="form.notes" rows="2" placeholder="可选"></textarea>
-        </label>
-        <label class="full">
-          描述
-          <input v-model.trim="form.description" placeholder="可选" />
-        </label>
-      </div>
-
-      <div class="row">
-        <button type="submit">{{ form.id ? '保存更新' : '新增物品' }}</button>
-        <button v-if="form.id" type="button" class="ghost" @click="resetForm">取消编辑</button>
-      </div>
-    </form>
+    </div>
 
     <div v-if="loading" class="hint">加载中...</div>
     <div v-else-if="filteredItems.length === 0" class="hint">没有匹配的物品</div>
@@ -331,7 +94,7 @@
           <td>{{ it.expiry_date || '-' }}</td>
           <td>{{ it.responsible_person || '-' }}</td>
           <td class="ops">
-            <button @click="startEdit(it)">编辑</button>
+            <button @click="editInEntry(it)">编辑</button>
             <button class="danger" @click="remove(it.id)">删除</button>
           </td>
         </tr>
@@ -343,8 +106,9 @@
 <script>
 import { api } from '@/api/http';
 import { DEFAULT_CATEGORIES, DEFAULT_LOCATIONS, DEFAULT_UNITS } from '@/config/defaults';
+import WarehouseManagePage from '@/components/WarehouseManagePage.vue';
 
-const TYPE_TREE = {
+const DEFAULT_TYPE_TREE = {
   家电: ['大家电', '小家电', '厨卫电器', '环境电器'],
   家具: ['客厅家具', '餐厅家具', '卧室家具', '书房家具', '储物家具'],
   家纺: ['床品', '毯子', '毛巾浴巾', '地毯地垫', '其他'],
@@ -366,10 +130,12 @@ const DEFAULT_SPOTS = ['整面墙', '柜子', '抽屉', '台面', '床底', '冰
 
 export default {
   name: 'ItemsPage',
+  components: { WarehouseManagePage },
   data() {
     return {
       loading: false,
       items: [],
+      entryOpen: false,
       filters: {
         q: '',
         type_l1: '',
@@ -381,6 +147,10 @@ export default {
       categories: [...DEFAULT_CATEGORIES],
       locations: [...DEFAULT_LOCATIONS],
       units: [...DEFAULT_UNITS],
+      typeTree: { ...DEFAULT_TYPE_TREE },
+      rooms: [...DEFAULT_ROOMS],
+      spots: [...DEFAULT_SPOTS],
+      responsiblePeople: ['我'],
       uiFold: {
         status: true,
         finance: true,
@@ -432,17 +202,20 @@ export default {
   },
   computed: {
     typeL1Options() {
-      return Object.keys(TYPE_TREE);
+      return Object.keys(this.typeTree || {});
     },
     typeL2Options() {
       const l1 = this.form.type_l1 || '';
-      return TYPE_TREE[l1] || [];
+      return (this.typeTree && this.typeTree[l1]) ? this.typeTree[l1] : [];
     },
     roomOptions() {
-      return DEFAULT_ROOMS;
+      return this.rooms && this.rooms.length > 0 ? this.rooms : DEFAULT_ROOMS;
     },
     spotOptions() {
-      return DEFAULT_SPOTS;
+      return this.spots && this.spots.length > 0 ? this.spots : DEFAULT_SPOTS;
+    },
+    responsiblePeopleOptions() {
+      return this.responsiblePeople && this.responsiblePeople.length > 0 ? this.responsiblePeople : [];
     },
     usageStatusOptions() {
       return ['在用', '备用（囤货）', '待维修', '待处理'];
@@ -521,11 +294,27 @@ export default {
         this.categories = Array.isArray(res.data.categories) ? res.data.categories : [...DEFAULT_CATEGORIES];
         this.locations = Array.isArray(res.data.locations) ? res.data.locations : [...DEFAULT_LOCATIONS];
         this.units = Array.isArray(res.data.units) ? res.data.units : [...DEFAULT_UNITS];
+        this.typeTree = (res.data.type_tree && typeof res.data.type_tree === 'object') ? res.data.type_tree : { ...DEFAULT_TYPE_TREE };
+        this.rooms = Array.isArray(res.data.rooms) ? res.data.rooms : [...DEFAULT_ROOMS];
+        this.spots = Array.isArray(res.data.spots) ? res.data.spots : [...DEFAULT_SPOTS];
+        this.responsiblePeople = Array.isArray(res.data.responsible_people) ? res.data.responsible_people : ['我'];
       } catch (e) {
         this.categories = [...DEFAULT_CATEGORIES];
         this.locations = [...DEFAULT_LOCATIONS];
         this.units = [...DEFAULT_UNITS];
+        this.typeTree = { ...DEFAULT_TYPE_TREE };
+        this.rooms = [...DEFAULT_ROOMS];
+        this.spots = [...DEFAULT_SPOTS];
+        this.responsiblePeople = ['我'];
       }
+    },
+    editInEntry(it) {
+      this.entryOpen = true;
+      this.$nextTick(() => {
+        if (this.$refs.entry && typeof this.$refs.entry.editItem === 'function') {
+          this.$refs.entry.editItem(it);
+        }
+      });
     },
     toggle(key) {
       this.uiFold[key] = !this.uiFold[key];
@@ -670,7 +459,7 @@ export default {
     },
     onTypeL1Change() {
       const l1 = this.form.type_l1 || '';
-      const list = TYPE_TREE[l1] || [];
+      const list = (this.typeTree && this.typeTree[l1]) ? this.typeTree[l1] : [];
       if (list.length > 0 && this.form.type_l2 && !list.includes(this.form.type_l2)) {
         this.form.type_l2 = '';
       }
@@ -873,6 +662,29 @@ export default {
   margin-bottom: 12px;
 }
 
+.entry-wrap {
+  background: rgba(255, 255, 255, 0.7);
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+.entry-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  background: rgba(17, 24, 39, 0.06);
+  cursor: pointer;
+}
+
+.entry-body {
+  margin-top: 12px;
+}
+
 .filter-input {
   flex: 1;
   min-width: 220px;
@@ -971,6 +783,13 @@ select {
   margin-bottom: 12px;
   background: rgba(255, 255, 255, 0.65);
 }
+
+.section.color-core { background: #eff6ff; border-color: #bfdbfe; }
+.section.color-time { background: #ecfdf5; border-color: #a7f3d0; }
+.section.color-status { background: #fef3c7; border-color: #fde68a; }
+.section.color-finance { background: #fef2f2; border-color: #fecaca; }
+.section.color-dynamic { background: #f5f3ff; border-color: #ddd6fe; }
+.section.color-custom { background: #f3f4f6; border-color: #e5e7eb; }
 
 .section-title {
   font-weight: 800;

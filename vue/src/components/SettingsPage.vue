@@ -64,6 +64,39 @@
             单位（每行一个）
             <textarea v-model="configText.units" rows="6"></textarea>
           </label>
+          <details class="details">
+            <summary>物品与录入字段配置</summary>
+            <div class="details-body">
+              <label class="full">
+                类型树（JSON：大类 -> 子类数组）
+                <textarea v-model="configText.typeTreeJson" rows="10"></textarea>
+              </label>
+              <label class="full">
+                房间（每行一个）
+                <textarea v-model="configText.rooms" rows="6"></textarea>
+              </label>
+              <label class="full">
+                位置点（每行一个）
+                <textarea v-model="configText.spots" rows="6"></textarea>
+              </label>
+              <label class="full">
+                责任人候选（每行一个）
+                <textarea v-model="configText.responsiblePeople" rows="6"></textarea>
+              </label>
+            </div>
+          </details>
+          <details class="details">
+            <summary>区域管理配置</summary>
+            <div class="details-body">
+              <div class="row">
+                <router-link class="link" to="/warehouse/map-test">打开区域设置测试页</router-link>
+              </div>
+              <label class="full">
+                区域配置（JSON）
+                <textarea v-model="configText.areaMapJson" rows="10"></textarea>
+              </label>
+            </div>
+          </details>
           <div class="row">
             <button :disabled="!isOwner || savingConfig" @click="saveConfig">
               {{ savingConfig ? '保存中...' : '保存配置' }}
@@ -117,6 +150,11 @@ export default {
         categories: '',
         locations: '',
         units: '',
+        rooms: '',
+        spots: '',
+        responsiblePeople: '',
+        typeTreeJson: '',
+        areaMapJson: '',
       },
     };
   },
@@ -155,6 +193,11 @@ export default {
         this.configText.categories = (res.data.categories || []).join('\n');
         this.configText.locations = (res.data.locations || []).join('\n');
         this.configText.units = (res.data.units || []).join('\n');
+        this.configText.rooms = (res.data.rooms || []).join('\n');
+        this.configText.spots = (res.data.spots || []).join('\n');
+        this.configText.responsiblePeople = (res.data.responsible_people || []).join('\n');
+        this.configText.typeTreeJson = JSON.stringify(res.data.type_tree || {}, null, 2);
+        this.configText.areaMapJson = JSON.stringify(res.data.area_map || [], null, 2);
       } catch (e) {
         this.config = null;
       } finally {
@@ -167,6 +210,11 @@ export default {
         .map(s => s.trim())
         .filter(Boolean);
     },
+    parseJson(text, fallback) {
+      const raw = (text || '').trim();
+      if (!raw) return fallback;
+      return JSON.parse(raw);
+    },
     async saveConfig() {
       this.hint = '';
       this.savingConfig = true;
@@ -175,6 +223,11 @@ export default {
           categories: this.parseLines(this.configText.categories),
           locations: this.parseLines(this.configText.locations),
           units: this.parseLines(this.configText.units),
+          rooms: this.parseLines(this.configText.rooms),
+          spots: this.parseLines(this.configText.spots),
+          responsible_people: this.parseLines(this.configText.responsiblePeople),
+          type_tree: this.parseJson(this.configText.typeTreeJson, {}),
+          area_map: this.parseJson(this.configText.areaMapJson, []),
         };
         const res = await api.put('/api/config', payload);
         this.config = res.data;
@@ -430,10 +483,29 @@ input {
   margin-bottom: 6px;
 }
 
+.details {
+  margin: 10px 0;
+  background: rgba(17, 24, 39, 0.04);
+  border: 1px dashed rgba(0, 0, 0, 0.18);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.details summary {
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.details-body {
+  margin-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 @media (max-width: 900px) {
   .grid {
     grid-template-columns: 1fr;
   }
 }
 </style>
-

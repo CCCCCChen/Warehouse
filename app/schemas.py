@@ -1,5 +1,5 @@
-from pydantic import BaseModel
-from typing import Optional
+from pydantic import BaseModel, Field
+from typing import Optional, Any
 from datetime import date, datetime
 
 class ItemBase(BaseModel):
@@ -103,13 +103,23 @@ class HouseholdConfigResponse(BaseModel):
     categories: list[str]
     locations: list[str]
     units: list[str]
-    version: int = 1
+    type_tree: dict[str, list[str]] = Field(default_factory=dict)
+    rooms: list[str] = Field(default_factory=list)
+    spots: list[str] = Field(default_factory=list)
+    responsible_people: list[str] = Field(default_factory=list)
+    area_map: Any = Field(default_factory=list)
+    version: int = 2
 
 
 class HouseholdConfigUpdate(BaseModel):
     categories: list[str]
     locations: list[str]
     units: list[str]
+    type_tree: Optional[dict[str, list[str]]] = None
+    rooms: Optional[list[str]] = None
+    spots: Optional[list[str]] = None
+    responsible_people: Optional[list[str]] = None
+    area_map: Optional[Any] = None
 
 
 class InviteCreateRequest(BaseModel):

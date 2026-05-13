@@ -92,6 +92,11 @@ class HouseholdConfig(Base):
     categories_json = Column(Text, nullable=False, default="[]")
     locations_json = Column(Text, nullable=False, default="[]")
     units_json = Column(Text, nullable=False, default="[]")
+    type_tree_json = Column(Text, nullable=False, default="{}")
+    rooms_json = Column(Text, nullable=False, default="[]")
+    spots_json = Column(Text, nullable=False, default="[]")
+    responsible_people_json = Column(Text, nullable=False, default="[]")
+    area_map_json = Column(Text, nullable=False, default="[]")
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_by_member_id = Column(Integer, nullable=True)
 

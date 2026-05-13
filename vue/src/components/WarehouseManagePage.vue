@@ -1,6 +1,6 @@
 <template>
-  <div class="page">
-    <div class="header">
+  <div class="page" :class="{ embedded }">
+    <div v-if="!embedded" class="header">
       <h2>录入/管理</h2>
       <div class="header-actions">
         <router-link class="link" to="/warehouse/items">物品管理</router-link>
@@ -8,12 +8,12 @@
       </div>
     </div>
 
-    <div class="card">
+    <div v-if="!embedded" class="card">
       <div v-if="loadingMessage">加载中...</div>
       <div v-else class="muted">{{ message }}</div>
     </div>
 
-    <div class="grid">
+    <div class="grid" :class="{ single: embedded }">
       <div class="panel">
         <div class="panel-title">快速录入</div>
 
@@ -57,8 +57,9 @@
         </div>
 
         <form class="form" @submit.prevent="quickCreate">
-          <div class="section">
+          <div class="section color-core">
             <div class="section-title">核心信息</div>
+
             <div class="row">
               <label>
                 编码
@@ -123,7 +124,7 @@
             </div>
           </div>
 
-          <div class="section">
+          <div class="section color-time">
             <div class="section-title">时间空间信息</div>
             <div class="row">
               <label>
@@ -165,7 +166,7 @@
             </div>
           </div>
 
-          <div class="section fold">
+          <div class="section fold color-status">
             <button class="section-toggle" type="button" @click="toggle('status')">
               <span class="section-title">状态属性信息</span>
               <span class="toggle-text">{{ uiFold.status ? '展开' : '收起' }}</span>
@@ -190,7 +191,7 @@
             </div>
           </div>
 
-          <div class="section fold">
+          <div class="section fold color-finance">
             <button class="section-toggle" type="button" @click="toggle('finance')">
               <span class="section-title">财务价值（非必填）</span>
               <span class="toggle-text">{{ uiFold.finance ? '展开' : '收起' }}</span>
@@ -213,7 +214,7 @@
             </div>
           </div>
 
-          <div class="section fold">
+          <div class="section fold color-dynamic">
             <button class="section-toggle" type="button" @click="toggle('dynamic')">
               <span class="section-title">动态维度</span>
               <span class="toggle-text">{{ uiFold.dynamic ? '展开' : '收起' }}</span>
@@ -229,7 +230,10 @@
                 </label>
                 <label class="grow">
                   责任人
-                  <input v-model.trim="form.responsible_person" placeholder="可选" />
+                  <input v-model.trim="form.responsible_person" placeholder="可选" list="responsible-people" />
+                  <datalist id="responsible-people">
+                    <option v-for="p in responsiblePeopleOptions" :key="p" :value="p"></option>
+                  </datalist>
                 </label>
               </div>
               <label class="full">
@@ -243,7 +247,7 @@
             </div>
           </div>
 
-          <div class="section fold">
+          <div class="section fold color-custom">
             <button class="section-toggle" type="button" @click="toggle('custom')">
               <span class="section-title">其他属性（允许自定义）</span>
               <span class="toggle-text">{{ uiFold.custom ? '展开' : '收起' }}</span>
@@ -295,7 +299,7 @@
         </form>
       </div>
 
-      <div class="panel">
+      <div v-if="!embedded" class="panel">
         <div class="panel-title">提醒</div>
         <div class="sub-title">低库存</div>
         <div v-if="loadingItems" class="muted">加载中...</div>
@@ -341,12 +345,17 @@ const TYPE_TREE = {
   宠物用品: ['食品', '餐具', '寝具', '清洁', '出行', '玩具'],
   其他: ['其他'],
 };
+ 
+const DEFAULT_TYPE_TREE = TYPE_TREE;
 
 const DEFAULT_ROOMS = ['玄关', '厨房', '客厅', '过道', '厕所', '房间1', '房间2', '房间3', '阳台', '其他'];
 const DEFAULT_SPOTS = ['整面墙', '柜子', '抽屉', '台面', '床底', '冰箱', '收纳箱', '置物架', '其他'];
 
 export default {
   name: 'WarehouseManagePage',
+  props: {
+    embedded: { type: Boolean, default: false },
+  },
   data() {
     return {
       loadingMessage: false,
@@ -365,6 +374,10 @@ export default {
       categories: [...DEFAULT_CATEGORIES],
       locations: [...DEFAULT_LOCATIONS],
       units: [...DEFAULT_UNITS],
+      typeTree: { ...DEFAULT_TYPE_TREE },
+      rooms: [...DEFAULT_ROOMS],
+      spots: [...DEFAULT_SPOTS],
+      responsiblePeople: ['我'],
       uiFold: {
         status: true,
         finance: true,
@@ -374,6 +387,7 @@ export default {
       uploadingImage: false,
       customPairs: [{ k: '', v: '' }],
       form: {
+        id: null,
         code: '',
         type_l1: '',
         type_l2: '',
@@ -411,22 +425,25 @@ export default {
   },
   created() {
     this.loadConfig();
-    this.fetchMessage();
+    if (!this.embedded) this.fetchMessage();
     this.fetchItems();
   },
   computed: {
     typeL1Options() {
-      return Object.keys(TYPE_TREE);
+      return Object.keys(this.typeTree || {});
     },
     typeL2Options() {
       const l1 = this.form.type_l1 || '';
-      return TYPE_TREE[l1] || [];
+      return (this.typeTree && this.typeTree[l1]) ? this.typeTree[l1] : [];
     },
     roomOptions() {
-      return DEFAULT_ROOMS;
+      return this.rooms && this.rooms.length > 0 ? this.rooms : DEFAULT_ROOMS;
     },
     spotOptions() {
-      return DEFAULT_SPOTS;
+      return this.spots && this.spots.length > 0 ? this.spots : DEFAULT_SPOTS;
+    },
+    responsiblePeopleOptions() {
+      return this.responsiblePeople && this.responsiblePeople.length > 0 ? this.responsiblePeople : [];
     },
     usageStatusOptions() {
       return ['在用', '备用（囤货）', '待维修', '待处理'];
@@ -476,11 +493,19 @@ export default {
         this.categories = Array.isArray(res.data.categories) ? res.data.categories : [...DEFAULT_CATEGORIES];
         this.locations = Array.isArray(res.data.locations) ? res.data.locations : [...DEFAULT_LOCATIONS];
         this.units = Array.isArray(res.data.units) ? res.data.units : [...DEFAULT_UNITS];
+        this.typeTree = (res.data.type_tree && typeof res.data.type_tree === 'object') ? res.data.type_tree : { ...DEFAULT_TYPE_TREE };
+        this.rooms = Array.isArray(res.data.rooms) ? res.data.rooms : [...DEFAULT_ROOMS];
+        this.spots = Array.isArray(res.data.spots) ? res.data.spots : [...DEFAULT_SPOTS];
+        this.responsiblePeople = Array.isArray(res.data.responsible_people) ? res.data.responsible_people : ['我'];
         if (!this.form.unit) this.form.unit = this.units[0] || '';
       } catch (e) {
         this.categories = [...DEFAULT_CATEGORIES];
         this.locations = [...DEFAULT_LOCATIONS];
         this.units = [...DEFAULT_UNITS];
+        this.typeTree = { ...DEFAULT_TYPE_TREE };
+        this.rooms = [...DEFAULT_ROOMS];
+        this.spots = [...DEFAULT_SPOTS];
+        this.responsiblePeople = ['我'];
       }
     },
     async fetchMessage() {
@@ -509,6 +534,7 @@ export default {
     reset() {
       this.hint = '';
       this.form = {
+        id: null,
         code: '',
         type_l1: '',
         type_l2: '',
@@ -652,6 +678,13 @@ export default {
       this.form = next;
       return applied;
     },
+    editItem(it) {
+      if (!it) return;
+      const next = { ...this.form, id: it.id != null ? Number(it.id) : null };
+      this.form = next;
+      this.applyExtracted(it);
+      this.hint = next.id ? `正在编辑 #${next.id}` : '';
+    },
     async runOcr() {
       if (!this.ocrFile || this.ocrLoading) return;
       this.ocrLoading = true;
@@ -787,10 +820,16 @@ export default {
           responsible_person: this.form.responsible_person || null,
           custom_json: customJson || null,
         };
-        await api.post('/api/items', payload);
-        this.hint = '已保存';
+        if (this.form.id != null) {
+          await api.put(`/api/items/${this.form.id}`, payload);
+          this.hint = '已更新';
+        } else {
+          await api.post('/api/items', payload);
+          this.hint = '已保存';
+        }
         this.reset();
         await this.fetchItems();
+        this.$emit('saved');
       } catch (e) {
         console.error('Failed to create item:', e);
         this.hint = '保存失败';
@@ -852,6 +891,10 @@ export default {
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
   align-items: stretch;
+}
+
+.grid.single {
+  grid-template-columns: 1fr;
 }
 
 .panel {
@@ -1000,6 +1043,13 @@ textarea {
   margin-bottom: 12px;
   background: rgba(255, 255, 255, 0.65);
 }
+
+.section.color-core { background: #eff6ff; border-color: #bfdbfe; }
+.section.color-time { background: #ecfdf5; border-color: #a7f3d0; }
+.section.color-status { background: #fef3c7; border-color: #fde68a; }
+.section.color-finance { background: #fef2f2; border-color: #fecaca; }
+.section.color-dynamic { background: #f5f3ff; border-color: #ddd6fe; }
+.section.color-custom { background: #f3f4f6; border-color: #e5e7eb; }
 
 .section-title {
   font-weight: 800;

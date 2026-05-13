@@ -43,7 +43,7 @@ from app import crud, models, schemas
 from sqlalchemy import inspect, text
 from app.ark_ocr import extract_item_from_image, ark_chat
 from app.security import generate_token, hash_token
-from app.defaults import default_config_json
+from app.defaults import default_config_json, default_extended_config_json
 from app.deps import get_current_member, require_owner, get_db as deps_get_db
 
 def ensure_items_table_columns():
@@ -106,18 +106,72 @@ def ensure_default_household():
             {"id": "default", "name": "默认家庭", "created_at": datetime.utcnow().isoformat()},
         )
         if "household_config" in inspector.get_table_names():
-            categories_json, locations_json, units_json = default_config_json()
+            cfg = default_extended_config_json()
             conn.execute(
                 text(
-                    "INSERT OR IGNORE INTO household_config(household_id, categories_json, locations_json, units_json, updated_at, updated_by_member_id) "
-                    "VALUES(:hid, :c, :l, :u, :t, NULL)"
+                    "INSERT OR IGNORE INTO household_config("
+                    "household_id, categories_json, locations_json, units_json, "
+                    "type_tree_json, rooms_json, spots_json, responsible_people_json, area_map_json, "
+                    "updated_at, updated_by_member_id"
+                    ") VALUES("
+                    ":hid, :c, :l, :u, :tt, :rooms, :spots, :rp, :am, :t, NULL"
+                    ")"
                 ),
-                {"hid": "default", "c": categories_json, "l": locations_json, "u": units_json, "t": datetime.utcnow().isoformat()},
+                {
+                    "hid": "default",
+                    "c": cfg["categories_json"],
+                    "l": cfg["locations_json"],
+                    "u": cfg["units_json"],
+                    "tt": cfg["type_tree_json"],
+                    "rooms": cfg["rooms_json"],
+                    "spots": cfg["spots_json"],
+                    "rp": cfg["responsible_people_json"],
+                    "am": cfg["area_map_json"],
+                    "t": datetime.utcnow().isoformat(),
+                },
             )
+
+
+def ensure_household_config_columns():
+    inspector = inspect(engine)
+    if "household_config" not in inspector.get_table_names():
+        return
+    existing = {c["name"] for c in inspector.get_columns("household_config")}
+    wanted = {
+        "household_id": "TEXT",
+        "categories_json": "TEXT",
+        "locations_json": "TEXT",
+        "units_json": "TEXT",
+        "type_tree_json": "TEXT",
+        "rooms_json": "TEXT",
+        "spots_json": "TEXT",
+        "responsible_people_json": "TEXT",
+        "area_map_json": "TEXT",
+        "updated_at": "DATETIME",
+        "updated_by_member_id": "INTEGER",
+    }
+    missing = [(name, sql_type) for name, sql_type in wanted.items() if name not in existing]
+    if not missing:
+        return
+    defaults = default_extended_config_json()
+    with engine.begin() as conn:
+        for name, sql_type in missing:
+            conn.execute(text(f"ALTER TABLE household_config ADD COLUMN {name} {sql_type}"))
+        if "type_tree_json" in {n for n, _ in missing}:
+            conn.execute(text("UPDATE household_config SET type_tree_json = :v WHERE type_tree_json IS NULL"), {"v": defaults["type_tree_json"]})
+        if "rooms_json" in {n for n, _ in missing}:
+            conn.execute(text("UPDATE household_config SET rooms_json = :v WHERE rooms_json IS NULL"), {"v": defaults["rooms_json"]})
+        if "spots_json" in {n for n, _ in missing}:
+            conn.execute(text("UPDATE household_config SET spots_json = :v WHERE spots_json IS NULL"), {"v": defaults["spots_json"]})
+        if "responsible_people_json" in {n for n, _ in missing}:
+            conn.execute(text("UPDATE household_config SET responsible_people_json = :v WHERE responsible_people_json IS NULL"), {"v": defaults["responsible_people_json"]})
+        if "area_map_json" in {n for n, _ in missing}:
+            conn.execute(text("UPDATE household_config SET area_map_json = :v WHERE area_map_json IS NULL"), {"v": defaults["area_map_json"]})
 
 # Initialize database tables
 Base.metadata.create_all(bind=engine)
 ensure_items_table_columns()
+ensure_household_config_columns()
 ensure_default_household()
 
 app = FastAPI(title="Warehouse API")
@@ -240,12 +294,17 @@ def init_household(payload: schemas.InitHouseholdRequest, db: Session = Depends(
     owner_token = generate_token()
     member = models.HouseholdMember(household_id=hid, role="owner", token_hash=hash_token(owner_token))
     db.add(member)
-    categories_json, locations_json, units_json = default_config_json()
+    defaults = default_extended_config_json()
     cfg = models.HouseholdConfig(
         household_id=hid,
-        categories_json=categories_json,
-        locations_json=locations_json,
-        units_json=units_json,
+        categories_json=defaults["categories_json"],
+        locations_json=defaults["locations_json"],
+        units_json=defaults["units_json"],
+        type_tree_json=defaults["type_tree_json"],
+        rooms_json=defaults["rooms_json"],
+        spots_json=defaults["spots_json"],
+        responsible_people_json=defaults["responsible_people_json"],
+        area_map_json=defaults["area_map_json"],
         updated_at=datetime.utcnow(),
         updated_by_member_id=None,
     )
@@ -340,17 +399,34 @@ def get_config(db: Session = Depends(get_db), member_household: Tuple[models.Hou
     member, household = member_household
     cfg = db.query(models.HouseholdConfig).filter(models.HouseholdConfig.household_id == household.id).first()
     if not cfg:
-        categories_json, locations_json, units_json = default_config_json()
-        cfg = models.HouseholdConfig(household_id=household.id, categories_json=categories_json, locations_json=locations_json, units_json=units_json, updated_at=datetime.utcnow())
+        defaults = default_extended_config_json()
+        cfg = models.HouseholdConfig(
+            household_id=household.id,
+            categories_json=defaults["categories_json"],
+            locations_json=defaults["locations_json"],
+            units_json=defaults["units_json"],
+            type_tree_json=defaults["type_tree_json"],
+            rooms_json=defaults["rooms_json"],
+            spots_json=defaults["spots_json"],
+            responsible_people_json=defaults["responsible_people_json"],
+            area_map_json=defaults["area_map_json"],
+            updated_at=datetime.utcnow(),
+        )
         db.add(cfg)
         db.commit()
     import json
+    defaults = default_extended_config_json()
     return schemas.HouseholdConfigResponse(
         household_id=household.id,
-        categories=json.loads(cfg.categories_json),
-        locations=json.loads(cfg.locations_json),
-        units=json.loads(cfg.units_json),
-        version=1,
+        categories=json.loads(cfg.categories_json or defaults["categories_json"]),
+        locations=json.loads(cfg.locations_json or defaults["locations_json"]),
+        units=json.loads(cfg.units_json or defaults["units_json"]),
+        type_tree=json.loads(cfg.type_tree_json or defaults["type_tree_json"]),
+        rooms=json.loads(cfg.rooms_json or defaults["rooms_json"]),
+        spots=json.loads(cfg.spots_json or defaults["spots_json"]),
+        responsible_people=json.loads(cfg.responsible_people_json or defaults["responsible_people_json"]),
+        area_map=json.loads(cfg.area_map_json or defaults["area_map_json"]),
+        version=2,
     )
 
 
@@ -369,10 +445,32 @@ def update_config(
     cfg.categories_json = json.dumps(payload.categories, ensure_ascii=False)
     cfg.locations_json = json.dumps(payload.locations, ensure_ascii=False)
     cfg.units_json = json.dumps(payload.units, ensure_ascii=False)
+    if payload.type_tree is not None:
+        cfg.type_tree_json = json.dumps(payload.type_tree, ensure_ascii=False)
+    if payload.rooms is not None:
+        cfg.rooms_json = json.dumps(payload.rooms, ensure_ascii=False)
+    if payload.spots is not None:
+        cfg.spots_json = json.dumps(payload.spots, ensure_ascii=False)
+    if payload.responsible_people is not None:
+        cfg.responsible_people_json = json.dumps(payload.responsible_people, ensure_ascii=False)
+    if payload.area_map is not None:
+        cfg.area_map_json = json.dumps(payload.area_map, ensure_ascii=False)
     cfg.updated_at = datetime.utcnow()
     cfg.updated_by_member_id = owner.id
     db.commit()
-    return schemas.HouseholdConfigResponse(household_id=household.id, categories=payload.categories, locations=payload.locations, units=payload.units, version=1)
+    defaults = default_extended_config_json()
+    return schemas.HouseholdConfigResponse(
+        household_id=household.id,
+        categories=payload.categories,
+        locations=payload.locations,
+        units=payload.units,
+        type_tree=json.loads(cfg.type_tree_json or defaults["type_tree_json"]),
+        rooms=json.loads(cfg.rooms_json or defaults["rooms_json"]),
+        spots=json.loads(cfg.spots_json or defaults["spots_json"]),
+        responsible_people=json.loads(cfg.responsible_people_json or defaults["responsible_people_json"]),
+        area_map=json.loads(cfg.area_map_json or defaults["area_map_json"]),
+        version=2,
+    )
 
 
 @app.post("/api/household/invites", response_model=schemas.InviteCreateResponse)
