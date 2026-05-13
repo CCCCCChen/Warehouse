@@ -51,3 +51,8 @@ cd vue
 npm run serve
 ```
 启动成功后，根据终端提示（通常是 http://localhost:8080/ ）在浏览器中打开页面即可。
+
+## 部署与域名
+
+- [deploy-docker.md](docs/deploy-docker.md)
+- [domain-subdomain.md](docs/domain-subdomain.md)

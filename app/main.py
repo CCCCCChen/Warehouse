@@ -225,6 +225,19 @@ def init_status(db: Session = Depends(get_db)):
     )
 
 
+@app.get("/api/init/households", response_model=list[schemas.HouseholdPublicResponse])
+def list_households_public(db: Session = Depends(get_db)):
+    rows = db.query(models.Household).order_by(models.Household.created_at.desc()).all()
+    return [
+        schemas.HouseholdPublicResponse(
+            household_id=h.id,
+            household_name=h.name,
+            created_at=h.created_at.isoformat() if h.created_at else "",
+        )
+        for h in rows
+    ]
+
+
 @app.post("/api/init/adopt_default", response_model=schemas.InitHouseholdResponse)
 def adopt_default_household(db: Session = Depends(get_db)):
     has_any_member = db.query(models.HouseholdMember).count() > 0

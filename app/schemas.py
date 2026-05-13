@@ -112,3 +112,9 @@ class InitStatusResponse(BaseModel):
     default_items_count: int
     has_any_member: bool
     can_adopt_default: bool
+
+
+class HouseholdPublicResponse(BaseModel):
+    household_id: str
+    household_name: str
+    created_at: str

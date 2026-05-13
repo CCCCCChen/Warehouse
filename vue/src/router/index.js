@@ -4,8 +4,9 @@ import { getAuthToken } from '@/auth/storage';
 // import App from '../App.vue';
 
 const routes = [
-  { path: '/', redirect: '/warehouse' },
-  { path: '/init', component: () => import('@/components/InitPage.vue')},
+  { path: '/', redirect: '/households' },
+  { path: '/init', redirect: '/households' },
+  { path: '/households', component: () => import('@/components/InitPage.vue')},
   { path: '/random_numbers', component: () => import('@/components/RandomNumbers.vue')},
   { path: '/warehouse', component: () => import('@/components/WarehousePage.vue')},
   { path: '/warehouse/items', component: () => import('@/components/ItemsPage.vue')},
@@ -31,7 +32,7 @@ router.beforeEach((to) => {
   if (to.path.startsWith('/warehouse')) {
     const token = getAuthToken();
     if (!token) {
-      return { path: '/init' };
+      return { path: '/households' };
     }
   }
   return true;

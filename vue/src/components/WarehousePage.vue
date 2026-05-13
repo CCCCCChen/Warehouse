@@ -2,6 +2,7 @@
   <div class="warehouse-page">
     <h2 class="page-title">{{ msg }}</h2>
     <div class="quick-nav">
+      <router-link class="nav-btn ghost" to="/households">切换家庭</router-link>
       <router-link class="nav-btn" to="/warehouse/items">物品管理</router-link>
       <router-link class="nav-btn" to="/warehouse/manage">录入/管理</router-link>
       <router-link class="nav-btn" to="/warehouse/user">用户管理</router-link>
