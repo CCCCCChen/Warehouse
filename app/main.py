@@ -6,6 +6,7 @@ uvicorn main:app --reload
 from fastapi import FastAPI, WebSocket, Depends, HTTPException
 from fastapi import UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from starlette.websockets import WebSocketDisconnect
 import os
 from pathlib import Path
@@ -51,17 +52,35 @@ def ensure_items_table_columns():
         return
     existing = {c["name"] for c in inspector.get_columns("items")}
     wanted = {
+        "code": "TEXT",
+        "type_l1": "TEXT",
+        "type_l2": "TEXT",
         "household_id": "TEXT",
         "category": "TEXT",
         "location": "TEXT",
+        "room": "TEXT",
+        "spot": "TEXT",
         "unit": "TEXT",
         "brand": "TEXT",
+        "usage": "TEXT",
+        "image_path": "TEXT",
         "min_quantity": "INTEGER",
         "purchase_date": "DATE",
+        "production_date": "DATE",
+        "recorded_at": "DATETIME",
         "expiry_date": "DATE",
         "barcode": "TEXT",
         "tags": "TEXT",
         "notes": "TEXT",
+        "usage_status": "TEXT",
+        "ownership": "TEXT",
+        "price": "REAL",
+        "value_score": "REAL",
+        "replacement_cycle_days": "INTEGER",
+        "usage_frequency": "TEXT",
+        "related_item_ids": "TEXT",
+        "responsible_person": "TEXT",
+        "custom_json": "TEXT",
     }
     missing = [(name, sql_type) for name, sql_type in wanted.items() if name not in existing]
     if not missing:
@@ -71,6 +90,8 @@ def ensure_items_table_columns():
             conn.execute(text(f"ALTER TABLE items ADD COLUMN {name} {sql_type}"))
         if "household_id" in {n for n, _ in missing}:
             conn.execute(text("UPDATE items SET household_id = 'default' WHERE household_id IS NULL"))
+        if "recorded_at" in {n for n, _ in missing}:
+            conn.execute(text("UPDATE items SET recorded_at = :t WHERE recorded_at IS NULL"), {"t": datetime.utcnow().isoformat()})
 
 
 def ensure_default_household():
@@ -108,6 +129,10 @@ app.add_middleware(
     allow_methods=["*"],  # 允许所有方法
     allow_headers=["*"],  # 允许所有头
 )
+
+uploads_dir = Path(__file__).resolve().parent.parent / "data" / "uploads"
+uploads_dir.mkdir(parents=True, exist_ok=True)
+app.mount("/uploads", StaticFiles(directory=str(uploads_dir)), name="uploads")
 
 get_db = deps_get_db
 
@@ -187,6 +212,24 @@ def delete_item(item_id: int, db: Session = Depends(get_db), member_household: T
     if db_item is None:
         raise HTTPException(status_code=404, detail="Item not found")
     return db_item
+
+
+@app.post("/api/items/upload_image", response_model=dict)
+async def upload_item_image(file: UploadFile = File(...), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    filename = file.filename or ""
+    suffix = Path(filename).suffix.lower()
+    allowed = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+    if suffix not in allowed:
+        raise HTTPException(status_code=400, detail="Unsupported image type")
+    data = await file.read()
+    if len(data) > 5 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="Image too large")
+    target_dir = uploads_dir / household.id
+    target_dir.mkdir(parents=True, exist_ok=True)
+    name = f"{uuid4().hex}{suffix}"
+    (target_dir / name).write_bytes(data)
+    return {"image_url": f"/uploads/{household.id}/{name}"}
 
 
 @app.post("/api/init/household", response_model=schemas.InitHouseholdResponse)

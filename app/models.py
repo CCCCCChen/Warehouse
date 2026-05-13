@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, Text
+from sqlalchemy import Column, Integer, String, Date, DateTime, ForeignKey, Text, Float
 from sqlalchemy.orm import relationship
 from datetime import datetime
 from app.database import Base
@@ -8,20 +8,42 @@ class Item(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     household_id = Column(String, index=True, nullable=False, default="default")
+    code = Column(String, nullable=True, index=True)
+    type_l1 = Column(String, nullable=True, index=True)
+    type_l2 = Column(String, nullable=True, index=True)
     name = Column(String, index=True)
     description = Column(String, nullable=True)
+    usage = Column(Text, nullable=True)
+    image_path = Column(String, nullable=True)
     quantity = Column(Integer, default=0)
 
     category = Column(String, nullable=True, index=True)
     location = Column(String, nullable=True, index=True)
+    room = Column(String, nullable=True, index=True)
+    spot = Column(String, nullable=True, index=True)
     unit = Column(String, nullable=True)
     brand = Column(String, nullable=True)
     min_quantity = Column(Integer, default=0)
     purchase_date = Column(Date, nullable=True)
+    production_date = Column(Date, nullable=True)
+    recorded_at = Column(DateTime, nullable=True, default=datetime.utcnow)
     expiry_date = Column(Date, nullable=True)
     barcode = Column(String, nullable=True, index=True)
     tags = Column(String, nullable=True)
     notes = Column(String, nullable=True)
+
+    usage_status = Column(String, nullable=True, index=True)
+    ownership = Column(String, nullable=True, index=True)
+
+    price = Column(Float, nullable=True)
+    value_score = Column(Float, nullable=True)
+    replacement_cycle_days = Column(Integer, nullable=True)
+
+    usage_frequency = Column(String, nullable=True)
+    related_item_ids = Column(String, nullable=True)
+    responsible_person = Column(String, nullable=True)
+
+    custom_json = Column(Text, nullable=True)
 
 
 class Household(Base):

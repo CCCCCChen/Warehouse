@@ -1,42 +1,77 @@
 from pydantic import BaseModel
 from typing import Optional
-from datetime import date
+from datetime import date, datetime
 
 class ItemBase(BaseModel):
+    code: Optional[str] = None
+    type_l1: Optional[str] = None
+    type_l2: Optional[str] = None
     name: str
     description: Optional[str] = None
+    usage: Optional[str] = None
+    image_path: Optional[str] = None
     quantity: int
     category: Optional[str] = None
     location: Optional[str] = None
+    room: Optional[str] = None
+    spot: Optional[str] = None
     unit: Optional[str] = None
     brand: Optional[str] = None
     min_quantity: int = 0
     purchase_date: Optional[date] = None
+    production_date: Optional[date] = None
     expiry_date: Optional[date] = None
     barcode: Optional[str] = None
     tags: Optional[str] = None
     notes: Optional[str] = None
+    usage_status: Optional[str] = None
+    ownership: Optional[str] = None
+    price: Optional[float] = None
+    value_score: Optional[float] = None
+    replacement_cycle_days: Optional[int] = None
+    usage_frequency: Optional[str] = None
+    related_item_ids: Optional[str] = None
+    responsible_person: Optional[str] = None
+    custom_json: Optional[str] = None
 
 class ItemCreate(ItemBase):
     pass
 
 class ItemUpdate(BaseModel):
+    code: Optional[str] = None
+    type_l1: Optional[str] = None
+    type_l2: Optional[str] = None
     name: Optional[str] = None
     description: Optional[str] = None
+    usage: Optional[str] = None
+    image_path: Optional[str] = None
     quantity: Optional[int] = None
     category: Optional[str] = None
     location: Optional[str] = None
+    room: Optional[str] = None
+    spot: Optional[str] = None
     unit: Optional[str] = None
     brand: Optional[str] = None
     min_quantity: Optional[int] = None
     purchase_date: Optional[date] = None
+    production_date: Optional[date] = None
     expiry_date: Optional[date] = None
     barcode: Optional[str] = None
     tags: Optional[str] = None
     notes: Optional[str] = None
+    usage_status: Optional[str] = None
+    ownership: Optional[str] = None
+    price: Optional[float] = None
+    value_score: Optional[float] = None
+    replacement_cycle_days: Optional[int] = None
+    usage_frequency: Optional[str] = None
+    related_item_ids: Optional[str] = None
+    responsible_person: Optional[str] = None
+    custom_json: Optional[str] = None
 
 class Item(ItemBase):
     id: int
+    recorded_at: Optional[datetime] = None
 
     class Config:
         from_attributes = True  # Pydantic v2 中替代 orm_mode 的配置
