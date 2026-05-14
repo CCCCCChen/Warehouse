@@ -22,7 +22,14 @@
         </div>
         <div class="muted">在下方灰色区域拖拽鼠标画出房间长方形，并命名。选中后拖动可移动位置。</div>
         
-        <div class="canvas-scroll-area">
+        <div
+          class="canvas-scroll-area"
+          @wheel="onRoomWheel"
+          @touchstart="onRoomTouchStart"
+          @touchmove="onRoomTouchMove"
+          @touchend="onRoomTouchEnd"
+          @touchcancel="onRoomTouchEnd"
+        >
           <div 
             class="canvas-container" 
             :style="{ transform: `scale(${roomZoom})`, transformOrigin: 'top left' }"
@@ -93,7 +100,14 @@
 
             <div class="muted mb-2">在下方图片区域拖拽鼠标画出收纳框，并命名。选中后拖动可移动位置。</div>
             
-            <div class="canvas-scroll-area">
+            <div
+              class="canvas-scroll-area"
+              @wheel="onWallWheel"
+              @touchstart="onWallTouchStart"
+              @touchmove="onWallTouchMove"
+              @touchend="onWallTouchEnd"
+              @touchcancel="onWallTouchEnd"
+            >
               <div 
                 class="wall-canvas"
                 :style="{ 
@@ -177,6 +191,8 @@ export default {
       wallZoom: 1.0,
       
       dragInfo: null,
+      roomPinch: null,
+      wallPinch: null,
     };
   },
   created() {
@@ -207,6 +223,64 @@ export default {
     adjustWallZoom(delta) {
       const next = Number(this.wallZoom) + Number(delta);
       this.wallZoom = Math.min(3, Math.max(0.2, Number.isFinite(next) ? next : 1));
+    },
+    clampZoom(z) {
+      const v = Number(z);
+      if (!Number.isFinite(v)) return 1;
+      return Math.min(3, Math.max(0.2, v));
+    },
+    onRoomWheel(e) {
+      if (!(e.ctrlKey || e.metaKey || e.altKey)) return;
+      e.preventDefault();
+      const step = e.deltaY < 0 ? 0.08 : -0.08;
+      this.roomZoom = this.clampZoom(this.roomZoom + step);
+    },
+    onWallWheel(e) {
+      if (!(e.ctrlKey || e.metaKey || e.altKey)) return;
+      e.preventDefault();
+      const step = e.deltaY < 0 ? 0.08 : -0.08;
+      this.wallZoom = this.clampZoom(this.wallZoom + step);
+    },
+    touchDistance(t1, t2) {
+      const dx = t1.clientX - t2.clientX;
+      const dy = t1.clientY - t2.clientY;
+      return Math.sqrt(dx * dx + dy * dy);
+    },
+    onRoomTouchStart(e) {
+      if (!e.touches || e.touches.length !== 2) return;
+      e.preventDefault();
+      this.roomPinch = {
+        dist: this.touchDistance(e.touches[0], e.touches[1]),
+        zoom: this.roomZoom,
+      };
+    },
+    onRoomTouchMove(e) {
+      if (!this.roomPinch || !e.touches || e.touches.length !== 2) return;
+      e.preventDefault();
+      const dist = this.touchDistance(e.touches[0], e.touches[1]);
+      const ratio = dist / (this.roomPinch.dist || dist);
+      this.roomZoom = this.clampZoom(this.roomPinch.zoom * ratio);
+    },
+    onRoomTouchEnd() {
+      this.roomPinch = null;
+    },
+    onWallTouchStart(e) {
+      if (!e.touches || e.touches.length !== 2) return;
+      e.preventDefault();
+      this.wallPinch = {
+        dist: this.touchDistance(e.touches[0], e.touches[1]),
+        zoom: this.wallZoom,
+      };
+    },
+    onWallTouchMove(e) {
+      if (!this.wallPinch || !e.touches || e.touches.length !== 2) return;
+      e.preventDefault();
+      const dist = this.touchDistance(e.touches[0], e.touches[1]);
+      const ratio = dist / (this.wallPinch.dist || dist);
+      this.wallZoom = this.clampZoom(this.wallPinch.zoom * ratio);
+    },
+    onWallTouchEnd() {
+      this.wallPinch = null;
     },
     async loadFromServer() {
       this.hint = '';
@@ -406,6 +480,10 @@ export default {
   padding: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .header {
@@ -413,6 +491,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
+  flex-shrink: 0;
 }
 
 .header-actions {
@@ -440,8 +519,9 @@ export default {
 
 .grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(auto-fit, minmax(540px, 1fr));
   gap: 20px;
+  flex: 1;
 }
 
 @media (max-width: 900px) {
@@ -455,17 +535,22 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   padding: 16px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .panel-title {
   font-weight: 800;
   font-size: 18px;
   margin-bottom: 10px;
+  flex-shrink: 0;
 }
 
 .muted {
   color: rgba(0, 0, 0, 0.6);
   font-size: 14px;
+  flex-shrink: 0;
 }
 
 .strong {
@@ -482,6 +567,7 @@ export default {
 
 .mt-4 {
   margin-top: 24px;
+  flex-shrink: 0;
 }
 
 .zoom-controls {
@@ -507,12 +593,15 @@ export default {
 
 .canvas-scroll-area {
   width: 100%;
-  height: 400px;
+  flex: 1;
+  min-height: 400px;
+  max-width: 100%;
   background: #f0f0f0;
   border: 1px solid #ccc;
   position: relative;
   overflow: auto;
   margin-top: 10px;
+  touch-action: pan-x pan-y;
 }
 
 .canvas-container {
@@ -617,6 +706,18 @@ export default {
   background-repeat: no-repeat;
   position: relative;
   cursor: crosshair;
+}
+
+@media (max-width: 900px) {
+  .map-test-page {
+    padding: 12px;
+    padding-bottom: 40px;
+  }
+  .canvas-scroll-area {
+    height: 55vh;
+    flex: none;
+    min-height: 0;
+  }
 }
 
 .empty-bg {

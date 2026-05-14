@@ -75,24 +75,24 @@
       </thead>
       <tbody>
         <tr v-for="it in filteredItems" :key="it.id" :class="rowClass(it)">
-          <td class="name">
+          <td class="name" data-label="编码/名称">
             <div class="primary">{{ it.code || '-' }}</div>
             <div class="secondary">{{ it.name }}</div>
           </td>
-          <td>
+          <td data-label="类型/位置">
             <div class="primary">{{ displayType(it) }}</div>
             <div class="secondary">{{ displayLocation(it) }}</div>
           </td>
-          <td>
+          <td data-label="数量">
             <span class="primary">{{ it.quantity }}</span>
             <span class="secondary">{{ it.unit || '' }}</span>
           </td>
-          <td>
+          <td data-label="状态">
             <div class="primary">{{ it.usage_status || '-' }}</div>
             <div class="secondary">{{ it.ownership || '-' }}</div>
           </td>
-          <td>{{ it.expiry_date || '-' }}</td>
-          <td>{{ it.responsible_person || '-' }}</td>
+          <td data-label="到期"><div class="cell-value">{{ it.expiry_date || '-' }}</div></td>
+          <td data-label="责任人"><div class="cell-value">{{ it.responsible_person || '-' }}</div></td>
           <td class="ops">
             <button @click="editInEntry(it)">编辑</button>
             <button class="danger" @click="remove(it.id)">删除</button>
@@ -591,12 +591,15 @@ export default {
 <style scoped>
 .items-page {
   padding: 20px;
+  padding-bottom: 60px;
   max-width: 1200px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.55);
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  min-height: 100vh;
+  box-sizing: border-box;
 }
 
 .header {
@@ -899,6 +902,13 @@ select {
 .ops {
   display: flex;
   gap: 8px;
+  flex-wrap: wrap;
+}
+
+.cell-value {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .danger {
@@ -910,12 +920,83 @@ select {
 }
 
 @media (max-width: 900px) {
+  .items-page {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
   .stats {
     grid-template-columns: 1fr;
   }
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .filter-input,
+  .filter-select {
+    width: 100%;
+    min-width: 0;
+  }
+  .check {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .ops {
+    justify-content: flex-end;
+  }
+
   .table {
+    width: 100%;
+  }
+  .table thead {
+    display: none;
+  }
+  .table tbody,
+  .table tr,
+  .table td {
     display: block;
-    overflow-x: auto;
+    width: 100%;
+  }
+  .table tr {
+    border: 1px solid rgba(0, 0, 0, 0.10);
+    border-radius: 12px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.7);
+  }
+  .table td {
+    border: none;
+    padding: 6px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    min-width: 0;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    align-items: flex-start;
+  }
+  .table td::before {
+    content: attr(data-label);
+    font-weight: 700;
+    color: rgba(0, 0, 0, 0.6);
+    flex: 0 0 auto;
+    max-width: 42%;
+  }
+  .table td > * {
+    min-width: 0;
+  }
+  .table td.name {
+    padding-top: 0;
+  }
+  .table td.name::before {
+    content: '';
+  }
+  .table td.ops::before {
+    content: '';
+  }
+  .table td.ops {
+    justify-content: flex-end;
+    padding-bottom: 0;
+    gap: 8px;
   }
 }
 </style>

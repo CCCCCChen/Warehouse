@@ -57,112 +57,137 @@
         </div>
 
         <form class="form" @submit.prevent="quickCreate">
-          <div class="section color-core">
-            <div class="section-title">核心信息</div>
+          <div class="section fold color-core">
+            <button class="section-toggle" type="button" @click="toggle('core')">
+              <span class="section-title">核心信息</span>
+              <span class="toggle-text">{{ uiFold.core ? '展开' : '收起' }}</span>
+            </button>
+            <div v-if="!uiFold.core" class="section-body">
+              <div class="row">
+                <label>
+                  编码
+                  <input v-model="form.code" placeholder="创建后自动生成" readonly />
+                </label>
+                <label>
+                  大类
+                  <select v-model="form.type_l1" @change="onTypeL1Change">
+                    <option value="">未设置</option>
+                    <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
+                  </select>
+                </label>
+                <label>
+                  子类
+                  <select v-model="form.type_l2">
+                    <option value="">未设置</option>
+                    <option v-for="t in typeL2Options" :key="t" :value="t">{{ t }}</option>
+                  </select>
+                </label>
+              </div>
 
-            <div class="row">
-              <label>
-                编码
-                <input v-model="form.code" placeholder="创建后自动生成" readonly />
-              </label>
-              <label>
-                大类
-                <select v-model="form.type_l1" @change="onTypeL1Change">
-                  <option value="">未设置</option>
-                  <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
-                </select>
-              </label>
-              <label>
-                子类
-                <select v-model="form.type_l2">
-                  <option value="">未设置</option>
-                  <option v-for="t in typeL2Options" :key="t" :value="t">{{ t }}</option>
-                </select>
-              </label>
-            </div>
+              <div class="row">
+                <label class="grow">
+                  名称
+                  <input v-model.trim="form.name" required />
+                </label>
+                <label>
+                  数量
+                  <input v-model.number="form.quantity" type="number" min="0" required />
+                </label>
+                <label>
+                  单位
+                  <select v-model="form.unit">
+                    <option value="">未设置</option>
+                    <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
+                  </select>
+                </label>
+                <label>
+                  最低库存
+                  <input v-model.number="form.min_quantity" type="number" min="0" />
+                </label>
+              </div>
 
-            <div class="row">
-              <label class="grow">
-                名称
-                <input v-model.trim="form.name" required />
+              <label class="full">
+                用途
+                <textarea v-model.trim="form.usage" rows="3" placeholder="可写用途、使用场景、注意事项等"></textarea>
               </label>
-              <label>
-                数量
-                <input v-model.number="form.quantity" type="number" min="0" required />
-              </label>
-              <label>
-                单位
-                <select v-model="form.unit">
-                  <option value="">未设置</option>
-                  <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
-                </select>
-              </label>
-              <label>
-                最低库存
-                <input v-model.number="form.min_quantity" type="number" min="0" />
-              </label>
-            </div>
 
-            <label class="full">
-              用途
-              <textarea v-model.trim="form.usage" rows="3" placeholder="可写用途、使用场景、注意事项等"></textarea>
-            </label>
-
-            <div class="row">
-              <label class="grow">
-                物品图片
-                <input type="file" accept="image/*" @change="onPickItemImage" />
-              </label>
-              <label class="grow">
-                图片地址
-                <input v-model.trim="form.image_path" placeholder="上传后自动填充" />
-              </label>
-            </div>
-            <div v-if="form.image_path" class="image-preview">
-              <img :src="form.image_path" alt="item" />
-              <button type="button" class="ghost-btn" @click="clearItemImage">清除图片</button>
+              <div class="row">
+                <label class="grow">
+                  物品图片
+                  <input type="file" accept="image/*" @change="onPickItemImage" />
+                </label>
+                <label class="grow">
+                  图片地址
+                  <input v-model.trim="form.image_path" placeholder="上传后自动填充" />
+                </label>
+              </div>
+              <div v-if="form.image_path" class="image-preview">
+                <img :src="form.image_path" alt="item" />
+                <button type="button" class="ghost-btn" @click="clearItemImage">清除图片</button>
+              </div>
             </div>
           </div>
 
-          <div class="section color-time">
-            <div class="section-title">时间空间信息</div>
-            <div class="row">
-              <label>
-                生产日期
-                <input v-model="form.production_date" type="date" />
-              </label>
-              <label>
-                记录日期
-                <input :value="recordedAtText" readonly />
-              </label>
-              <label>
-                Expire Date
-                <input v-model="form.expiry_date" type="date" />
-              </label>
-              <label>
-                购买日期
-                <input v-model="form.purchase_date" type="date" />
-              </label>
-            </div>
-            <div class="row">
-              <label>
-                房间
-                <select v-model="form.room">
-                  <option value="">未设置</option>
-                  <option v-for="r in roomOptions" :key="r" :value="r">{{ r }}</option>
-                </select>
-              </label>
-              <label class="grow">
-                位置
-                <select v-model="form.spot">
-                  <option value="">未设置</option>
-                  <option v-for="s in spotOptions" :key="s" :value="s">{{ s }}</option>
-                </select>
-              </label>
-              <label class="grow">
-                位置补充
-                <input v-model.trim="form.location_free" placeholder="例如：东侧墙-第三层 / 床底-左侧" />
-              </label>
+          <div class="section fold color-time">
+            <button class="section-toggle" type="button" @click="toggle('time')">
+              <span class="section-title">时间空间信息</span>
+              <span class="toggle-text">{{ uiFold.time ? '展开' : '收起' }}</span>
+            </button>
+            <div v-if="!uiFold.time" class="section-body">
+              <div class="row">
+                <label>
+                  生产日期
+                  <input v-model="form.production_date" type="date" />
+                </label>
+                <label>
+                  记录日期
+                  <input :value="recordedAtText" readonly />
+                </label>
+                <label>
+                  Expire Date
+                  <input v-model="form.expiry_date" type="date" />
+                </label>
+                <label>
+                  购买日期
+                  <input v-model="form.purchase_date" type="date" />
+                </label>
+              </div>
+              <div class="row">
+                <label>
+                  区域
+                  <select v-model="form.room" @change="onRoomChange">
+                    <option value="">未设置</option>
+                    <option v-for="r in areaRoomOptions" :key="r" :value="r">{{ r }}</option>
+                  </select>
+                </label>
+                <template v-if="areaMapEnabled">
+                  <label>
+                    墙面
+                    <select v-model="form.wall_side" @change="onWallChange">
+                      <option value="">未设置</option>
+                      <option v-for="w in wallSideOptions" :key="w.value" :value="w.value">{{ w.label }}</option>
+                    </select>
+                  </label>
+                  <label class="grow">
+                    收纳位
+                    <select v-model="form.wall_slot">
+                      <option value="">未设置</option>
+                      <option v-for="s in wallSlotOptions" :key="s" :value="s">{{ s }}</option>
+                    </select>
+                  </label>
+                </template>
+                <label v-else class="grow">
+                  位置
+                  <select v-model="form.spot">
+                    <option value="">未设置</option>
+                    <option v-for="s in spotOptions" :key="s" :value="s">{{ s }}</option>
+                  </select>
+                </label>
+                <label class="grow">
+                  位置补充
+                  <input v-model.trim="form.location_free" placeholder="例如：东侧墙-第三层 / 床底-左侧" />
+                </label>
+              </div>
             </div>
           </div>
 
@@ -267,29 +292,37 @@
             </div>
           </div>
 
-          <div class="row">
-            <label>
-              品牌
-              <input v-model.trim="form.brand" placeholder="可选" />
-            </label>
-            <label>
-              条码
-              <input v-model.trim="form.barcode" placeholder="可选" />
-            </label>
-            <label>
-              标签
-              <input v-model.trim="form.tags" placeholder="厨房,常用" />
-            </label>
-          </div>
+          <div class="section fold">
+            <button class="section-toggle" type="button" @click="toggle('other')">
+              <span class="section-title">其他</span>
+              <span class="toggle-text">{{ uiFold.other ? '展开' : '收起' }}</span>
+            </button>
+            <div v-if="!uiFold.other" class="section-body">
+              <div class="row">
+                <label>
+                  品牌
+                  <input v-model.trim="form.brand" placeholder="可选" />
+                </label>
+                <label>
+                  条码
+                  <input v-model.trim="form.barcode" placeholder="可选" />
+                </label>
+                <label>
+                  标签
+                  <input v-model.trim="form.tags" placeholder="厨房,常用" />
+                </label>
+              </div>
 
-          <label class="full">
-            备注
-            <textarea v-model.trim="form.notes" rows="2" placeholder="可选"></textarea>
-          </label>
-          <label class="full">
-            描述
-            <input v-model.trim="form.description" placeholder="可选" />
-          </label>
+              <label class="full">
+                备注
+                <textarea v-model.trim="form.notes" rows="2" placeholder="可选"></textarea>
+              </label>
+              <label class="full">
+                描述
+                <input v-model.trim="form.description" placeholder="可选" />
+              </label>
+            </div>
+          </div>
 
           <div class="row">
             <button type="submit">保存</button>
@@ -299,28 +332,6 @@
         </form>
       </div>
 
-      <div v-if="!embedded" class="panel">
-        <div class="panel-title">提醒</div>
-        <div class="sub-title">低库存</div>
-        <div v-if="loadingItems" class="muted">加载中...</div>
-        <div v-else-if="lowStockItems.length === 0" class="muted">暂无</div>
-        <ul v-else class="list">
-          <li v-for="it in lowStockItems" :key="it.id" class="list-item warn">
-            <span class="strong">{{ it.name }}</span>
-            <span class="muted">{{ it.quantity }}{{ it.unit || '' }} / 最低 {{ it.min_quantity }}</span>
-          </li>
-        </ul>
-
-        <div class="sub-title">临期(30天)</div>
-        <div v-if="loadingItems" class="muted">加载中...</div>
-        <div v-else-if="expiringItems.length === 0" class="muted">暂无</div>
-        <ul v-else class="list">
-          <li v-for="it in expiringItems" :key="it.id" class="list-item danger">
-            <span class="strong">{{ it.name }}</span>
-            <span class="muted">到期 {{ it.expiry_date }}</span>
-          </li>
-        </ul>
-      </div>
     </div>
   </div>
 </template>
@@ -350,6 +361,13 @@ const DEFAULT_TYPE_TREE = TYPE_TREE;
 
 const DEFAULT_ROOMS = ['玄关', '厨房', '客厅', '过道', '厕所', '房间1', '房间2', '房间3', '阳台', '其他'];
 const DEFAULT_SPOTS = ['整面墙', '柜子', '抽屉', '台面', '床底', '冰箱', '收纳箱', '置物架', '其他'];
+const WALL_TYPES = [
+  { value: 'north', label: '北墙' },
+  { value: 'south', label: '南墙' },
+  { value: 'east', label: '东墙' },
+  { value: 'west', label: '西墙' },
+  { value: 'floor', label: '底面' },
+];
 
 export default {
   name: 'WarehouseManagePage',
@@ -378,11 +396,15 @@ export default {
       rooms: [...DEFAULT_ROOMS],
       spots: [...DEFAULT_SPOTS],
       responsiblePeople: ['我'],
+      areaMap: [],
       uiFold: {
+        core: false,
+        time: false,
         status: true,
         finance: true,
         dynamic: true,
         custom: true,
+        other: true,
       },
       uploadingImage: false,
       customPairs: [{ k: '', v: '' }],
@@ -398,6 +420,8 @@ export default {
         location: '',
         room: '',
         spot: '',
+        wall_side: '',
+        wall_slot: '',
         location_free: '',
         min_quantity: 0,
         production_date: '',
@@ -441,6 +465,33 @@ export default {
     },
     spotOptions() {
       return this.spots && this.spots.length > 0 ? this.spots : DEFAULT_SPOTS;
+    },
+    areaMapEnabled() {
+      return Array.isArray(this.areaMap) && this.areaMap.length > 0;
+    },
+    areaRoomOptions() {
+      if (!this.areaMapEnabled) return this.roomOptions;
+      return this.areaMap
+        .map(r => (r && r.name ? String(r.name).trim() : ''))
+        .filter(Boolean);
+    },
+    wallSideOptions() {
+      return WALL_TYPES;
+    },
+    currentAreaRoom() {
+      if (!this.areaMapEnabled || !this.form.room) return null;
+      return this.areaMap.find(r => r && String(r.name).trim() === String(this.form.room).trim()) || null;
+    },
+    wallSlotOptions() {
+      if (!this.areaMapEnabled) return this.spotOptions;
+      if (!this.currentAreaRoom || !this.form.wall_side) return ['整面墙'];
+      const walls = this.currentAreaRoom.walls && typeof this.currentAreaRoom.walls === 'object'
+        ? this.currentAreaRoom.walls
+        : {};
+      const w = walls[this.form.wall_side];
+      const spots = (w && Array.isArray(w.spots)) ? w.spots : [];
+      const names = spots.map(s => (s && s.name ? String(s.name).trim() : '')).filter(Boolean);
+      return names.length > 0 ? names : ['整面墙'];
     },
     responsiblePeopleOptions() {
       return this.responsiblePeople && this.responsiblePeople.length > 0 ? this.responsiblePeople : [];
@@ -487,6 +538,50 @@ export default {
     },
   },
   methods: {
+    wallLabel(value) {
+      const found = WALL_TYPES.find(w => w.value === value);
+      return found ? found.label : '';
+    },
+    wallSlotOptionsFor(roomName, wallSide) {
+      if (!this.areaMapEnabled || !roomName || !wallSide) return ['整面墙'];
+      const room = this.areaMap.find(r => r && String(r.name).trim() === String(roomName).trim()) || null;
+      if (!room) return ['整面墙'];
+      const walls = room.walls && typeof room.walls === 'object' ? room.walls : {};
+      const w = walls[wallSide];
+      const spots = (w && Array.isArray(w.spots)) ? w.spots : [];
+      const names = spots.map(s => (s && s.name ? String(s.name).trim() : '')).filter(Boolean);
+      return names.length > 0 ? names : ['整面墙'];
+    },
+    parseWallFromSpot(spot) {
+      const raw = (spot || '').trim();
+      if (!raw) return { wall_side: '', wall_slot: '' };
+      for (const w of WALL_TYPES) {
+        const prefix = `${w.label}-`;
+        if (raw.startsWith(prefix)) {
+          return { wall_side: w.value, wall_slot: raw.slice(prefix.length).trim() || '整面墙' };
+        }
+      }
+      return { wall_side: '', wall_slot: '' };
+    },
+    ensureWallDefaults() {
+      if (!this.areaMapEnabled) return;
+      if (!this.form.wall_side) this.form.wall_side = 'north';
+      const opts = this.wallSlotOptions;
+      const first = (opts && opts[0]) ? opts[0] : '整面墙';
+      if (!this.form.wall_slot) this.form.wall_slot = first;
+      if (Array.isArray(opts) && opts.length > 0 && !opts.includes(this.form.wall_slot)) {
+        this.form.wall_slot = first;
+      }
+    },
+    onRoomChange() {
+      if (!this.areaMapEnabled) return;
+      this.ensureWallDefaults();
+    },
+    onWallChange() {
+      if (!this.areaMapEnabled) return;
+      const opts = this.wallSlotOptions;
+      this.form.wall_slot = (opts && opts[0]) ? opts[0] : '整面墙';
+    },
     async loadConfig() {
       try {
         const res = await api.get('/api/config');
@@ -497,7 +592,9 @@ export default {
         this.rooms = Array.isArray(res.data.rooms) ? res.data.rooms : [...DEFAULT_ROOMS];
         this.spots = Array.isArray(res.data.spots) ? res.data.spots : [...DEFAULT_SPOTS];
         this.responsiblePeople = Array.isArray(res.data.responsible_people) ? res.data.responsible_people : ['我'];
+        this.areaMap = Array.isArray(res.data.area_map) ? res.data.area_map : [];
         if (!this.form.unit) this.form.unit = this.units[0] || '';
+        this.ensureWallDefaults();
       } catch (e) {
         this.categories = [...DEFAULT_CATEGORIES];
         this.locations = [...DEFAULT_LOCATIONS];
@@ -506,6 +603,7 @@ export default {
         this.rooms = [...DEFAULT_ROOMS];
         this.spots = [...DEFAULT_SPOTS];
         this.responsiblePeople = ['我'];
+        this.areaMap = [];
       }
     },
     async fetchMessage() {
@@ -545,6 +643,8 @@ export default {
         location: '',
         room: '',
         spot: '',
+        wall_side: '',
+        wall_slot: '',
         location_free: '',
         min_quantity: 0,
         production_date: '',
@@ -569,10 +669,14 @@ export default {
         recorded_at: '',
       };
       this.customPairs = [{ k: '', v: '' }];
+      this.uiFold.core = false;
+      this.uiFold.time = false;
       this.uiFold.status = true;
       this.uiFold.finance = true;
       this.uiFold.dynamic = true;
       this.uiFold.custom = true;
+      this.uiFold.other = true;
+      this.ensureWallDefaults();
     },
     onPickImage(e) {
       const f = (e.target && e.target.files && e.target.files[0]) || null;
@@ -663,6 +767,20 @@ export default {
         if (parts.length >= 2) {
           next.room = parts[0];
           next.spot = parts.slice(1).join('-');
+        }
+      }
+      if (this.areaMapEnabled) {
+        const parsed = this.parseWallFromSpot(next.spot);
+        if (parsed.wall_side) {
+          next.wall_side = parsed.wall_side;
+          next.wall_slot = parsed.wall_slot || '整面墙';
+        } else {
+          const fallbackWall = next.wall_side || 'north';
+          const opts = this.wallSlotOptionsFor(next.room, fallbackWall);
+          next.wall_side = fallbackWall;
+          next.wall_slot = (next.spot && opts.includes(String(next.spot).trim()))
+            ? String(next.spot).trim()
+            : (opts[0] || '整面墙');
         }
       }
       if (typeof next.quantity === 'string') next.quantity = Number(next.quantity) || 0;
@@ -782,7 +900,9 @@ export default {
       try {
         const customJson = this.pairsToJson();
         const room = (this.form.room || '').trim();
-        const spot = (this.form.spot || '').trim();
+        const spot = this.areaMapEnabled
+          ? `${this.wallLabel(this.form.wall_side) || '北墙'}-${(this.form.wall_slot || '').trim() || '整面墙'}`
+          : (this.form.spot || '').trim();
         const free = (this.form.location_free || '').trim();
         const location = room && spot ? `${room}-${spot}${free ? `-${free}` : ''}` : (this.form.location || '');
         const category = this.form.type_l1
@@ -842,12 +962,26 @@ export default {
 <style scoped>
 .page {
   padding: 20px;
+  padding-bottom: 60px;
   max-width: 1200px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0.55);
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+.page.embedded {
+  padding: 0;
+  padding-bottom: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  min-height: auto;
+  box-sizing: border-box;
 }
 
 .header {
@@ -888,7 +1022,7 @@ export default {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
   gap: 12px;
   align-items: stretch;
 }
@@ -903,6 +1037,8 @@ export default {
   padding: 14px;
   border: 1px solid rgba(0, 0, 0, 0.10);
   height: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .panel-title {
@@ -1156,6 +1292,14 @@ textarea {
 }
 
 @media (max-width: 900px) {
+  .page {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+  .page.embedded {
+    padding: 0;
+    padding-bottom: 0;
+  }
   .grid {
     grid-template-columns: 1fr;
   }

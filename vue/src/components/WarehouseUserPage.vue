@@ -205,6 +205,14 @@ export default {
 <style scoped>
 .page {
   padding: 20px;
+  padding-bottom: 60px;
+  max-width: 1200px;
+  margin: 0 auto;
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  min-height: 100vh;
 }
 
 .header {
@@ -379,6 +387,10 @@ select {
 }
 
 @media (max-width: 900px) {
+  .page {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
   .grid {
     grid-template-columns: 1fr;
   }
