@@ -176,10 +176,26 @@ ensure_default_household()
 
 app = FastAPI(title="Warehouse API")
 
+def _parse_csv_env(name: str) -> List[str]:
+    raw = (os.getenv(name) or "").strip()
+    if not raw:
+        return []
+    parts = [p.strip() for p in raw.split(",")]
+    return [p for p in parts if p]
+
+cors_origins = _parse_csv_env("CORS_ALLOW_ORIGINS")
+if not cors_origins:
+    cors_origins = [
+        "http://127.0.0.1:3030",
+        "http://localhost:3030",
+        "http://127.0.0.1:8080",
+        "http://localhost:8080",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # 允许所有源
-    allow_credentials=True,
+    allow_origins=cors_origins,
+    allow_credentials=False,
     allow_methods=["*"],  # 允许所有方法
     allow_headers=["*"],  # 允许所有头
 )
@@ -634,6 +650,8 @@ async def llm_test(prompt: str = Form(...), file: UploadFile = File(default=None
         filename = "image.jpg"
         if file is not None:
             image_bytes = await file.read()
+            if len(image_bytes) > 5 * 1024 * 1024:
+                raise HTTPException(status_code=400, detail={"error": "Image too large", "provider": "ark"})
             filename = file.filename or filename
         content, raw_json = await ark_chat(
             prompt=prompt,

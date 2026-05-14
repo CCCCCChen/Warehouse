@@ -1,0 +1,8 @@
+**/node_modules
+**/dist
+**/.git
+**/.idea
+**/.trae
+**/__pycache__
+**/*.pyc
+data/uploads
