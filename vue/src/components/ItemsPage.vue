@@ -61,45 +61,68 @@
     <div v-if="loading" class="hint">加载中...</div>
     <div v-else-if="filteredItems.length === 0" class="hint">没有匹配的物品</div>
 
-    <table v-else class="table">
-      <thead>
-        <tr>
-          <th>编码/名称</th>
-          <th>类型/位置</th>
-          <th>数量</th>
-          <th>状态</th>
-          <th>到期</th>
-          <th>责任人</th>
-          <th>操作</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="it in filteredItems" :key="it.id" :class="rowClass(it)">
-          <td class="name" data-label="编码/名称">
-            <div class="primary">{{ it.code || '-' }}</div>
-            <div class="secondary">{{ it.name }}</div>
-          </td>
-          <td data-label="类型/位置">
-            <div class="primary">{{ displayType(it) }}</div>
-            <div class="secondary">{{ displayLocation(it) }}</div>
-          </td>
-          <td data-label="数量">
-            <span class="primary">{{ it.quantity }}</span>
-            <span class="secondary">{{ it.unit || '' }}</span>
-          </td>
-          <td data-label="状态">
-            <div class="primary">{{ it.usage_status || '-' }}</div>
-            <div class="secondary">{{ it.ownership || '-' }}</div>
-          </td>
-          <td data-label="到期"><div class="cell-value">{{ it.expiry_date || '-' }}</div></td>
-          <td data-label="责任人"><div class="cell-value">{{ it.responsible_person || '-' }}</div></td>
-          <td class="ops">
-            <button @click="editInEntry(it)">编辑</button>
-            <button class="danger" @click="remove(it.id)">删除</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div v-else class="items-list-wrap">
+      <div class="mobile-list">
+        <div v-for="it in filteredItems" :key="it.id" class="mobile-item" :class="rowClass(it)">
+          <div class="mobile-line">
+            <div class="mobile-title">
+              <span v-if="it.code" class="mobile-code">{{ it.code }}</span>
+              <span class="mobile-name">{{ it.name || '-' }}</span>
+            </div>
+            <div class="mobile-qty">{{ it.quantity }}{{ it.unit || '' }}</div>
+          </div>
+          <div class="mobile-line">
+            <div class="mobile-meta">
+              {{ displayType(it) }} · {{ displayLocation(it) }} · {{ it.expiry_date ? `到期 ${it.expiry_date}` : '无到期' }}
+            </div>
+            <div class="mobile-actions">
+              <button @click="editInEntry(it)">编辑</button>
+              <button class="danger" @click="remove(it.id)">删除</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <table class="table table-desktop">
+        <thead>
+          <tr>
+            <th>编码/名称</th>
+            <th>类型/位置</th>
+            <th>数量</th>
+            <th>状态</th>
+            <th>到期</th>
+            <th>责任人</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="it in filteredItems" :key="it.id" :class="rowClass(it)">
+            <td class="name" data-label="编码/名称">
+              <div class="primary">{{ it.code || '-' }}</div>
+              <div class="secondary">{{ it.name }}</div>
+            </td>
+            <td data-label="类型/位置">
+              <div class="primary">{{ displayType(it) }}</div>
+              <div class="secondary">{{ displayLocation(it) }}</div>
+            </td>
+            <td data-label="数量">
+              <span class="primary">{{ it.quantity }}</span>
+              <span class="secondary">{{ it.unit || '' }}</span>
+            </td>
+            <td data-label="状态">
+              <div class="primary">{{ it.usage_status || '-' }}</div>
+              <div class="secondary">{{ it.ownership || '-' }}</div>
+            </td>
+            <td data-label="到期"><div class="cell-value">{{ it.expiry_date || '-' }}</div></td>
+            <td data-label="责任人"><div class="cell-value">{{ it.responsible_person || '-' }}</div></td>
+            <td class="ops">
+              <button @click="editInEntry(it)">编辑</button>
+              <button class="danger" @click="remove(it.id)">删除</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -598,8 +621,21 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.12);
   border-radius: 14px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  min-height: 100vh;
+  /* min-height: 100vh;*/
+   height: 100vh;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* 让上面所有头部模块 不被压缩 */
+.header,
+.stats,
+.filters,
+.entry-wrap,
+.hint {
+  flex-shrink: 0;
 }
 
 .header {
@@ -905,6 +941,99 @@ select {
   flex-wrap: wrap;
 }
 
+.items-list-wrap {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+  padding-right: 4px;
+  padding-bottom: 20px;
+}
+
+.mobile-list {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  /*height: 100%;*/
+}
+
+.mobile-item {
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.7);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.mobile-item.row-warn {
+  background: rgba(255, 193, 7, 0.12);
+}
+
+.mobile-item.row-danger {
+  background: rgba(176, 0, 32, 0.12);
+}
+
+.mobile-line {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.mobile-title {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  overflow: hidden;
+}
+
+.mobile-code {
+  flex: 0 0 auto;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.7);
+  white-space: nowrap;
+}
+
+.mobile-name {
+  min-width: 0;
+  flex: 1;
+  font-weight: 700;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mobile-qty {
+  flex: 0 0 auto;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.mobile-meta {
+  min-width: 0;
+  flex: 1;
+  color: rgba(0, 0, 0, 0.62);
+  font-size: 12px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.mobile-actions {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 8px;
+}
+
+.mobile-actions button {
+  padding: 6px 8px;
+  border-radius: 8px;
+}
+
 .cell-value {
   min-width: 0;
   overflow-wrap: anywhere;
@@ -944,59 +1073,14 @@ select {
     justify-content: flex-end;
   }
 
-  .table {
-    width: 100%;
-  }
-  .table thead {
+  .table.table-desktop {
     display: none;
   }
-  .table tbody,
-  .table tr,
-  .table td {
-    display: block;
-    width: 100%;
-  }
-  .table tr {
-    border: 1px solid rgba(0, 0, 0, 0.10);
-    border-radius: 12px;
-    padding: 10px 12px;
-    margin-bottom: 10px;
-    background: rgba(255, 255, 255, 0.7);
-  }
-  .table td {
-    border: none;
-    padding: 6px 0;
+
+  .mobile-list {
     display: flex;
-    justify-content: space-between;
-    gap: 12px;
-    min-width: 0;
-    overflow-wrap: anywhere;
-    word-break: break-word;
-    align-items: flex-start;
-  }
-  .table td::before {
-    content: attr(data-label);
-    font-weight: 700;
-    color: rgba(0, 0, 0, 0.6);
-    flex: 0 0 auto;
-    max-width: 42%;
-  }
-  .table td > * {
-    min-width: 0;
-  }
-  .table td.name {
-    padding-top: 0;
-  }
-  .table td.name::before {
-    content: '';
-  }
-  .table td.ops::before {
-    content: '';
-  }
-  .table td.ops {
-    justify-content: flex-end;
-    padding-bottom: 0;
-    gap: 8px;
+    flex-direction: column;
+    gap: 10px;
   }
 }
 </style>

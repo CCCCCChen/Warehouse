@@ -260,6 +260,7 @@ export default {
   background: rgba(255, 255, 255, 0.7);
   border-radius: 10px;
   padding: 14px;
+  margin-bottom: 20px;
 }
 
 .panel-title {

@@ -363,6 +363,7 @@ export default {
   border-radius: 10px;
   padding: 14px;
   border: 1px solid rgba(0, 0, 0, 0.10);
+  margin-bottom: 20px;
   height: 100%;
 }
 

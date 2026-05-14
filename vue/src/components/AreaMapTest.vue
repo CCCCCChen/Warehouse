@@ -32,6 +32,7 @@
         >
           <div 
             class="canvas-container" 
+            ref="roomCanvas"
             :style="{ transform: `scale(${roomZoom})`, transformOrigin: 'top left' }"
             @mousedown="onRoomMouseDown"
             @mousemove="onRoomMouseMove"
@@ -45,6 +46,7 @@
               :class="{ active: selectedRoomIndex === idx }"
               :style="boxStyle(room)"
               @mousedown.stop="onRoomDragStart($event, idx)"
+              @touchstart.stop.prevent="onRoomDragStartTouch($event, idx)"
             >
               <div class="room-name">{{ room.name }}</div>
             </div>
@@ -110,6 +112,7 @@
             >
               <div 
                 class="wall-canvas"
+                ref="wallCanvas"
                 :style="{ 
                   backgroundImage: currentWall.image ? `url(${currentWall.image})` : 'none',
                   transform: `scale(${wallZoom})`,
@@ -129,6 +132,7 @@
                   :class="{ active: selectedSpotIndex === idx }"
                   :style="boxStyle(spot)"
                   @mousedown.stop="onSpotDragStart($event, idx)"
+                  @touchstart.stop.prevent="onSpotDragStartTouch($event, idx)"
                 >
                   <div class="spot-name">{{ spot.name }}</div>
                 </div>
@@ -216,6 +220,29 @@ export default {
     }
   },
   methods: {
+    firstTouch(e) {
+      if (e && e.touches && e.touches[0]) return e.touches[0];
+      if (e && e.changedTouches && e.changedTouches[0]) return e.changedTouches[0];
+      return null;
+    },
+    roomPointFromClient(clientX, clientY) {
+      const el = this.$refs.roomCanvas;
+      if (!el || typeof el.getBoundingClientRect !== 'function') return null;
+      const rect = el.getBoundingClientRect();
+      return {
+        x: (clientX - rect.left) / this.roomZoom,
+        y: (clientY - rect.top) / this.roomZoom,
+      };
+    },
+    wallPointFromClient(clientX, clientY) {
+      const el = this.$refs.wallCanvas;
+      if (!el || typeof el.getBoundingClientRect !== 'function') return null;
+      const rect = el.getBoundingClientRect();
+      return {
+        x: (clientX - rect.left) / this.wallZoom,
+        y: (clientY - rect.top) / this.wallZoom,
+      };
+    },
     adjustRoomZoom(delta) {
       const next = Number(this.roomZoom) + Number(delta);
       this.roomZoom = Math.min(3, Math.max(0.2, Number.isFinite(next) ? next : 1));
@@ -247,40 +274,155 @@ export default {
       return Math.sqrt(dx * dx + dy * dy);
     },
     onRoomTouchStart(e) {
-      if (!e.touches || e.touches.length !== 2) return;
+      if (!e.touches) return;
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        this.roomPinch = {
+          dist: this.touchDistance(e.touches[0], e.touches[1]),
+          zoom: this.roomZoom,
+        };
+        return;
+      }
+      if (e.touches.length !== 1) return;
+      if (this.dragInfo) return;
+      const t = this.firstTouch(e);
+      if (!t) return;
+      const p = this.roomPointFromClient(t.clientX, t.clientY);
+      if (!p) return;
       e.preventDefault();
-      this.roomPinch = {
-        dist: this.touchDistance(e.touches[0], e.touches[1]),
-        zoom: this.roomZoom,
-      };
+      this.startPos = { x: p.x, y: p.y };
+      this.drawingRoom = { x: p.x, y: p.y, w: 0, h: 0 };
+      this.selectedRoomIndex = null;
     },
     onRoomTouchMove(e) {
-      if (!this.roomPinch || !e.touches || e.touches.length !== 2) return;
+      if (!e.touches) return;
+      if (this.roomPinch && e.touches.length === 2) {
+        e.preventDefault();
+        const dist = this.touchDistance(e.touches[0], e.touches[1]);
+        const ratio = dist / (this.roomPinch.dist || dist);
+        this.roomZoom = this.clampZoom(this.roomPinch.zoom * ratio);
+        return;
+      }
+      if (e.touches.length !== 1) return;
+      if (!this.drawingRoom && !(this.dragInfo && this.dragInfo.type === 'room')) return;
+      const t = this.firstTouch(e);
+      if (!t) return;
+      const p = this.roomPointFromClient(t.clientX, t.clientY);
+      if (!p) return;
       e.preventDefault();
-      const dist = this.touchDistance(e.touches[0], e.touches[1]);
-      const ratio = dist / (this.roomPinch.dist || dist);
-      this.roomZoom = this.clampZoom(this.roomPinch.zoom * ratio);
+      if (this.dragInfo && this.dragInfo.type === 'room') {
+        const dx = p.x - this.dragInfo.startX;
+        const dy = p.y - this.dragInfo.startY;
+        this.rooms[this.dragInfo.index].x = Math.max(0, this.dragInfo.origX + dx);
+        this.rooms[this.dragInfo.index].y = Math.max(0, this.dragInfo.origY + dy);
+        return;
+      }
+      if (!this.drawingRoom || !this.startPos) return;
+      this.drawingRoom.x = Math.min(this.startPos.x, p.x);
+      this.drawingRoom.y = Math.min(this.startPos.y, p.y);
+      this.drawingRoom.w = Math.abs(p.x - this.startPos.x);
+      this.drawingRoom.h = Math.abs(p.y - this.startPos.y);
     },
-    onRoomTouchEnd() {
-      this.roomPinch = null;
+    onRoomTouchEnd(e) {
+      if (this.roomPinch) {
+        if (!e || !e.touches || e.touches.length < 2) {
+          this.roomPinch = null;
+        }
+        return;
+      }
+      if (this.dragInfo && this.dragInfo.type === 'room') {
+        this.dragInfo = null;
+        return;
+      }
+      if (!this.drawingRoom) return;
+      if (this.drawingRoom.w > 20 && this.drawingRoom.h > 20) {
+        this.rooms.push({
+          name: `区域 ${this.rooms.length + 1}`,
+          x: this.drawingRoom.x,
+          y: this.drawingRoom.y,
+          w: this.drawingRoom.w,
+          h: this.drawingRoom.h,
+          walls: {}
+        });
+        this.selectedRoomIndex = this.rooms.length - 1;
+      }
+      this.drawingRoom = null;
+      this.startPos = null;
     },
     onWallTouchStart(e) {
-      if (!e.touches || e.touches.length !== 2) return;
+      if (!e.touches) return;
+      if (e.touches.length === 2) {
+        e.preventDefault();
+        this.wallPinch = {
+          dist: this.touchDistance(e.touches[0], e.touches[1]),
+          zoom: this.wallZoom,
+        };
+        return;
+      }
+      if (e.touches.length !== 1) return;
+      if (!this.currentWall || this.dragInfo) return;
+      const t = this.firstTouch(e);
+      if (!t) return;
+      const p = this.wallPointFromClient(t.clientX, t.clientY);
+      if (!p) return;
       e.preventDefault();
-      this.wallPinch = {
-        dist: this.touchDistance(e.touches[0], e.touches[1]),
-        zoom: this.wallZoom,
-      };
+      this.spotStartPos = { x: p.x, y: p.y };
+      this.drawingSpot = { x: p.x, y: p.y, w: 0, h: 0 };
+      this.selectedSpotIndex = null;
     },
     onWallTouchMove(e) {
-      if (!this.wallPinch || !e.touches || e.touches.length !== 2) return;
+      if (!e.touches) return;
+      if (this.wallPinch && e.touches.length === 2) {
+        e.preventDefault();
+        const dist = this.touchDistance(e.touches[0], e.touches[1]);
+        const ratio = dist / (this.wallPinch.dist || dist);
+        this.wallZoom = this.clampZoom(this.wallPinch.zoom * ratio);
+        return;
+      }
+      if (e.touches.length !== 1) return;
+      if (!this.drawingSpot && !(this.dragInfo && this.dragInfo.type === 'spot')) return;
+      const t = this.firstTouch(e);
+      if (!t) return;
+      const p = this.wallPointFromClient(t.clientX, t.clientY);
+      if (!p) return;
       e.preventDefault();
-      const dist = this.touchDistance(e.touches[0], e.touches[1]);
-      const ratio = dist / (this.wallPinch.dist || dist);
-      this.wallZoom = this.clampZoom(this.wallPinch.zoom * ratio);
+      if (this.dragInfo && this.dragInfo.type === 'spot') {
+        const dx = p.x - this.dragInfo.startX;
+        const dy = p.y - this.dragInfo.startY;
+        this.currentWall.spots[this.dragInfo.index].x = Math.max(0, this.dragInfo.origX + dx);
+        this.currentWall.spots[this.dragInfo.index].y = Math.max(0, this.dragInfo.origY + dy);
+        return;
+      }
+      if (!this.drawingSpot || !this.spotStartPos) return;
+      this.drawingSpot.x = Math.min(this.spotStartPos.x, p.x);
+      this.drawingSpot.y = Math.min(this.spotStartPos.y, p.y);
+      this.drawingSpot.w = Math.abs(p.x - this.spotStartPos.x);
+      this.drawingSpot.h = Math.abs(p.y - this.spotStartPos.y);
     },
-    onWallTouchEnd() {
-      this.wallPinch = null;
+    onWallTouchEnd(e) {
+      if (this.wallPinch) {
+        if (!e || !e.touches || e.touches.length < 2) {
+          this.wallPinch = null;
+        }
+        return;
+      }
+      if (this.dragInfo && this.dragInfo.type === 'spot') {
+        this.dragInfo = null;
+        return;
+      }
+      if (!this.drawingSpot) return;
+      if (this.drawingSpot.w > 10 && this.drawingSpot.h > 10) {
+        this.currentWall.spots.push({
+          name: `收纳框 ${this.currentWall.spots.length + 1}`,
+          x: this.drawingSpot.x,
+          y: this.drawingSpot.y,
+          w: this.drawingSpot.w,
+          h: this.drawingSpot.h,
+        });
+        this.selectedSpotIndex = this.currentWall.spots.length - 1;
+      }
+      this.drawingSpot = null;
+      this.spotStartPos = null;
     },
     async loadFromServer() {
       this.hint = '';
@@ -356,6 +498,22 @@ export default {
         origY: this.rooms[idx].y
       };
     },
+    onRoomDragStartTouch(e, idx) {
+      this.selectedRoomIndex = idx;
+      this.selectedSpotIndex = null;
+      const t = this.firstTouch(e);
+      if (!t) return;
+      const p = this.roomPointFromClient(t.clientX, t.clientY);
+      if (!p) return;
+      this.dragInfo = {
+        type: 'room',
+        index: idx,
+        startX: p.x,
+        startY: p.y,
+        origX: this.rooms[idx].x,
+        origY: this.rooms[idx].y
+      };
+    },
     onRoomMouseMove(e) {
       const rect = e.currentTarget.getBoundingClientRect();
       const currentX = (e.clientX - rect.left) / this.roomZoom;
@@ -419,6 +577,21 @@ export default {
         index: idx,
         startX: currentX,
         startY: currentY,
+        origX: this.currentWall.spots[idx].x,
+        origY: this.currentWall.spots[idx].y
+      };
+    },
+    onSpotDragStartTouch(e, idx) {
+      this.selectedSpotIndex = idx;
+      const t = this.firstTouch(e);
+      if (!t) return;
+      const p = this.wallPointFromClient(t.clientX, t.clientY);
+      if (!p) return;
+      this.dragInfo = {
+        type: 'spot',
+        index: idx,
+        startX: p.x,
+        startY: p.y,
         origX: this.currentWall.spots[idx].x,
         origY: this.currentWall.spots[idx].y
       };
@@ -535,6 +708,7 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   padding: 16px;
+  margin-bottom: 20px;
   display: flex;
   flex-direction: column;
   min-width: 0;
