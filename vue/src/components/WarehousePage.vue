@@ -16,9 +16,6 @@
         <WarehouseNotice />
       </div>
       <div class="grid-item">
-        <RandomNumbers />
-      </div>
-      <div class="grid-item">
         <DashboardSummary />
       </div>
       <div class="grid-item">
@@ -31,7 +28,6 @@
 <script>
 import { api } from '@/api/http';
 import WarehouseNotice from './WarehouseNotice.vue';
-import RandomNumbers from './RandomNumbers.vue';
 import DashboardSummary from './DashboardSummary.vue';
 import DataComponent from './Data.vue';
 
@@ -39,7 +35,6 @@ export default {
   name: 'WarehousePage',
   components: {
     WarehouseNotice,
-    RandomNumbers,
     DashboardSummary,
     DataComponent
   },

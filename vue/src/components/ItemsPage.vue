@@ -4,8 +4,16 @@
       <h2>物品管理</h2>
       <div class="header-actions">
         <button @click="refresh">刷新</button>
+        <button @click="exportExcel" :disabled="loading || exporting">{{ exporting ? '导出中...' : '导出Excel' }}</button>
+        <button @click="downloadImportTemplate" :disabled="exporting || importing">下载导入模板</button>
+        <button @click="triggerExcelPick" :disabled="loading || exporting || importing">{{ importing ? '导入中...' : '导入Excel' }}</button>
         <router-link class="link" to="/warehouse">返回主页</router-link>
+        <input ref="excelInput" class="excel-input" type="file" accept=".xlsx,.xls" @change="onExcelPicked" />
       </div>
+    </div>
+
+    <div v-if="importSummary" class="import-summary" :class="{ danger: importHasErrors }">
+      {{ importSummary }}
     </div>
 
     <div class="stats">
@@ -130,6 +138,42 @@
 import { api } from '@/api/http';
 import { DEFAULT_CATEGORIES, DEFAULT_LOCATIONS, DEFAULT_UNITS } from '@/config/defaults';
 import WarehouseManagePage from '@/components/WarehouseManagePage.vue';
+import * as XLSX from 'xlsx';
+
+const EXCEL_COLUMNS = [
+  { key: 'id', title: 'ID', exportable: true, importable: true },
+  { key: 'code', title: '编码', exportable: true, importable: true },
+  { key: 'type_l1', title: '大类', exportable: true, importable: true },
+  { key: 'type_l2', title: '小类', exportable: true, importable: true },
+  { key: 'name', title: '名称', exportable: true, importable: true, required: true },
+  { key: 'brand', title: '品牌', exportable: true, importable: true },
+  { key: 'quantity', title: '数量', exportable: true, importable: true, required: true, type: 'int' },
+  { key: 'unit', title: '单位', exportable: true, importable: true },
+  { key: 'min_quantity', title: '最小库存', exportable: true, importable: true, type: 'int' },
+  { key: 'room', title: '房间', exportable: true, importable: true },
+  { key: 'spot', title: '位置', exportable: true, importable: true },
+  { key: 'location', title: '位置(完整)', exportable: true, importable: true },
+  { key: 'category', title: '分类(旧)', exportable: true, importable: true },
+  { key: 'description', title: '描述', exportable: true, importable: true },
+  { key: 'usage', title: '用途', exportable: true, importable: true },
+  { key: 'barcode', title: '条码', exportable: true, importable: true },
+  { key: 'tags', title: '标签', exportable: true, importable: true },
+  { key: 'notes', title: '备注', exportable: true, importable: true },
+  { key: 'purchase_date', title: '购买日期', exportable: true, importable: true, type: 'date' },
+  { key: 'production_date', title: '生产日期', exportable: true, importable: true, type: 'date' },
+  { key: 'expiry_date', title: '到期日期', exportable: true, importable: true, type: 'date' },
+  { key: 'usage_status', title: '使用状态', exportable: true, importable: true },
+  { key: 'ownership', title: '归属', exportable: true, importable: true },
+  { key: 'price', title: '价格', exportable: true, importable: true, type: 'float' },
+  { key: 'value_score', title: '价值评分', exportable: true, importable: true, type: 'float' },
+  { key: 'replacement_cycle_days', title: '更换周期(天)', exportable: true, importable: true, type: 'int' },
+  { key: 'usage_frequency', title: '使用频率', exportable: true, importable: true },
+  { key: 'related_item_ids', title: '关联物品ID/编码', exportable: true, importable: true },
+  { key: 'responsible_person', title: '责任人', exportable: true, importable: true },
+  { key: 'custom_json', title: '自定义JSON', exportable: true, importable: true },
+  { key: 'image_path', title: '图片URL', exportable: true, importable: true },
+  { key: 'recorded_at', title: '录入时间(只读)', exportable: true, importable: false },
+];
 
 const DEFAULT_TYPE_TREE = {
   家电: ['大家电', '小家电', '厨卫电器', '环境电器'],
@@ -157,6 +201,10 @@ export default {
   data() {
     return {
       loading: false,
+      exporting: false,
+      importing: false,
+      importSummary: '',
+      importErrors: [],
       items: [],
       entryOpen: false,
       filters: {
@@ -309,8 +357,296 @@ export default {
 
       return list;
     },
+    importHasErrors() {
+      return Array.isArray(this.importErrors) && this.importErrors.length > 0;
+    },
   },
   methods: {
+    downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    },
+    toIsoDateString(v) {
+      if (!v) return '';
+      if (v instanceof Date && !Number.isNaN(v.getTime())) {
+        const y = v.getFullYear();
+        const m = String(v.getMonth() + 1).padStart(2, '0');
+        const d = String(v.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+      if (typeof v === 'number' && Number.isFinite(v)) {
+        const days = Math.floor(v - 25569);
+        const ms = days * 86400 * 1000;
+        const dt = new Date(ms);
+        if (!Number.isNaN(dt.getTime())) {
+          const y = dt.getUTCFullYear();
+          const m = String(dt.getUTCMonth() + 1).padStart(2, '0');
+          const d = String(dt.getUTCDate()).padStart(2, '0');
+          return `${y}-${m}-${d}`;
+        }
+      }
+      const s = String(v).trim();
+      if (!s) return '';
+      const dt = new Date(s);
+      if (!Number.isNaN(dt.getTime())) {
+        const y = dt.getFullYear();
+        const m = String(dt.getMonth() + 1).padStart(2, '0');
+        const d = String(dt.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+      return s;
+    },
+    normalizeNumber(v, kind) {
+      if (v == null) return null;
+      if (typeof v === 'number' && Number.isFinite(v)) {
+        if (kind === 'int') return Math.trunc(v);
+        return v;
+      }
+      const s = String(v).trim();
+      if (!s) return null;
+      const n = Number(s);
+      if (!Number.isFinite(n)) return null;
+      if (kind === 'int') return Math.trunc(n);
+      return n;
+    },
+    normalizeString(v) {
+      if (v == null) return null;
+      const s = String(v).trim();
+      return s ? s : null;
+    },
+    buildCodeToIdMap() {
+      const map = {};
+      for (const it of this.items || []) {
+        const code = (it && it.code) ? String(it.code).trim() : '';
+        if (!code) continue;
+        map[code] = it.id;
+      }
+      return map;
+    },
+    normalizeRelatedItemIds(v, codeToId) {
+      const raw = this.normalizeString(v);
+      if (!raw) return null;
+      const parts = raw.split(',').map(s => s.trim()).filter(Boolean);
+      const mapped = parts.map(p => {
+        if (/^\d+$/.test(p)) return p;
+        const id = codeToId && codeToId[p];
+        return id != null ? String(id) : p;
+      });
+      return mapped.join(',');
+    },
+    exportExcel() {
+      try {
+        this.exporting = true;
+        const cols = EXCEL_COLUMNS.filter(c => c.exportable);
+        const header = cols.map(c => c.title);
+        const rows = (this.filteredItems || []).map(it => {
+          const row = {};
+          for (const c of cols) {
+            let v = it ? it[c.key] : '';
+            if (c.type === 'date') v = this.toIsoDateString(v);
+            if (c.key === 'recorded_at' && v) {
+              const dt = new Date(v);
+              if (!Number.isNaN(dt.getTime())) v = dt.toISOString();
+            }
+            row[c.title] = v == null ? '' : v;
+          }
+          return row;
+        });
+
+        const ws = XLSX.utils.json_to_sheet(rows, { header, skipHeader: false });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, 'items');
+        const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+        const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        const name = `items_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        this.downloadBlob(blob, name);
+      } finally {
+        this.exporting = false;
+      }
+    },
+    downloadImportTemplate() {
+      const cols = EXCEL_COLUMNS.filter(c => c.importable);
+      const header = cols.map(c => c.title);
+      const example = {};
+      for (const c of cols) example[c.title] = '';
+      const ws = XLSX.utils.json_to_sheet([example], { header, skipHeader: false });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'template');
+      const out = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([out], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      const name = `items_import_template.xlsx`;
+      this.downloadBlob(blob, name);
+    },
+    triggerExcelPick() {
+      this.importSummary = '';
+      this.importErrors = [];
+      const el = this.$refs.excelInput;
+      if (el) {
+        el.value = '';
+        el.click();
+      }
+    },
+    async onExcelPicked(e) {
+      const file = e && e.target && e.target.files ? e.target.files[0] : null;
+      if (!file) return;
+      await this.importExcelFile(file);
+      e.target.value = '';
+    },
+    async importExcelFile(file) {
+      this.importing = true;
+      this.importSummary = '';
+      this.importErrors = [];
+      const errors = [];
+      let created = 0;
+      let updated = 0;
+      let skipped = 0;
+
+      try {
+        const buf = await file.arrayBuffer();
+        const wb = XLSX.read(buf, { type: 'array', cellDates: true });
+        const sheetName = wb.SheetNames && wb.SheetNames.length > 0 ? wb.SheetNames[0] : '';
+        if (!sheetName) {
+          this.importSummary = '导入失败：未找到工作表';
+          return;
+        }
+        const ws = wb.Sheets[sheetName];
+        const rawRows = XLSX.utils.sheet_to_json(ws, { defval: '' });
+        const cols = EXCEL_COLUMNS.filter(c => c.importable);
+        const titleToCol = {};
+        for (const c of cols) titleToCol[c.title] = c;
+
+        const hasAnyKnownHeader = rawRows.length > 0 && Object.keys(rawRows[0] || {}).some(k => titleToCol[k]);
+        if (!hasAnyKnownHeader) {
+          this.importSummary = '导入失败：表头不匹配，请使用“下载导入模板”生成的表格';
+          return;
+        }
+
+        const codeToId = this.buildCodeToIdMap();
+
+        for (let i = 0; i < rawRows.length; i++) {
+          const src = rawRows[i] || {};
+          const lineNo = i + 2;
+          const dst = {};
+
+          let hasValue = false;
+          for (const c of cols) {
+            if (!(c.title in src)) continue;
+            const v = src[c.title];
+            if (v !== '' && v != null) hasValue = true;
+            if (c.type === 'int') dst[c.key] = this.normalizeNumber(v, 'int');
+            else if (c.type === 'float') dst[c.key] = this.normalizeNumber(v, 'float');
+            else if (c.type === 'date') dst[c.key] = this.toIsoDateString(v) || null;
+            else if (c.key === 'related_item_ids') dst[c.key] = this.normalizeRelatedItemIds(v, codeToId);
+            else if (c.key === 'custom_json') dst[c.key] = this.normalizeString(v);
+            else dst[c.key] = this.normalizeString(v);
+          }
+
+          if (!hasValue) {
+            skipped++;
+            continue;
+          }
+
+          const name = dst.name;
+          if (!name) {
+            errors.push(`第${lineNo}行：名称不能为空`);
+            continue;
+          }
+
+          const quantity = dst.quantity == null ? 0 : dst.quantity;
+          if (!Number.isFinite(Number(quantity))) {
+            errors.push(`第${lineNo}行：数量格式不正确`);
+            continue;
+          }
+          dst.quantity = Math.trunc(Number(quantity));
+
+          if (dst.custom_json) {
+            try {
+              const obj = JSON.parse(dst.custom_json);
+              if (!obj || typeof obj !== 'object' || Array.isArray(obj)) {
+                errors.push(`第${lineNo}行：自定义JSON必须是对象`);
+                continue;
+              }
+            } catch (e) {
+              errors.push(`第${lineNo}行：自定义JSON不是合法JSON`);
+              continue;
+            }
+          }
+
+          const id = dst.id != null ? Number(dst.id) : null;
+          delete dst.id;
+
+          if (id != null && Number.isFinite(id) && id > 0) {
+            const payload = {};
+            for (const [k, v] of Object.entries(dst)) {
+              if (v === null) continue;
+              if (typeof v === 'string' && !v.trim()) continue;
+              payload[k] = v;
+            }
+            payload.quantity = dst.quantity;
+            try {
+              await api.put(`/api/items/${id}`, payload);
+              updated++;
+            } catch (e) {
+              errors.push(`第${lineNo}行：更新失败（ID=${id}）`);
+            }
+          } else {
+            const payload = {
+              code: dst.code || null,
+              type_l1: dst.type_l1 || null,
+              type_l2: dst.type_l2 || null,
+              name: dst.name,
+              description: dst.description || null,
+              usage: dst.usage || null,
+              image_path: dst.image_path || null,
+              quantity: dst.quantity,
+              category: dst.category || null,
+              location: dst.location || null,
+              room: dst.room || null,
+              spot: dst.spot || null,
+              unit: dst.unit || null,
+              brand: dst.brand || null,
+              min_quantity: dst.min_quantity == null ? 0 : dst.min_quantity,
+              purchase_date: dst.purchase_date || null,
+              production_date: dst.production_date || null,
+              expiry_date: dst.expiry_date || null,
+              barcode: dst.barcode || null,
+              tags: dst.tags || null,
+              notes: dst.notes || null,
+              usage_status: dst.usage_status || null,
+              ownership: dst.ownership || null,
+              price: dst.price == null ? null : dst.price,
+              value_score: dst.value_score == null ? null : dst.value_score,
+              replacement_cycle_days: dst.replacement_cycle_days == null ? null : dst.replacement_cycle_days,
+              usage_frequency: dst.usage_frequency || null,
+              related_item_ids: dst.related_item_ids || null,
+              responsible_person: dst.responsible_person || null,
+              custom_json: dst.custom_json || null,
+            };
+
+            try {
+              await api.post('/api/items', payload);
+              created++;
+            } catch (e) {
+              errors.push(`第${lineNo}行：创建失败（名称=${dst.name}）`);
+            }
+          }
+        }
+
+        await this.refresh();
+      } finally {
+        this.importErrors = errors.slice(0, 50);
+        const errText = errors.length > 0 ? `，失败${errors.length}条` : '';
+        const tip = errors.length > 0 ? `。示例错误：${errors[0]}` : '';
+        this.importSummary = `导入完成：新增${created}条，更新${updated}条，跳过${skipped}条${errText}${tip}`;
+        this.importing = false;
+      }
+    },
     async loadConfig() {
       try {
         const res = await api.get('/api/config');
@@ -612,6 +948,26 @@ export default {
 </script>
 
 <style scoped>
+.excel-input {
+  display: none;
+}
+
+.import-summary {
+  margin: 10px 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: rgba(17, 24, 39, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  color: #111827;
+  font-size: 13px;
+}
+
+.import-summary.danger {
+  background: rgba(176, 0, 32, 0.10);
+  border-color: rgba(176, 0, 32, 0.20);
+  color: #7f0018;
+}
+
 .items-page {
   padding: 20px;
   padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
