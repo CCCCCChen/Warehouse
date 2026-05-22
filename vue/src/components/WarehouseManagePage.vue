@@ -353,6 +353,10 @@ const TYPE_TREE = {
   药品: ['内服药', '外用药', '医疗器械', '保健品', '家庭急救包'],
   文件证件: ['身份证明', '学历证明', '资产证明', '合同票据', '医疗档案'],
   纪念品: ['旅行纪念', '礼物收藏', '手工DIY', '奖杯证书'],
+  玩具与游戏: ['手办/模型/盲盒', '积木/拼图', '桌游卡牌', '遥控/电动玩具', '户外玩具', '益智玩具'],
+  运动器材: ['球类', '健身器材', '户外运动', '水上运动', '骑行'],
+  乐器: ['键盘类', '弦乐', '打击乐', '管乐', '配件'],
+  '园艺/户外': ['花盆/种植箱', '土壤/肥料/种子', '浇水工具', '修剪工具', '防护用品'],
   宠物用品: ['食品', '餐具', '寝具', '清洁', '出行', '玩具'],
   其他: ['其他'],
 };
@@ -622,9 +626,15 @@ export default {
       this.loadingItems = true;
       try {
         const res = await api.get('/api/items');
-        this.items = res.data;
+        if (Array.isArray(res.data)) {
+          this.items = res.data;
+        } else {
+          this.items = [];
+          console.warn('WarehouseManagePage expected /api/items to return an array, got:', res.data);
+        }
       } catch (e) {
         console.error('Failed to fetch items:', e);
+        this.items = [];
       } finally {
         this.loadingItems = false;
       }

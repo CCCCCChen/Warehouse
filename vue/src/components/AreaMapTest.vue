@@ -281,6 +281,16 @@ export default {
     },
   },
   methods: {
+    requestErrorText(e, action) {
+      const status = e && e.response ? e.response.status : null;
+      const detail = e && e.response && e.response.data && e.response.data.detail ? String(e.response.data.detail) : '';
+      if (status === 401) return `${action}失败：未登录或 token 无效`;
+      if (status === 403) return `${action}失败：需要 owner 权限`;
+      if (status) return `${action}失败：HTTP ${status}${detail ? ` (${detail})` : ''}`;
+      const msg = e && e.message ? String(e.message) : '';
+      if (msg && /timeout/i.test(msg)) return `${action}失败：请求超时`;
+      return `${action}失败：无法连接到服务器（请检查 API 地址/HTTPS/反向代理/后端是否在运行）`;
+    },
     downloadBlob(blob, filename) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -643,7 +653,7 @@ export default {
         }
         this.hint = '已加载';
       } catch (e) {
-        this.hint = '加载失败';
+        this.hint = this.requestErrorText(e, '加载');
       } finally {
         this.loading = false;
       }
@@ -670,7 +680,7 @@ export default {
         await api.put('/api/config', payload);
         this.hint = '已保存';
       } catch (e) {
-        this.hint = '保存失败（需要 owner 权限）';
+        this.hint = this.requestErrorText(e, '保存');
       } finally {
         this.loading = false;
       }
@@ -847,12 +857,25 @@ export default {
       this.currentWall.spots.splice(idx, 1);
       this.selectedSpotIndex = null;
     },
-    onWallImageUpload(e) {
-      const f = e.target.files[0];
-      if (f) {
-        this.currentWall.image = URL.createObjectURL(f);
+    async onWallImageUpload(e) {
+      const f = e && e.target && e.target.files ? e.target.files[0] : null;
+      if (!f) return;
+      try {
+        const fd = new FormData();
+        fd.append('file', f);
+        const res = await api.post('/api/items/upload_image', fd);
+        const url = res.data && res.data.image_url ? String(res.data.image_url) : '';
+        if (!url) {
+          this.hint = '图片上传失败：未返回图片地址';
+          return;
+        }
+        this.currentWall.image = url;
+        this.hint = '墙面图片已上传';
+      } catch (err) {
+        this.hint = this.requestErrorText(err, '图片上传');
+      } finally {
+        e.target.value = '';
       }
-      e.target.value = '';
     }
   }
 };

@@ -61,7 +61,12 @@ export default {
       this.loading = true;
       try {
         const res = await api.get('/api/items');
-        this.items = res.data;
+        if (Array.isArray(res.data)) {
+          this.items = res.data;
+        } else {
+          this.items = [];
+          console.warn('DashboardSummary expected /api/items to return an array, got:', res.data);
+        }
       } catch (e) {
         console.error('Failed to fetch items for dashboard:', e);
       } finally {
