@@ -5,7 +5,10 @@
       <div class="header-actions">
         <button class="ghost-btn" type="button" :disabled="loading" @click="loadFromServer">从服务器加载</button>
         <button class="ghost-btn" type="button" :disabled="loading" @click="saveToServer">保存到服务器</button>
+        <button class="ghost-btn" type="button" :disabled="loading" @click="exportAreaJson">导出JSON</button>
+        <button class="ghost-btn" type="button" :disabled="loading" @click="triggerJsonPick">导入JSON</button>
         <router-link class="link" to="/warehouse">返回主页</router-link>
+        <input ref="jsonInput" class="json-input" type="file" accept=".json,application/json" @change="onJsonPicked" />
       </div>
     </div>
 
@@ -113,11 +116,7 @@
               <div 
                 class="wall-canvas"
                 ref="wallCanvas"
-                :style="{ 
-                  backgroundImage: currentWall.image ? `url(${currentWall.image})` : 'none',
-                  transform: `scale(${wallZoom})`,
-                  transformOrigin: 'top left'
-                }"
+                :style="wallCanvasStyle"
                 @mousedown="onSpotMouseDown"
                 @mousemove="onSpotMouseMove"
                 @mouseup="onSpotMouseUp"
@@ -155,6 +154,18 @@
     </div>
 
     <div class="panel mt-4">
+      <div class="panel-title">JSON 导入/展示</div>
+      <div class="muted mb-2">支持两种格式：1) 直接 rooms 数组；2) /api/config 返回对象（取 area_map 字段）。</div>
+      <div class="json-actions mb-2">
+        <button class="ghost-btn" type="button" :disabled="loading" @click="exportAreaJson">下载当前JSON</button>
+        <button class="ghost-btn" type="button" :disabled="loading" @click="applyPastedJson">粘贴JSON并应用</button>
+      </div>
+      <textarea v-model.trim="pastedJson" class="json-text" placeholder="在此粘贴 JSON..."></textarea>
+      <div v-if="jsonError" class="hint danger">{{ jsonError }}</div>
+      <div v-else class="hint">概览：{{ overviewText }}</div>
+    </div>
+
+    <div class="panel mt-4">
       <div class="panel-title">生成的配置 JSON</div>
       <pre class="pre">{{ generatedJson }}</pre>
     </div>
@@ -174,6 +185,9 @@ export default {
       ],
       loading: false,
       hint: '',
+      pastedJson: '',
+      jsonError: '',
+      wallImageLoadId: 0,
       selectedRoomIndex: null,
       drawingRoom: null,
       startPos: null,
@@ -217,9 +231,201 @@ export default {
     },
     generatedJson() {
       return JSON.stringify(this.rooms, null, 2);
+    },
+    overviewText() {
+      const rooms = Array.isArray(this.rooms) ? this.rooms : [];
+      const roomCount = rooms.length;
+      let wallCount = 0;
+      let spotCount = 0;
+      for (const r of rooms) {
+        const walls = r && r.walls && typeof r.walls === 'object' ? r.walls : {};
+        wallCount += Object.keys(walls).length;
+        for (const w of Object.values(walls)) {
+          const spots = w && Array.isArray(w.spots) ? w.spots : [];
+          spotCount += spots.length;
+        }
+      }
+      return `区域 ${roomCount} 个，墙面 ${wallCount} 个，收纳框 ${spotCount} 个`;
+    },
+    wallCanvasStyle() {
+      const w = this.currentWall;
+      const width = w && Number.isFinite(Number(w._img_w)) && Number(w._img_w) > 0 ? Math.round(Number(w._img_w)) : 2000;
+      const height = w && Number.isFinite(Number(w._img_h)) && Number(w._img_h) > 0 ? Math.round(Number(w._img_h)) : 2000;
+      return {
+        backgroundImage: w && w.image ? `url(${w.image})` : 'none',
+        width: `${width}px`,
+        height: `${height}px`,
+        transform: `scale(${this.wallZoom})`,
+        transformOrigin: 'top left',
+      };
     }
   },
+  watch: {
+    'currentWall.image': {
+      immediate: true,
+      handler(newVal) {
+        this.updateCurrentWallImageSize(newVal);
+      }
+    },
+    selectedRoomIndex() {
+      this.$nextTick(() => {
+        const w = this.currentWall;
+        this.updateCurrentWallImageSize(w ? w.image : '');
+      });
+    },
+    selectedWallType() {
+      this.$nextTick(() => {
+        const w = this.currentWall;
+        this.updateCurrentWallImageSize(w ? w.image : '');
+      });
+    },
+  },
   methods: {
+    downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);
+    },
+    exportAreaJson() {
+      const text = JSON.stringify(this.rooms || [], null, 2);
+      const blob = new Blob([text], { type: 'application/json;charset=utf-8' });
+      const name = `area_map_${new Date().toISOString().slice(0, 10)}.json`;
+      this.downloadBlob(blob, name);
+    },
+    triggerJsonPick() {
+      this.jsonError = '';
+      const el = this.$refs.jsonInput;
+      if (el) {
+        el.value = '';
+        el.click();
+      }
+    },
+    async onJsonPicked(e) {
+      const file = e && e.target && e.target.files ? e.target.files[0] : null;
+      if (!file) return;
+      this.jsonError = '';
+      try {
+        const text = await file.text();
+        this.pastedJson = text;
+        this.applyAreaMapFromText(text);
+        this.hint = '已从文件导入';
+      } catch (err) {
+        this.jsonError = '导入失败：无法读取文件';
+      } finally {
+        e.target.value = '';
+      }
+    },
+    applyPastedJson() {
+      this.jsonError = '';
+      try {
+        this.applyAreaMapFromText(this.pastedJson || '');
+        this.hint = '已应用粘贴内容';
+      } catch (err) {
+        this.jsonError = err && err.message ? String(err.message) : '导入失败：JSON 不合法';
+      }
+    },
+    applyAreaMapFromText(text) {
+      const raw = (text || '').trim();
+      if (!raw) throw new Error('导入失败：内容为空');
+      let parsed;
+      try {
+        parsed = JSON.parse(raw);
+      } catch (e) {
+        throw new Error('导入失败：JSON 解析失败');
+      }
+      const area = Array.isArray(parsed)
+        ? parsed
+        : (parsed && typeof parsed === 'object' && Array.isArray(parsed.area_map))
+          ? parsed.area_map
+          : (parsed && typeof parsed === 'object' && Array.isArray(parsed.rooms))
+            ? parsed.rooms
+            : null;
+      if (!Array.isArray(area)) throw new Error('导入失败：格式不支持（需要 rooms 数组或包含 area_map 的对象）');
+      const normalized = this.normalizeRooms(area);
+      if (normalized.length === 0) throw new Error('导入失败：没有有效的区域数据');
+      this.rooms = normalized;
+      this.selectedRoomIndex = null;
+      this.selectedSpotIndex = null;
+      this.jsonError = '';
+    },
+    normalizeNumber(v, fallback) {
+      const n = Number(v);
+      if (!Number.isFinite(n)) return fallback;
+      return n;
+    },
+    normalizeRooms(list) {
+      const out = [];
+      for (const r of list || []) {
+        if (!r || typeof r !== 'object') continue;
+        const name = (r.name == null ? '' : String(r.name)).trim() || `区域 ${out.length + 1}`;
+        const x = Math.max(0, this.normalizeNumber(r.x, 0));
+        const y = Math.max(0, this.normalizeNumber(r.y, 0));
+        const w = Math.max(10, this.normalizeNumber(r.w, 100));
+        const h = Math.max(10, this.normalizeNumber(r.h, 80));
+        const wallsIn = r.walls && typeof r.walls === 'object' && !Array.isArray(r.walls) ? r.walls : {};
+        const wallsOut = {};
+        for (const [k, wv] of Object.entries(wallsIn)) {
+          if (!wv || typeof wv !== 'object') continue;
+          const image = (wv.image == null ? '' : String(wv.image)).trim();
+          const imgW = this.normalizeNumber(wv._img_w, null);
+          const imgH = this.normalizeNumber(wv._img_h, null);
+          const spotsIn = Array.isArray(wv.spots) ? wv.spots : [];
+          const spotsOut = [];
+          for (const s of spotsIn) {
+            if (!s || typeof s !== 'object') continue;
+            const sName = (s.name == null ? '' : String(s.name)).trim() || `收纳框 ${spotsOut.length + 1}`;
+            const sx = Math.max(0, this.normalizeNumber(s.x, 0));
+            const sy = Math.max(0, this.normalizeNumber(s.y, 0));
+            const sw = Math.max(10, this.normalizeNumber(s.w, 60));
+            const sh = Math.max(10, this.normalizeNumber(s.h, 40));
+            spotsOut.push({ name: sName, x: sx, y: sy, w: sw, h: sh });
+          }
+          const wallOut = { image, spots: spotsOut };
+          if (imgW != null && imgH != null && Number.isFinite(imgW) && Number.isFinite(imgH) && imgW > 0 && imgH > 0) {
+            wallOut._img_w = imgW;
+            wallOut._img_h = imgH;
+          }
+          wallsOut[k] = wallOut;
+        }
+        out.push({ name, x, y, w, h, walls: wallsOut });
+      }
+      return out;
+    },
+    updateCurrentWallImageSize(url) {
+      const wall = this.currentWall;
+      if (!wall) return;
+      const raw = (url || '').trim();
+      if (!raw) {
+        delete wall._img_w;
+        delete wall._img_h;
+        return;
+      }
+      const id = ++this.wallImageLoadId;
+      const img = new Image();
+      img.onload = () => {
+        if (id !== this.wallImageLoadId) return;
+        if (!this.currentWall) return;
+        if ((this.currentWall.image || '').trim() !== raw) return;
+        const w = img.naturalWidth || img.width;
+        const h = img.naturalHeight || img.height;
+        if (!Number.isFinite(w) || !Number.isFinite(h) || w <= 0 || h <= 0) return;
+        this.currentWall._img_w = w;
+        this.currentWall._img_h = h;
+      };
+      img.onerror = () => {
+        if (id !== this.wallImageLoadId) return;
+        if (!this.currentWall) return;
+        if ((this.currentWall.image || '').trim() !== raw) return;
+        delete this.currentWall._img_w;
+        delete this.currentWall._img_h;
+      };
+      img.src = raw;
+    },
     firstTouch(e) {
       if (e && e.touches && e.touches[0]) return e.touches[0];
       if (e && e.changedTouches && e.changedTouches[0]) return e.changedTouches[0];
@@ -448,12 +654,15 @@ export default {
       try {
         const current = await api.get('/api/config');
         const d = current.data || {};
+        const roomNames = Array.isArray(this.rooms)
+          ? Array.from(new Set(this.rooms.map(r => (r && r.name != null ? String(r.name).trim() : '')).filter(Boolean)))
+          : [];
         const payload = {
           categories: Array.isArray(d.categories) ? d.categories : [],
           locations: Array.isArray(d.locations) ? d.locations : [],
           units: Array.isArray(d.units) ? d.units : [],
           type_tree: d.type_tree && typeof d.type_tree === 'object' ? d.type_tree : {},
-          rooms: Array.isArray(d.rooms) ? d.rooms : [],
+          rooms: roomNames,
           spots: Array.isArray(d.spots) ? d.spots : [],
           responsible_people: Array.isArray(d.responsible_people) ? d.responsible_people : [],
           area_map: this.rooms,
@@ -643,19 +852,52 @@ export default {
       if (f) {
         this.currentWall.image = URL.createObjectURL(f);
       }
+      e.target.value = '';
     }
   }
 };
 </script>
 
 <style scoped>
+.json-input {
+  display: none;
+}
+
+.json-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.json-text {
+  width: 100%;
+  min-height: 140px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.7);
+  box-sizing: border-box;
+  resize: vertical;
+}
+
+.hint.danger {
+  color: #7f0018;
+  background: rgba(176, 0, 32, 0.10);
+  border: 1px solid rgba(176, 0, 32, 0.18);
+  padding: 10px 12px;
+  border-radius: 10px;
+}
+
 .map-test-page {
   padding: 20px;
-  max-width: 1200px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
+  padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
 }
 
@@ -691,16 +933,11 @@ export default {
 }
 
 .grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(540px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 20px;
   flex: 1;
-}
-
-@media (max-width: 900px) {
-  .grid {
-    grid-template-columns: 1fr;
-  }
+  min-height: 0;
 }
 
 .panel {
@@ -767,8 +1004,9 @@ export default {
 
 .canvas-scroll-area {
   width: 100%;
-  flex: 1;
-  min-height: 400px;
+  flex: none;
+  height: min(55vh, 520px);
+  min-height: 280px;
   max-width: 100%;
   background: #f0f0f0;
   border: 1px solid #ccc;
@@ -872,10 +1110,8 @@ export default {
 }
 
 .wall-canvas {
-  width: 2000px;
-  height: 2000px;
   background-color: transparent;
-  background-size: contain;
+  background-size: 100% 100%;
   background-position: top left;
   background-repeat: no-repeat;
   position: relative;
@@ -885,11 +1121,9 @@ export default {
 @media (max-width: 900px) {
   .map-test-page {
     padding: 12px;
-    padding-bottom: 40px;
+    padding-bottom: calc(60px + env(safe-area-inset-bottom, 0px));
   }
   .canvas-scroll-area {
-    height: 55vh;
-    flex: none;
     min-height: 0;
   }
 }
