@@ -13,8 +13,11 @@ services:
       - ./data:/app/data
     expose:
       - "18808"
+    networks:
+      - bb-internal-network
 
   web:
+    container_name: warehouse-nginx
     build:
       context: .
       dockerfile: Dockerfile.web
@@ -23,7 +26,14 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
-    ports:
-      - "80:80"
-      - "443:443"
+    expose:
+      - "80"
+    networks:
+      - gateway-network
+      - bb-internal-network
 
+networks:
+  gateway-network:
+    external: true
+  bb-internal-network:
+    driver: bridge
