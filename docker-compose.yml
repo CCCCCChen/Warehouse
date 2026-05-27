@@ -23,6 +23,8 @@ services:
       dockerfile: Dockerfile.web
       args:
         - VUE_APP_API_BASE_URL=${VUE_APP_API_BASE_URL}
+        - VUE_APP_ICP_NUMBER=${VUE_APP_ICP_NUMBER}
+        - VUE_APP_PSAP_NUMBER=${VUE_APP_PSAP_NUMBER}
     restart: unless-stopped
     depends_on:
       - backend
