@@ -947,6 +947,7 @@ export default {
     },
     async remove(id) {
       try {
+        if (!window.confirm('确认删除该物品？此操作不可撤销。')) return;
         await api.delete(`/api/items/${id}`);
         await this.refresh();
       } catch (e) {

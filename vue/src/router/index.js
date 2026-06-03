@@ -12,6 +12,7 @@ const routes = [
   { path: '/warehouse/items', component: () => import('@/components/ItemsPage.vue')},
   { path: '/warehouse/user', component: () => import('@/components/WarehouseUserPage.vue')},
   { path: '/warehouse/manage', component: () => import('@/components/WarehouseManagePage.vue')},
+  { path: '/warehouse/outbound', component: () => import('@/components/WarehouseOutboundPage.vue')},
   { path: '/warehouse/notice', component: defineAsyncComponent(() => import('@/components/WarehouseNotice.vue'))},
   { path: '/warehouse/llm-test', component: () => import('@/components/LlmTestPage.vue')},
   { path: '/warehouse/settings', component: () => import('@/components/SettingsPage.vue')},

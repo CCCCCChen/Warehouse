@@ -163,3 +163,35 @@ class HouseholdPublicResponse(BaseModel):
     household_id: str
     household_name: str
     created_at: str
+
+
+class StockMovement(BaseModel):
+    id: int
+    household_id: str
+    item_id: int
+    member_id: int
+    action: str
+    delta: int
+    before_qty: int
+    after_qty: int
+    note: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class OutboundLine(BaseModel):
+    item_id: int
+    qty: int = Field(ge=1)
+    note: Optional[str] = None
+
+
+class OutboundRequest(BaseModel):
+    lines: list[OutboundLine]
+
+
+class OutboundResponse(BaseModel):
+    updated_items: list[Item]
+    movements: list[StockMovement]
+    low_stock_item_ids: list[int] = Field(default_factory=list)

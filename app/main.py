@@ -284,6 +284,34 @@ def delete_item(item_id: int, db: Session = Depends(get_db), member_household: T
     return db_item
 
 
+@app.post("/api/stock/outbound", response_model=schemas.OutboundResponse)
+def stock_outbound(payload: schemas.OutboundRequest, db: Session = Depends(get_db), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    try:
+        items, movements, low_stock_ids = crud.apply_outbound(
+            db=db,
+            household_id=household.id,
+            member_id=member.id,
+            lines=payload.lines,
+        )
+        return {"updated_items": items, "movements": movements, "low_stock_item_ids": low_stock_ids}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+
+
+@app.get("/api/stock/movements", response_model=List[schemas.StockMovement])
+def list_stock_movements(skip: int = 0, limit: int = 50, db: Session = Depends(get_db), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
+    member, household = member_household
+    return (
+        db.query(models.StockMovement)
+        .filter(models.StockMovement.household_id == household.id)
+        .order_by(models.StockMovement.created_at.desc())
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
 @app.post("/api/items/upload_image", response_model=dict)
 async def upload_item_image(file: UploadFile = File(...), member_household: Tuple[models.HouseholdMember, models.Household] = Depends(get_current_member)):
     member, household = member_household

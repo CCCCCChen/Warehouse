@@ -101,3 +101,18 @@ class HouseholdConfig(Base):
     updated_by_member_id = Column(Integer, nullable=True)
 
     household = relationship("Household", back_populates="config")
+
+
+class StockMovement(Base):
+    __tablename__ = "stock_movements"
+
+    id = Column(Integer, primary_key=True, index=True)
+    household_id = Column(String, index=True, nullable=False)
+    item_id = Column(Integer, index=True, nullable=False)
+    member_id = Column(Integer, index=True, nullable=False)
+    action = Column(String, index=True, nullable=False, default="outbound")
+    delta = Column(Integer, nullable=False)
+    before_qty = Column(Integer, nullable=False)
+    after_qty = Column(Integer, nullable=False)
+    note = Column(Text, nullable=True)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)

@@ -3,8 +3,8 @@ from typing import List, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import func
 from datetime import datetime
-from app.models import Item
-from app.schemas import ItemCreate, ItemBase, ItemUpdate
+from app.models import Item, StockMovement
+from app.schemas import ItemCreate, ItemBase, ItemUpdate, OutboundLine
 
 def create_item(db: Session, household_id: str, item: ItemCreate) -> Item:
     # 创建新物品
@@ -74,3 +74,68 @@ def delete_item(db: Session, household_id: str, item_id: int) -> Optional[Item]:
         db.delete(db_item)
         db.commit()
     return db_item
+
+
+def apply_outbound(db: Session, household_id: str, member_id: int, lines: List[OutboundLine]):
+    qty_map = {}
+    note_map = {}
+    for ln in lines:
+        item_id = int(ln.item_id)
+        qty = int(ln.qty)
+        if qty <= 0:
+            continue
+        qty_map[item_id] = qty_map.get(item_id, 0) + qty
+        if ln.note:
+            note_map[item_id] = ln.note
+
+    item_ids = list(qty_map.keys())
+    if not item_ids:
+        return [], [], []
+
+    items = (
+        db.query(Item)
+        .filter(Item.household_id == household_id, Item.id.in_(item_ids))
+        .all()
+    )
+    found_ids = {int(it.id) for it in items}
+    missing = [i for i in item_ids if i not in found_ids]
+    if missing:
+        raise ValueError(f"Items not found: {missing}")
+
+    movements = []
+    low_stock_item_ids = []
+    try:
+        for it in items:
+            requested = qty_map.get(int(it.id), 0)
+            before = int(it.quantity or 0)
+            deduct = requested if requested <= before else before
+            after = before - deduct
+            it.quantity = after
+            mv = StockMovement(
+                household_id=household_id,
+                item_id=int(it.id),
+                member_id=int(member_id),
+                action="outbound",
+                delta=-int(deduct),
+                before_qty=before,
+                after_qty=after,
+                note=note_map.get(int(it.id)),
+                created_at=datetime.utcnow(),
+            )
+            db.add(mv)
+            movements.append(mv)
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    for it in items:
+        db.refresh(it)
+        min_q = int(it.min_quantity or 0)
+        q = int(it.quantity or 0)
+        if min_q > 0 and q <= min_q:
+            low_stock_item_ids.append(int(it.id))
+    for mv in movements:
+        db.refresh(mv)
+
+    return items, movements, low_stock_item_ids

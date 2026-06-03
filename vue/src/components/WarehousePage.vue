@@ -3,6 +3,7 @@
     <h2 class="page-title">{{ msg }}</h2>
     <div class="quick-nav">
       <router-link class="nav-btn ghost" to="/households">切换家庭</router-link>
+      <router-link class="nav-btn" to="/warehouse/outbound">出库</router-link>
       <router-link class="nav-btn" to="/warehouse/items">物品管理</router-link>
       <router-link class="nav-btn" to="/warehouse/manage">录入/管理</router-link>
       <router-link class="nav-btn" to="/warehouse/user">用户管理</router-link>
@@ -13,10 +14,19 @@
     </div>
     <div class="grid-container">
       <div class="grid-item">
-        <WarehouseNotice />
+        <div class="panel">
+          <DashboardNoticeTile />
+        </div>
       </div>
       <div class="grid-item">
-        <DashboardSummary />
+        <div class="panel">
+          <WarehouseOutboundPage :embedded="true" />
+        </div>
+      </div>
+      <div class="grid-item">
+        <div class="panel">
+          <ItemsEmbeddedTile :limit="20" />
+        </div>
       </div>
       <div class="grid-item">
         <DataComponent />
@@ -27,15 +37,17 @@
 
 <script>
 import { api } from '@/api/http';
-import WarehouseNotice from './WarehouseNotice.vue';
-import DashboardSummary from './DashboardSummary.vue';
+import DashboardNoticeTile from './DashboardNoticeTile.vue';
+import ItemsEmbeddedTile from './ItemsEmbeddedTile.vue';
+import WarehouseOutboundPage from './WarehouseOutboundPage.vue';
 import DataComponent from './Data.vue';
 
 export default {
   name: 'WarehousePage',
   components: {
-    WarehouseNotice,
-    DashboardSummary,
+    DashboardNoticeTile,
+    ItemsEmbeddedTile,
+    WarehouseOutboundPage,
     DataComponent
   },
   data() {
@@ -102,6 +114,48 @@ export default {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   padding: 15px;
   box-sizing: border-box;
+}
+
+.panel {
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 12px;
+  padding: 14px;
+  box-sizing: border-box;
+}
+
+.panel-title {
+  font-weight: 900;
+  font-size: 18px;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.panel-desc {
+  color: rgba(0, 0, 0, 0.65);
+  margin-bottom: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.panel-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.panel-btn {
+  display: inline-block;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #111827;
+  color: white;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.panel-btn.ghost {
+  background: #1f6feb;
 }
 
 /* 媒体查询，针对移动端设备 */
