@@ -2,15 +2,34 @@
   <div class="warehouse-page">
     <h2 class="page-title">{{ msg }}</h2>
     <div class="quick-nav">
-      <router-link class="nav-btn ghost" to="/households">切换家庭</router-link>
-      <router-link class="nav-btn" to="/warehouse/outbound">出库</router-link>
-      <router-link class="nav-btn" to="/warehouse/items">物品管理</router-link>
-      <router-link class="nav-btn" to="/warehouse/manage">录入/管理</router-link>
-      <router-link class="nav-btn" to="/warehouse/user">用户管理</router-link>
-      <router-link class="nav-btn" to="/warehouse/notice">公告</router-link>
-      <router-link class="nav-btn ghost" to="/warehouse/map-test">区域设置(测试)</router-link>
-      <router-link class="nav-btn ghost" to="/warehouse/llm-test">LLM 测试</router-link>
-      <router-link class="nav-btn ghost" to="/warehouse/settings">设置中心</router-link>
+      <div class="nav-main">
+        <router-link class="nav-btn ghost" to="/households">切换家庭</router-link>
+        <router-link class="nav-btn ghost" to="/warehouse/settings">设置中心</router-link>
+        <button class="nav-btn toggle" type="button" @click="navOpen = !navOpen">
+          {{ navOpen ? '收起' : '展开' }}
+        </button>
+      </div>
+
+      <div v-if="navOpen" class="nav-more">
+        <div class="nav-group">
+          <div class="nav-group-title">页面</div>
+          <div class="nav-group-actions">
+            <router-link class="nav-btn" to="/warehouse/outbound">出库</router-link>
+            <router-link class="nav-btn" to="/warehouse/items">物品管理</router-link>
+            <router-link class="nav-btn" to="/warehouse/manage">快速录入</router-link>
+            <router-link class="nav-btn" to="/warehouse/notice">公告</router-link>
+            <router-link class="nav-btn" to="/warehouse/user">用户管理</router-link>
+          </div>
+        </div>
+
+        <div class="nav-group">
+          <div class="nav-group-title">测试</div>
+          <div class="nav-group-actions">
+            <router-link class="nav-btn ghost" to="/warehouse/map-test">区域设置</router-link>
+            <router-link class="nav-btn ghost" to="/warehouse/llm-test">LLM</router-link>
+          </div>
+        </div>
+      </div>
     </div>
     <div class="grid-container">
       <div class="grid-item">
@@ -53,6 +72,7 @@ export default {
   data() {
     return {
       msg: 'Hello, Warehouse Page!',
+      navOpen: false,
     };
   },
   created() {
@@ -80,11 +100,45 @@ export default {
 }
 
 .quick-nav {
+  display: grid;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.nav-main {
   display: flex;
   gap: 10px;
   justify-content: center;
   flex-wrap: wrap;
-  margin-bottom: 16px;
+}
+
+.nav-more {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 10px;
+}
+
+.nav-group {
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.nav-group-title {
+  font-weight: 900;
+  color: rgba(0, 0, 0, 0.70);
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.nav-group-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .nav-btn {
@@ -93,10 +147,17 @@ export default {
   background: #111827;
   color: white;
   text-decoration: none;
+  border: none;
+  cursor: pointer;
 }
 
 .nav-btn.ghost {
   background: #1f6feb;
+}
+
+.nav-btn.toggle {
+  background: rgba(0, 0, 0, 0.75);
+  font-weight: 800;
 }
 
 .grid-container {

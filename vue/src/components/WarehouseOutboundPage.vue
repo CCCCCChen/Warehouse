@@ -10,7 +10,12 @@
     <div :class="embedded ? 'content' : 'card'">
       <div v-if="embedded" class="embed-head">
         <div class="embed-title">出库</div>
-        <router-link class="embed-link" to="/warehouse/outbound">全屏打开</router-link>
+        <div class="embed-actions">
+          <router-link class="embed-link" to="/warehouse/outbound">全屏打开</router-link>
+          <button class="btn danger" type="button" :disabled="!canSave" @click="save">
+            {{ saving ? '保存中...' : '保存出库' }}
+          </button>
+        </div>
       </div>
       <div class="row">
         <input v-model.trim="q" class="input" placeholder="搜索：名称/品牌/条码/标签/备注" />
@@ -46,7 +51,7 @@
 
       <div class="footer">
         <div class="muted">{{ saveSummary }}</div>
-        <button class="btn danger" type="button" :disabled="!canSave" @click="save">
+        <button v-if="!embedded" class="btn danger" type="button" :disabled="!canSave" @click="save">
           {{ saving ? '保存中...' : '保存出库' }}
         </button>
       </div>
@@ -268,6 +273,13 @@ export default {
   gap: 10px;
   flex-wrap: wrap;
   margin-bottom: 10px;
+}
+
+.embed-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 .embed-title {
