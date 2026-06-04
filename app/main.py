@@ -60,6 +60,7 @@ def ensure_items_table_columns():
         "location": "TEXT",
         "room": "TEXT",
         "spot": "TEXT",
+        "location_free": "TEXT",
         "unit": "TEXT",
         "brand": "TEXT",
         "usage": "TEXT",
@@ -168,10 +169,122 @@ def ensure_household_config_columns():
         if "area_map_json" in {n for n, _ in missing}:
             conn.execute(text("UPDATE household_config SET area_map_json = :v WHERE area_map_json IS NULL"), {"v": defaults["area_map_json"]})
 
+
+def ensure_location_table():
+    """Ensure location table exists and migrate old data."""
+    import json
+    from app.database import engine as db_engine
+    from app.defaults import default_extended_config_json
+
+    inspector = inspect(db_engine)
+    # 1. Create location table if not exists
+    if "location" not in inspector.get_table_names():
+        models.Base.metadata.tables["location"].create(bind=db_engine)
+
+    # 2. Add location_id column to items table if missing
+    if "items" in inspector.get_table_names():
+        existing_cols = {c["name"] for c in inspector.get_columns("items")}
+        if "location_id" not in existing_cols:
+            with db_engine.begin() as conn:
+                conn.execute(text("ALTER TABLE items ADD COLUMN location_id TEXT REFERENCES location(id) ON DELETE SET NULL"))
+
+    # 3. Migrate HouseholdConfig rooms_json / area_map_json → Location records
+    with SessionLocal() as db:
+        # Skip if location table already has records
+        existing_count = db.query(models.Location).count()
+        if existing_count > 0:
+            return
+
+        config = db.query(models.HouseholdConfig).filter_by(household_id="default").first()
+        if not config:
+            return
+
+        defaults = default_extended_config_json()
+        rooms_raw = config.rooms_json or defaults.get("rooms_json", "[]")
+        area_raw = config.area_map_json or defaults.get("area_map_json", "[]")
+
+        try:
+            rooms: list = json.loads(rooms_raw) if isinstance(rooms_raw, str) else rooms_raw
+        except (json.JSONDecodeError, TypeError):
+            rooms = []
+        try:
+            areas: list = json.loads(area_raw) if isinstance(area_raw, str) else area_raw
+        except (json.JSONDecodeError, TypeError):
+            areas = []
+
+        # Build zone-level locations from rooms list
+        zone_locations: list[models.Location] = []
+        for room_name in rooms:
+            loc_id = str(uuid4())
+            loc = models.Location(
+                id=loc_id,
+                name=str(room_name),
+                parent_id=None,
+                level="zone",
+                zone_id=loc_id,
+                path=f"/{loc_id}/",
+                household_id="default",
+            )
+            db.add(loc)
+            zone_locations.append(loc)
+        db.flush()
+
+        # Build wall-level and unit-level from area_map_json
+        zone_name_to_id = {loc.name: loc.id for loc in zone_locations}
+        for area in areas:
+            zone_name = area.get("name", "")
+            zone_id = zone_name_to_id.get(zone_name)
+            if not zone_id:
+                continue
+            walls = area.get("walls", {})
+            for wall_name, wall_data in walls.items():
+                wall_id = str(uuid4())
+                wall_loc = models.Location(
+                    id=wall_id,
+                    name=str(wall_name),
+                    parent_id=zone_id,
+                    level="wall",
+                    zone_id=zone_id,
+                    path=f"/{zone_id}/{wall_id}/",
+                    household_id="default",
+                )
+                db.add(wall_loc)
+                db.flush()
+
+                spots = wall_data.get("spots", []) if isinstance(wall_data, dict) else []
+                for spot in spots:
+                    spot_name = spot.get("name", str(spot)) if isinstance(spot, dict) else str(spot)
+                    spot_id = str(uuid4())
+                    spot_loc = models.Location(
+                        id=spot_id,
+                        name=spot_name,
+                        parent_id=wall_id,
+                        level="unit",
+                        zone_id=zone_id,
+                        path=f"/{zone_id}/{wall_id}/{spot_id}/",
+                        household_id="default",
+                    )
+                    db.add(spot_loc)
+
+        db.commit()
+
+        # 4. Match existing item.room → Location.name to fill location_id
+        q = text(
+            "UPDATE items SET location_id = ("
+            "  SELECT l.id FROM location l "
+            "  WHERE l.household_id = items.household_id AND l.name = items.room AND l.level = 'zone'"
+            "  LIMIT 1"
+            ") WHERE location_id IS NULL AND room IS NOT NULL AND room != ''"
+        )
+        db.execute(q)
+        db.commit()
+
+
 # Initialize database tables
 Base.metadata.create_all(bind=engine)
 ensure_items_table_columns()
 ensure_household_config_columns()
+ensure_location_table()
 ensure_default_household()
 
 app = FastAPI(title="Warehouse API")
@@ -692,6 +805,288 @@ async def llm_test(prompt: str = Form(...), file: UploadFile = File(default=None
         raise HTTPException(status_code=400, detail={"error": str(e), "provider": "ark"})
     except Exception as e:
         raise HTTPException(status_code=502, detail={"error": "LLM provider call failed", "provider": "ark", "hint": str(e)})
+
+
+# ── Public Location API (no auth, used by scan-to-panel page) ──
+
+@app.get("/api/public/locations/{loc_id}")
+def get_public_location(loc_id: str, db: Session = Depends(get_db)):
+    """Public: get single location info (name, path, level, updated_at)."""
+    loc = db.query(models.Location).filter(models.Location.id == loc_id).first()
+    if not loc:
+        raise HTTPException(status_code=404, detail="Location not found")
+    return {
+        "id": loc.id,
+        "name": loc.name,
+        "level": loc.level,
+        "path": loc.path,
+        "zone_id": loc.zone_id,
+        "updated_at": str(loc.updated_at) if loc.updated_at else None,
+    }
+
+@app.get("/api/public/locations/{loc_id}/ancestors")
+def get_public_location_ancestors(loc_id: str, db: Session = Depends(get_db)):
+    """Public: get all ancestor locations (for breadcrumb names)."""
+    loc = db.query(models.Location).filter(models.Location.id == loc_id).first()
+    if not loc:
+        raise HTTPException(status_code=404, detail="Location not found")
+    if not loc.path:
+        return []
+    ancestor_ids = [aid for aid in loc.path.strip("/").split("/") if aid and aid != loc_id]
+    if not ancestor_ids:
+        return []
+    ancestors = (
+        db.query(models.Location)
+        .filter(models.Location.id.in_(ancestor_ids))
+        .all()
+    )
+    id_order = {aid: i for i, aid in enumerate(ancestor_ids)}
+    ancestors.sort(key=lambda a: id_order.get(a.id, 0))
+    return [{"id": a.id, "name": a.name} for a in ancestors]
+
+# ── Location API ──
+
+def _build_location_tree(locations: list, parent_id: str | None = None) -> list[dict]:
+    """Build nested location tree from flat list."""
+    children = []
+    for loc in locations:
+        if loc.parent_id == parent_id:
+            d = loc.__dict__.copy()
+            d.pop("_sa_instance_state", None)
+            d["children"] = _build_location_tree(locations, loc.id)
+            children.append(d)
+    return children
+
+
+@app.get("/api/locations")
+def get_locations(
+    zone_id: str | None = None,
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Get location tree, optionally filtered by zone_id."""
+    member, household = member_household
+    q = db.query(models.Location).filter_by(household_id=household.id)
+    if zone_id:
+        q = q.filter_by(zone_id=zone_id)
+    all_locs = q.order_by(models.Location.sort_order, models.Location.name).all()
+    if zone_id:
+        return [_build_location_tree(all_locs, parent_id=zone_id)]
+    return _build_location_tree(all_locs)
+
+
+@app.post("/api/locations", response_model=schemas.LocationOut)
+def create_location(
+    loc: schemas.LocationCreate,
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Create a location. Auto-computes level, zone_id, and path from parent_id."""
+    member, household = member_household
+    loc_id = str(uuid4())
+
+    if loc.parent_id:
+        parent = db.query(models.Location).filter_by(id=loc.parent_id, household_id=household.id).first()
+        if not parent:
+            raise HTTPException(status_code=404, detail="Parent location not found")
+        level_map = {"zone": "wall", "wall": "unit", "unit": "sub"}
+        level = level_map.get(parent.level)
+        if not level:
+            raise HTTPException(status_code=400, detail="Cannot create child under 'sub' level")
+        zone_id = parent.zone_id
+        path = f"{parent.path}{loc_id}/"
+    else:
+        level = "zone"
+        zone_id = loc_id
+        path = f"/{loc_id}/"
+
+    new_loc = models.Location(
+        id=loc_id,
+        name=loc.name,
+        parent_id=loc.parent_id,
+        level=level,
+        zone_id=zone_id,
+        path=path,
+        sort_order=loc.sort_order,
+        map_image_url=loc.map_image_url,
+        coordinates=loc.coordinates,
+        household_id=household.id,
+    )
+    db.add(new_loc)
+    db.commit()
+    db.refresh(new_loc)
+    return new_loc
+
+
+@app.put("/api/locations/{loc_id}", response_model=schemas.LocationOut)
+def update_location(
+    loc_id: str,
+    loc: schemas.LocationUpdate,
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Update location name / coordinates / map_image_url / sort_order."""
+    member, household = member_household
+    target = db.query(models.Location).filter_by(id=loc_id, household_id=household.id).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    if loc.name is not None:
+        target.name = loc.name
+    if loc.sort_order is not None:
+        target.sort_order = loc.sort_order
+    if loc.map_image_url is not None:
+        target.map_image_url = loc.map_image_url
+    if loc.coordinates is not None:
+        target.coordinates = loc.coordinates
+
+    target.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(target)
+    return target
+
+
+@app.delete("/api/locations/{loc_id}")
+def delete_location(
+    loc_id: str,
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Delete location. Cascades to children, sets item.location_id to NULL."""
+    member, household = member_household
+    target = db.query(models.Location).filter_by(id=loc_id, household_id=household.id).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    # Nullify location_id on associated items
+    db.execute(
+        text("UPDATE items SET location_id = NULL WHERE location_id = :lid"),
+        {"lid": loc_id},
+    )
+    # Delete all descendants via path prefix match
+    db.execute(
+        text("DELETE FROM location WHERE household_id = :hid AND path LIKE :pat"),
+        {"hid": household.id, "pat": f"{target.path}%"},
+    )
+    db.commit()
+    return {"ok": True, "deleted_id": loc_id}
+
+
+@app.post("/api/locations/{loc_id}/move", response_model=schemas.LocationOut)
+def move_location(
+    loc_id: str,
+    move: schemas.LocationMove,
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Move location under a new parent. Recomputes level, zone_id, and path for subtree."""
+    member, household = member_household
+    target = db.query(models.Location).filter_by(id=loc_id, household_id=household.id).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    new_parent_id = move.target_parent_id
+    if new_parent_id:
+        new_parent = db.query(models.Location).filter_by(id=new_parent_id, household_id=household.id).first()
+        if not new_parent:
+            raise HTTPException(status_code=404, detail="Target parent not found")
+        # Cycle detection: target must not be ancestor of new_parent
+        if new_parent.path.startswith(f"{target.path}"):
+            raise HTTPException(status_code=400, detail="Cannot move a node into its own subtree")
+        level_map = {"zone": "wall", "wall": "unit", "unit": "sub"}
+        new_level = level_map.get(new_parent.level, "wall")
+        new_zone_id = new_parent.zone_id
+        new_prefix = f"{new_parent.path}{loc_id}/"
+    else:
+        # Move to root → become zone
+        new_level = "zone"
+        new_zone_id = loc_id
+        new_prefix = f"/{loc_id}/"
+
+    old_prefix = target.path
+    # Update the moved node
+    target.parent_id = new_parent_id
+    target.level = new_level
+    target.zone_id = new_zone_id
+    # Update path for self and all descendants
+    descendants = db.query(models.Location).filter(
+        models.Location.household_id == household.id,
+        models.Location.path.like(f"{old_prefix}%"),
+    ).all()
+    for d in descendants:
+        d.path = d.path.replace(old_prefix, new_prefix, 1)
+        if d.id == loc_id:
+            d.path = new_prefix
+    # Update zone_id for descendants
+    for d in descendants:
+        if d.id != loc_id:
+            d.zone_id = new_zone_id
+
+    target.updated_at = datetime.utcnow()
+    db.commit()
+    db.refresh(target)
+    return target
+
+
+@app.post("/api/locations/batch-delete")
+def batch_delete_locations(
+    req: schemas.BatchDeleteRequest,
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Batch delete locations that have no items associated."""
+    member, household = member_household
+    if not req.ids:
+        raise HTTPException(status_code=400, detail="No location IDs provided")
+
+    deleted = []
+    for lid in req.ids:
+        target = db.query(models.Location).filter_by(id=lid, household_id=household.id).first()
+        if not target:
+            continue
+        # Only delete if no items reference this location or its descendants
+        descendant_ids = db.execute(
+            text("SELECT id FROM location WHERE household_id = :hid AND path LIKE :pat"),
+            {"hid": household.id, "pat": f"{target.path}%"},
+        ).fetchall()
+        all_ids = [lid] + [row[0] for row in descendant_ids if row[0] != lid]
+        item_count = db.query(models.Item).filter(
+            models.Item.household_id == household.id,
+            models.Item.location_id.in_(all_ids),
+        ).count()
+        if item_count > 0:
+            continue
+        db.execute(text("DELETE FROM location WHERE id IN ({})".format(",".join(f"'{i}'" for i in all_ids))))
+        deleted.append(lid)
+
+    db.commit()
+    return {"ok": True, "deleted_ids": deleted}
+
+
+@app.get("/api/locations/{loc_id}/qrcode")
+def get_location_qrcode(
+    loc_id: str,
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Generate QR code PNG for a location."""
+    import qrcode
+    from io import BytesIO
+    from fastapi.responses import Response
+
+    member, household = member_household
+    target = db.query(models.Location).filter_by(id=loc_id, household_id=household.id).first()
+    if not target:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    host = os.getenv("PUBLIC_HOST", "http://127.0.0.1:3030")
+    content = f"{host}/location/{loc_id}?action=panel"
+
+    img = qrcode.make(content)
+    buf = BytesIO()
+    img.save(buf, format="PNG")
+    buf.seek(0)
+    return Response(content=buf.getvalue(), media_type="image/png")
 
 
 if __name__ == "__main__":

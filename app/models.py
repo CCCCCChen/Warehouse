@@ -21,6 +21,8 @@ class Item(Base):
     location = Column(String, nullable=True, index=True)
     room = Column(String, nullable=True, index=True)
     spot = Column(String, nullable=True, index=True)
+    location_free = Column(String, nullable=True)
+    location_id = Column(String, ForeignKey("location.id", ondelete="SET NULL"), nullable=True)
     unit = Column(String, nullable=True)
     brand = Column(String, nullable=True)
     min_quantity = Column(Integer, default=0)
@@ -101,6 +103,23 @@ class HouseholdConfig(Base):
     updated_by_member_id = Column(Integer, nullable=True)
 
     household = relationship("Household", back_populates="config")
+
+
+class Location(Base):
+    __tablename__ = "location"
+
+    id = Column(String, primary_key=True)
+    name = Column(String, nullable=False)
+    parent_id = Column(String, ForeignKey("location.id", ondelete="CASCADE"), nullable=True)
+    level = Column(String, nullable=False)
+    zone_id = Column(String, nullable=False)
+    path = Column(String, nullable=False, default="")
+    sort_order = Column(Integer, default=0)
+    map_image_url = Column(String, nullable=True)
+    coordinates = Column(String, nullable=True)
+    household_id = Column(String, ForeignKey("households.id", ondelete="CASCADE"), nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
 
 class StockMovement(Base):

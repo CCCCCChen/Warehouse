@@ -11,3 +11,4 @@ node_modules/
 warehouse-app/
 data/uploads/
 vue.zip
+.vscode/settings.json

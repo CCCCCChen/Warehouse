@@ -17,6 +17,17 @@
       <div class="panel">
         <div class="panel-title">快速录入</div>
 
+        <div v-if="embedded" class="action-card" ref="actionCard">
+          <div class="action-card-status">
+            <span class="action-card-label">状态</span>
+            <span class="action-card-value">{{ hint || '录入新物品' }}</span>
+          </div>
+          <div class="action-card-btns">
+            <button type="button" class="action-btn-clear" @click="reset">清空</button>
+            <button type="button" class="action-btn-save" @click="quickCreate">保存</button>
+          </div>
+        </div>
+
         <div class="ocr">
           <div class="ocr-title">图片识别录入</div>
           <div class="row">
@@ -155,7 +166,7 @@
               <div class="row">
                 <label>
                   区域
-                  <select v-model="form.room" @change="onRoomChange">
+                  <select v-model="form.room" :disabled="locationFieldsDisabled" @change="onRoomChange">
                     <option value="">未设置</option>
                     <option v-for="r in areaRoomOptions" :key="r" :value="r">{{ r }}</option>
                   </select>
@@ -163,29 +174,29 @@
                 <template v-if="areaMapEnabled">
                   <label>
                     墙面
-                    <select v-model="form.wall_side" @change="onWallChange">
+                    <select v-model="form.wall_side" :disabled="locationFieldsDisabled" @change="onWallChange">
                       <option value="">未设置</option>
                       <option v-for="w in wallSideOptions" :key="w.value" :value="w.value">{{ w.label }}</option>
                     </select>
                   </label>
                   <label class="grow">
                     收纳位
-                    <select v-model="form.wall_slot">
+                    <select v-model="form.wall_slot" :disabled="locationFieldsDisabled">
                       <option value="">未设置</option>
                       <option v-for="s in wallSlotOptions" :key="s" :value="s">{{ s }}</option>
                     </select>
                   </label>
                 </template>
                 <label v-else class="grow">
-                  位置
-                  <select v-model="form.spot">
+                  收纳位
+                  <select v-model="form.spot" :disabled="locationFieldsDisabled">
                     <option value="">未设置</option>
                     <option v-for="s in spotOptions" :key="s" :value="s">{{ s }}</option>
                   </select>
                 </label>
-                <label class="grow">
-                  位置补充
-                  <input v-model.trim="form.location_free" placeholder="例如：东侧墙-第三层 / 床底-左侧" />
+                <label v-if="showSubSpot" class="grow">
+                  细分位置
+                  <input v-model.trim="form.location_free" :disabled="locationFieldsDisabled" placeholder="例如：第2层 / 左侧 / 上层" />
                 </label>
               </div>
             </div>
@@ -325,14 +336,18 @@
           </div>
 
           <div class="row">
-            <button type="submit">保存</button>
-            <button type="button" class="ghost-btn" @click="reset">清空</button>
+            <button type="submit" v-if="!embedded">保存</button>
+            <button type="button" class="ghost-btn" v-if="!embedded" @click="reset">清空</button>
           </div>
-          <div v-if="hint" class="hint">{{ hint }}</div>
+          <div v-if="hint && !embedded" class="hint">{{ hint }}</div>
         </form>
       </div>
 
     </div>
+
+    <button v-if="embedded && showBackTop" class="back-top-btn" @click="scrollToActionCard" title="回到顶部">
+      ↑
+    </button>
   </div>
 </template>
 
@@ -385,6 +400,9 @@ export default {
       message: '',
       items: [],
       hint: '',
+      locationPrefilled: false,
+      locationPrefilledId: '',
+      showBackTop: false,
       ocrFile: null,
       ocrPreviewUrl: '',
       ocrLoading: false,
@@ -455,6 +473,24 @@ export default {
     this.loadConfig();
     if (!this.embedded) this.fetchMessage();
     this.fetchItems();
+    this.prefillFromRoute();
+  },
+  activated() {
+    this.handleScroll();
+  },
+  mounted() {
+    if (this.embedded) {
+      window.addEventListener('scroll', this.handleScroll, true);
+      this.$nextTick(() => this.handleScroll());
+    }
+  },
+  beforeUnmount() {
+    window.removeEventListener('scroll', this.handleScroll, true);
+  },
+  watch: {
+    '$route.query.location_id'() {
+      this.prefillFromRoute();
+    },
   },
   computed: {
     typeL1Options() {
@@ -515,6 +551,16 @@ export default {
     recordedAtText() {
       return this.form.recorded_at || new Date().toISOString();
     },
+    locationFieldsDisabled() {
+      return this.locationPrefilled;
+    },
+    showSubSpot() {
+      const spot = this.areaMapEnabled
+        ? (this.form.wall_slot || '').trim()
+        : (this.form.spot || '').trim();
+      const subDivisible = ['柜子', '抽屉', '收纳箱', '置物架', '冰箱'];
+      return subDivisible.includes(spot);
+    },
     lowStockItems() {
       return this.items
         .filter(it => (it.min_quantity ?? 0) > 0 && (it.quantity ?? 0) <= (it.min_quantity ?? 0))
@@ -542,6 +588,18 @@ export default {
     },
   },
   methods: {
+    scrollToActionCard() {
+      if (this.$refs.actionCard) {
+        this.$refs.actionCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    },
+    handleScroll() {
+      if (!this.embedded) return;
+      if (this.$refs.actionCard) {
+        const rect = this.$refs.actionCard.getBoundingClientRect();
+        this.showBackTop = rect.bottom < -20;
+      }
+    },
     wallLabel(value) {
       const found = WALL_TYPES.find(w => w.value === value);
       return found ? found.label : '';
@@ -637,6 +695,49 @@ export default {
         this.items = [];
       } finally {
         this.loadingItems = false;
+      }
+    },
+    async prefillFromRoute() {
+      const locId = this.$route.query.location_id;
+      if (!locId || this.embedded) return;
+      try {
+        const res = await api.get(`/api/locations/${locId}`);
+        const loc = res.data;
+        if (!loc || !loc.path) return;
+        const ancestors = loc.path.split('/').filter(Boolean);
+        // Fetch full ancestor chain for name lookup
+        const ancRes = await api.get(`/api/locations?zone_id=${ancestors[0]}`);
+        // Walk tree to find path segments
+        const nameMap = {};
+        const walk = (nodes, p) => {
+          nodes.forEach(n => {
+            nameMap[n.id] = n.name;
+            if (n.children) walk(n.children, p);
+          });
+        };
+        if (ancRes.data && typeof ancRes.data === 'object') {
+          walk(ancRes.data.children || ancRes.data.tree || [], nameMap);
+        }
+        // ancestors[0]=zone, [1]=wall, [2]=unit, [3]=sub
+        const zoneName = nameMap[ancestors[0]] || ancestors[0];
+        const wallName = ancestors[1] ? (nameMap[ancestors[1]] || ancestors[1]) : '';
+        const unitName = ancestors[2] ? (nameMap[ancestors[2]] || ancestors[2]) : '';
+        const subName = ancestors[3] ? (nameMap[ancestors[3]] || ancestors[3]) : '';
+
+        const formPatch = { room: zoneName };
+        if (this.areaMapEnabled) {
+          const wallSide = WALL_TYPES.find(w => w.label === wallName);
+          formPatch.wall_side = wallSide ? wallSide.value : 'north';
+          formPatch.wall_slot = unitName;
+        } else {
+          formPatch.spot = unitName;
+        }
+        if (subName) formPatch.location_free = subName;
+        this.form = { ...this.form, ...formPatch };
+        this.locationPrefilled = true;
+        this.locationPrefilledId = String(locId);
+      } catch (e) {
+        console.error('Failed to prefill from location_id:', e);
       }
     },
     reset() {
@@ -738,6 +839,7 @@ export default {
         'location',
         'room',
         'spot',
+        'location_free',
         'unit',
         'brand',
         'min_quantity',
@@ -927,6 +1029,7 @@ export default {
           unit: this.form.unit || null,
           category,
           location: location || null,
+          location_free: free || null,
           room: room || null,
           spot: spot || null,
           min_quantity: Number.isFinite(Number(this.form.min_quantity)) ? Number(this.form.min_quantity) : 0,
@@ -954,12 +1057,17 @@ export default {
           await api.put(`/api/items/${this.form.id}`, payload);
           this.hint = '已更新';
         } else {
+          if (this.locationPrefilledId) payload.location_id = this.locationPrefilledId;
           await api.post('/api/items', payload);
           this.hint = '已保存';
         }
-        this.reset();
-        await this.fetchItems();
         this.$emit('saved');
+        await this.fetchItems();
+        if (this.embedded) {
+          setTimeout(() => this.reset(), 2000);
+        } else {
+          this.reset();
+        }
       } catch (e) {
         console.error('Failed to create item:', e);
         this.hint = '保存失败';
@@ -993,6 +1101,111 @@ export default {
   box-shadow: none;
   min-height: auto;
   box-sizing: border-box;
+}
+
+/* ─── 卡片式操作栏（桌面端base） ─── */
+.action-card {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 20px 0;
+  padding: 16px 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+.action-card-status {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.action-card-label {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.action-card-value {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1e293b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.action-card-btns {
+  display: flex;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.action-btn-save {
+  padding: 10px 28px;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  border-radius: 10px;
+  background: #2563eb;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  transition: background 0.15s;
+}
+.action-btn-save:hover {
+  background: #1d4ed8;
+}
+.action-btn-save:active {
+  background: #1e40af;
+}
+.action-btn-clear {
+  padding: 10px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.action-btn-clear:hover {
+  background: #f3f4f6;
+  border-color: #d1d5db;
+  color: #4b5563;
+}
+.action-btn-clear:active {
+  background: #e5e7eb;
+}
+
+/* ─── 回到顶部浮动按钮 ─── */
+.back-top-btn {
+  position: fixed;
+  right: 24px;
+  bottom: 40px;
+  z-index: 50;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff;
+  color: #1e293b;
+  font-size: 20px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeInUp 0.2s ease;
+}
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .header {
@@ -1312,6 +1525,76 @@ textarea {
     padding: 0;
     padding-bottom: 0;
   }
+
+  .action-card {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 0 0 16px 0;
+    padding: 14px 16px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.06);
+  }
+  .action-card-status {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .action-card-label {
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .action-card-value {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .action-card-btns {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+  .action-btn-save {
+    padding: 8px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    border: none;
+    border-radius: 10px;
+    background: #2563eb;
+    color: #fff;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+  }
+  .action-btn-clear {
+    padding: 8px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    background: #f9fafb;
+    color: #6b7280;
+    cursor: pointer;
+  }
+
+  .back-top-btn {
+    right: 16px;
+    bottom: 28px;
+    width: 42px;
+    height: 42px;
+  }
+
   .grid {
     grid-template-columns: 1fr;
   }

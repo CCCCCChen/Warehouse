@@ -15,6 +15,7 @@ class ItemBase(BaseModel):
     location: Optional[str] = None
     room: Optional[str] = None
     spot: Optional[str] = None
+    location_free: Optional[str] = None
     unit: Optional[str] = None
     brand: Optional[str] = None
     min_quantity: int = 0
@@ -50,6 +51,7 @@ class ItemUpdate(BaseModel):
     location: Optional[str] = None
     room: Optional[str] = None
     spot: Optional[str] = None
+    location_free: Optional[str] = None
     unit: Optional[str] = None
     brand: Optional[str] = None
     min_quantity: Optional[int] = None
@@ -195,3 +197,49 @@ class OutboundResponse(BaseModel):
     updated_items: list[Item]
     movements: list[StockMovement]
     low_stock_item_ids: list[int] = Field(default_factory=list)
+
+
+# ── Location schemas ──
+
+class LocationBase(BaseModel):
+    name: str
+    parent_id: Optional[str] = None
+    sort_order: int = 0
+    map_image_url: Optional[str] = None
+    coordinates: Optional[str] = None
+
+
+class LocationCreate(LocationBase):
+    """创建位置时 parent_id 决定 level/zone_id/path，后端自动计算"""
+    pass
+
+
+class LocationUpdate(BaseModel):
+    name: Optional[str] = None
+    parent_id: Optional[str] = None
+    sort_order: Optional[int] = None
+    map_image_url: Optional[str] = None
+    coordinates: Optional[str] = None
+
+
+class LocationOut(LocationBase):
+    id: str
+    level: str
+    zone_id: str
+    path: str
+    household_id: str
+    parent_id: Optional[str] = None
+    created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+    children: list["LocationOut"] = Field(default_factory=list)
+
+    class Config:
+        from_attributes = True
+
+
+class LocationMove(BaseModel):
+    target_parent_id: Optional[str] = None
+
+
+class BatchDeleteRequest(BaseModel):
+    ids: list[str]

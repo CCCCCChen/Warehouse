@@ -4,6 +4,7 @@ import { getAuthToken } from '@/auth/storage';
 // import App from '../App.vue';
 
 const routes = [
+  { path: '/location/:id', component: () => import('@/components/LocationPanelPage.vue')},
   { path: '/', redirect: '/households' },
   { path: '/init', redirect: '/households' },
   { path: '/households', component: () => import('@/components/InitPage.vue')},

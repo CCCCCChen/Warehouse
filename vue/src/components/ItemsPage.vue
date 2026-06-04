@@ -677,6 +677,12 @@ export default {
         if (this.$refs.entry && typeof this.$refs.entry.editItem === 'function') {
           this.$refs.entry.editItem(it);
         }
+        const entryEl = this.$el.querySelector('.entry-wrap');
+        if (entryEl) {
+          entryEl.classList.add('entry-pulse');
+          entryEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          setTimeout(() => entryEl.classList.remove('entry-pulse'), 600);
+        }
       });
     },
     toggle(key) {
@@ -1071,6 +1077,18 @@ export default {
   border-radius: 8px;
   margin-bottom: 20px;
   border: 1px solid rgba(0, 0, 0, 0.10);
+  transition: border-color 0.3s;
+}
+
+.entry-wrap.entry-pulse {
+  border-color: #007aff;
+  animation: entryPulse 0.6s ease;
+}
+
+@keyframes entryPulse {
+  0% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.4); }
+  50% { box-shadow: 0 0 0 8px rgba(0, 122, 255, 0.1); }
+  100% { box-shadow: 0 0 0 0 rgba(0, 122, 255, 0); }
 }
 
 .entry-toggle {
