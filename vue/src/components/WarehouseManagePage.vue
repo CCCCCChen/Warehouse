@@ -195,6 +195,7 @@
                   <select v-model="form.room" :disabled="locationFieldsDisabled" @change="onRoomChange">
                     <option value="">未设置</option>
                     <option v-for="r in areaRoomOptions" :key="r" :value="r">{{ r }}</option>
+                    <option v-if="form.room && !areaRoomOptions.includes(form.room)" :value="form.room">{{ form.room }}（不在列表中）</option>
                   </select>
                 </label>
                 <template v-if="areaMapEnabled">
