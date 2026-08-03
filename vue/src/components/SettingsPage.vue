@@ -27,7 +27,7 @@
           <div class="token-title">邀请码</div>
           <pre class="pre">{{ latestInvite.invite_code }}</pre>
           <div class="row">
-            <button class="ghost-btn" @click="copy(latestInvite.invite_code)">复制</button>
+            <button class="btn-ghost" @click="copy(latestInvite.invite_code)">复制</button>
           </div>
         </div>
 
@@ -101,7 +101,7 @@
             <button :disabled="!isOwner || savingConfig" @click="saveConfig">
               {{ savingConfig ? '保存中...' : '保存配置' }}
             </button>
-            <button class="ghost-btn" @click="reloadAll">刷新</button>
+            <button class="btn-ghost" @click="reloadAll">刷新</button>
           </div>
         </div>
 
@@ -402,13 +402,6 @@ input {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.15);
-}
-
-.ghost-btn {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 6px 10px;
-  border-radius: 8px;
 }
 
 .danger {

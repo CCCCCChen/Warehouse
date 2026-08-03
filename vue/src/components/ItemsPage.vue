@@ -3,11 +3,11 @@
     <div class="header">
       <h2>物品管理</h2>
       <div class="header-actions">
-        <button @click="refresh">刷新</button>
-        <button @click="exportExcel" :disabled="loading || exporting">{{ exporting ? '导出中...' : '导出Excel' }}</button>
-        <button @click="downloadImportTemplate" :disabled="exporting || importing">下载导入模板</button>
-        <button @click="triggerExcelPick" :disabled="loading || exporting || importing">{{ importing ? '导入中...' : '导入Excel' }}</button>
-        <router-link class="link" to="/warehouse">返回主页</router-link>
+        <button class="btn-ghost" @click="refresh">刷新</button>
+        <button class="btn-ghost" @click="exportExcel" :disabled="loading || exporting">{{ exporting ? '导出中...' : '导出Excel' }}</button>
+        <button class="btn-ghost" @click="downloadImportTemplate" :disabled="exporting || importing">下载导入模板</button>
+        <button class="btn-ghost" @click="triggerExcelPick" :disabled="loading || exporting || importing">{{ importing ? '导入中...' : '导入Excel' }}</button>
+        <router-link class="btn" to="/warehouse">返回主页</router-link>
         <input ref="excelInput" class="excel-input" type="file" accept=".xlsx,.xls" @change="onExcelPicked" />
       </div>
     </div>
@@ -62,7 +62,7 @@
         {{ entryOpen ? '收起录入' : '展开录入' }}
       </button>
       <div v-if="entryOpen" class="entry-body">
-        <WarehouseManagePage ref="entry" :embedded="true" @saved="refresh" />
+        <WarehouseManagePage ref="entry" :embedded="true" @saved="refresh" @close="closeEntry" />
       </div>
     </div>
 
@@ -84,8 +84,8 @@
               {{ displayType(it) }} · {{ displayLocation(it) }} · {{ it.expiry_date ? `到期 ${it.expiry_date}` : '无到期' }}
             </div>
             <div class="mobile-actions">
-              <button @click="editInEntry(it)">编辑</button>
-              <button class="danger" @click="remove(it.id)">删除</button>
+              <button class="btn-ghost btn-sm" @click="editInEntry(it)">编辑</button>
+              <button class="btn-danger btn-sm" @click="remove(it.id)">删除</button>
             </div>
           </div>
         </div>
@@ -124,8 +124,8 @@
             <td data-label="到期"><div class="cell-value">{{ it.expiry_date || '-' }}</div></td>
             <td data-label="责任人"><div class="cell-value">{{ it.responsible_person || '-' }}</div></td>
             <td class="ops">
-              <button @click="editInEntry(it)">编辑</button>
-              <button class="danger" @click="remove(it.id)">删除</button>
+              <button class="btn-ghost btn-sm" @click="editInEntry(it)">编辑</button>
+              <button class="btn-danger btn-sm" @click="remove(it.id)">删除</button>
             </td>
           </tr>
         </tbody>
@@ -366,6 +366,9 @@ export default {
     },
   },
   methods: {
+    closeEntry() {
+      this.entryOpen = false;
+    },
     downloadBlob(blob, filename) {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
@@ -1023,14 +1026,6 @@ export default {
   align-items: center;
 }
 
-.link {
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: #111827;
-  color: white;
-  text-decoration: none;
-}
-
 .stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1420,14 +1415,6 @@ select {
   min-width: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
-}
-
-.danger {
-  background: #b00020;
-  color: white;
-  border: none;
-  padding: 6px 10px;
-  border-radius: 6px;
 }
 
 @media (max-width: 900px) {

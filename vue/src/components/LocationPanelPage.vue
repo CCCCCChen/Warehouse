@@ -11,15 +11,15 @@
     </header>
 
     <section class="actions" v-if="loc">
-      <button class="action-btn primary" @click="go('/warehouse/manage')">
+      <button class="btn-sm" @click="go('/warehouse/manage')">
         <span class="icon">📦</span>
         <span class="label">录入物品</span>
       </button>
-      <button class="action-btn" @click="go('/warehouse/items')">
+      <button class="btn-ghost btn-sm" @click="go('/warehouse/items')">
         <span class="icon">📋</span>
         <span class="label">查看物品</span>
       </button>
-      <button class="action-btn" @click="go('/warehouse/settings')">
+      <button class="btn-ghost btn-sm" @click="go('/warehouse/settings')">
         <span class="icon">⚙️</span>
         <span class="label">位置设置</span>
       </button>
@@ -128,36 +128,22 @@ export default {
   padding: 20px 0;
 }
 
-.action-btn {
+.actions .btn-sm,
+.actions .btn-ghost.btn-sm {
   display: flex;
   align-items: center;
   gap: 16px;
   padding: 20px 24px;
-  border: none;
   border-radius: 16px;
-  background: #fff;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
-  cursor: pointer;
   font-size: 18px;
-  color: #1d1d1f;
-  transition: all 0.15s;
   min-height: 56px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  transition: all 0.15s;
 }
-
-.action-btn:hover {
-  background: #f0f0f5;
+.actions .btn-sm:hover,
+.actions .btn-ghost.btn-sm:hover {
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-}
-
-.action-btn.primary {
-  background: #007aff;
-  color: #fff;
-  box-shadow: 0 4px 14px rgba(0,122,255,0.3);
-}
-
-.action-btn.primary:hover {
-  background: #0066d6;
 }
 
 .icon {

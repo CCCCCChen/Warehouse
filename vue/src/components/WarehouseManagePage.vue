@@ -3,8 +3,8 @@
     <div v-if="!embedded" class="header">
       <h2>录入/管理</h2>
       <div class="header-actions">
-        <router-link class="link" to="/warehouse/items">物品管理</router-link>
-        <router-link class="link ghost" to="/warehouse">主页</router-link>
+        <router-link class="btn" to="/warehouse/items">物品管理</router-link>
+        <router-link class="btn-ghost" to="/warehouse">主页</router-link>
       </div>
     </div>
 
@@ -23,8 +23,9 @@
             <span class="action-card-value">{{ hint || '录入新物品' }}</span>
           </div>
           <div class="action-card-btns">
-            <button type="button" class="action-btn-clear" @click="reset">清空</button>
-            <button type="button" class="action-btn-save" @click="quickCreate">保存</button>
+            <button type="button" class="btn-ghost" @click="$emit('close')">返回</button>
+            <button type="button" class="btn-ghost" @click="reset">清空</button>
+            <button type="button" class="btn" @click="quickCreate">保存</button>
           </div>
         </div>
 
@@ -51,7 +52,7 @@
             <button type="button" :disabled="!ocrFile || ocrLoading" @click="runOcr">
               {{ ocrLoading ? '识别中...' : '识别并填充' }}
             </button>
-            <button type="button" class="ghost-btn" :disabled="ocrLoading" @click="clearOcr">
+            <button type="button" class="btn-ghost" :disabled="ocrLoading" @click="clearOcr">
               清除图片
             </button>
           </div>
@@ -68,6 +69,14 @@
         </div>
 
         <form class="form" @submit.prevent="quickCreate">
+          <div class="form-sticky-bar" v-if="!embedded">
+            <div v-if="hint" class="hint">{{ hint }}</div>
+            <div class="row">
+              <router-link class="btn-ghost" to="/warehouse/items">返回</router-link>
+              <button type="button" class="btn-ghost" @click="reset">清空</button>
+              <button type="submit" class="btn">保存</button>
+            </div>
+          </div>
           <div class="section fold color-core">
             <button class="section-toggle" type="button" @click="toggle('core')">
               <span class="section-title">核心信息</span>
@@ -134,7 +143,7 @@
               </div>
               <div v-if="form.image_path" class="image-preview">
                 <img :src="form.image_path" alt="item" />
-                <button type="button" class="ghost-btn" @click="clearItemImage">清除图片</button>
+                <button type="button" class="btn-ghost" @click="clearItemImage">清除图片</button>
               </div>
             </div>
           </div>
@@ -297,9 +306,9 @@
               <div v-for="(p, idx) in customPairs" :key="idx" class="kv-row">
                 <input v-model.trim="p.k" placeholder="例如：保修期" />
                 <input v-model.trim="p.v" placeholder="例如：2年" />
-                <button type="button" class="ghost-btn" @click="removePair(idx)">移除</button>
+                <button type="button" class="btn-ghost" @click="removePair(idx)">移除</button>
               </div>
-              <button type="button" class="ghost-btn" @click="addPair">新增一行</button>
+              <button type="button" class="btn-ghost" @click="addPair">新增一行</button>
             </div>
           </div>
 
@@ -335,11 +344,13 @@
             </div>
           </div>
 
-          <div class="row">
-            <button type="submit" v-if="!embedded">保存</button>
-            <button type="button" class="ghost-btn" v-if="!embedded" @click="reset">清空</button>
-          </div>
-          <div v-if="hint && !embedded" class="hint">{{ hint }}</div>
+<!--           <div class="form-sticky-bar" v-if="!embedded">
+            <div v-if="hint" class="hint">{{ hint }}</div>
+            <div class="row">
+              <button type="button" class="btn-ghost" @click="reset">清空</button>
+              <button type="submit" class="btn">保存</button>
+            </div>
+          </div> -->
         </form>
       </div>
 
@@ -1144,44 +1155,6 @@ export default {
   gap: 12px;
   flex-shrink: 0;
 }
-.action-btn-save {
-  padding: 10px 28px;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  border-radius: 10px;
-  background: #2563eb;
-  color: #fff;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-  transition: background 0.15s;
-}
-.action-btn-save:hover {
-  background: #1d4ed8;
-}
-.action-btn-save:active {
-  background: #1e40af;
-}
-.action-btn-clear {
-  padding: 10px 24px;
-  font-size: 15px;
-  font-weight: 600;
-  border: 2px solid #e5e7eb;
-  border-radius: 10px;
-  background: #f9fafb;
-  color: #6b7280;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.action-btn-clear:hover {
-  background: #f3f4f6;
-  border-color: #d1d5db;
-  color: #4b5563;
-}
-.action-btn-clear:active {
-  background: #e5e7eb;
-}
-
 /* ─── 回到顶部浮动按钮 ─── */
 .back-top-btn {
   position: fixed;
@@ -1231,19 +1204,6 @@ export default {
   border: 1px solid rgba(0, 0, 0, 0.10);
 }
 
-.link {
-  display: inline-block;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #1f6feb;
-  color: white;
-  text-decoration: none;
-}
-
-.link.ghost {
-  background: #111827;
-}
-
 .grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -1269,6 +1229,22 @@ export default {
 .panel-title {
   font-weight: 800;
   margin-bottom: 10px;
+}
+
+.form-sticky-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 14px;
+  padding: 12px 0;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+.form-sticky-bar .hint {
+  text-align: center;
+  font-size: 13px;
+  margin-bottom: 6px;
 }
 
 .ocr {
@@ -1390,12 +1366,7 @@ textarea {
   margin: 8px 0 0;
 }
 
-.ghost-btn {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 6px 10px;
-  border-radius: 8px;
-}
+
 
 .section {
   border: 1px solid rgba(0, 0, 0, 0.10);
@@ -1565,27 +1536,6 @@ textarea {
     display: flex;
     gap: 10px;
     flex-shrink: 0;
-  }
-  .action-btn-save {
-    padding: 8px 24px;
-    font-size: 15px;
-    font-weight: 700;
-    border: none;
-    border-radius: 10px;
-    background: #2563eb;
-    color: #fff;
-    cursor: pointer;
-    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
-  }
-  .action-btn-clear {
-    padding: 8px 20px;
-    font-size: 14px;
-    font-weight: 600;
-    border: 2px solid #e5e7eb;
-    border-radius: 10px;
-    background: #f9fafb;
-    color: #6b7280;
-    cursor: pointer;
   }
 
   .back-top-btn {

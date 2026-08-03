@@ -1,0 +1,2282 @@
+
+> vue@0.1.0 serve
+> vue-cli-service serve
+
+ INFO  Starting development server...
+[3%] setup (watch run)
+[2K[1A[2K[G[3%] setup (watch run vue-loader-plugin)
+[2K[1A[2K[G[3%] setup (watch run ESLintWebpackPlugin_1)
+[2K[1A[2K[G[3%] setup (watch run webpack-dev-middleware)
+[2K[1A[2K[G[3%] setup (watch run)
+[2K[1A[2K[G[4%] setup (normal module factory)
+[2K[1A[2K[G[4%] setup (normal module factory CaseSensitivePathsPlugin)
+[2K[1A[2K[G[4%] setup (normal module factory)
+[2K[1A[2K[G[5%] setup (context module factory)
+[2K[1A[2K[G[6%] setup (before compile)
+[2K[1A[2K[G[6%] setup (before compile ProgressPlugin)
+[2K[1A[2K[G[6%] setup (before compile)
+[2K[1A[2K[G[7%] setup (compile)
+[2K[1A[2K[G[7%] setup (compile ExternalsPlugin)
+[2K[1A[2K[G[7%] setup (compile)
+[2K[1A[2K[G[8%] setup (compilation)
+[2K[1A[2K[G[8%] setup (compilation HtmlWebpackPlugin)
+[2K[1A[2K[G[8%] setup (compilation CopyPlugin)
+[2K[1A[2K[G[8%] setup (compilation ArrayPushCallbackChunkFormatPlugin)
+[2K[1A[2K[G[8%] setup (compilation JsonpChunkLoadingPlugin)
+[2K[1A[2K[G[8%] setup (compilation StartupChunkDependenciesPlugin)
+[2K[1A[2K[G[8%] setup (compilation ImportScriptsChunkLoadingPlugin)
+[2K[1A[2K[G[8%] setup (compilation WorkerPlugin)
+[2K[1A[2K[G[8%] setup (compilation SplitChunksPlugin)
+[2K[1A[2K[G[8%] setup (compilation ResolverCachePlugin)
+[2K[1A[2K[G[8%] setup (compilation)
+[2K[1A[2K[G[9%] setup (compilation)
+[2K[1A[2K[G[9%] setup (compilation vue-loader-plugin)
+[2K[1A[2K[G[9%] setup (compilation DefinePlugin)
+[2K[1A[2K[G[9%] setup (compilation ProgressPlugin)
+[2K[1A[2K[G[9%] setup (compilation EntryPlugin)
+[2K[1A[2K[G[9%] setup (compilation ExternalsPlugin)
+[2K[1A[2K[G[9%] setup (compilation ChunkPrefetchPreloadPlugin)
+[2K[1A[2K[G[9%] setup (compilation ModuleInfoHeaderPlugin)
+[2K[1A[2K[G[9%] setup (compilation EvalSourceMapDevToolPlugin)
+[2K[1A[2K[G[9%] setup (compilation JavascriptModulesPlugin)
+[2K[1A[2K[G[9%] setup (compilation JsonModulesPlugin)
+[2K[1A[2K[G[9%] setup (compilation AssetModulesPlugin)
+[2K[1A[2K[G[9%] setup (compilation EntryPlugin)
+[2K[1A[2K[G[9%] setup (compilation RuntimePlugin)
+[2K[1A[2K[G[9%] setup (compilation InferAsyncModulesPlugin)
+[2K[1A[2K[G[9%] setup (compilation DataUriPlugin)
+[2K[1A[2K[G[9%] setup (compilation FileUriPlugin)
+[2K[1A[2K[G[9%] setup (compilation CompatibilityPlugin)
+[2K[1A[2K[G[9%] setup (compilation HarmonyModulesPlugin)
+[2K[1A[2K[G[9%] setup (compilation AMDPlugin)
+[2K[1A[2K[G[9%] setup (compilation RequireJsStuffPlugin)
+[2K[1A[2K[G[9%] setup (compilation CommonJsPlugin)
+[2K[1A[2K[G[9%] setup (compilation LoaderPlugin)
+[2K[1A[2K[G[9%] setup (compilation NodeStuffPlugin)
+[2K[1A[2K[G[9%] setup (compilation APIPlugin)
+[2K[1A[2K[G[9%] setup (compilation ExportsInfoApiPlugin)
+[2K[1A[2K[G[9%] setup (compilation WebpackIsIncludedPlugin)
+[2K[1A[2K[G[9%] setup (compilation ConstPlugin)
+[2K[1A[2K[G[9%] setup (compilation UseStrictPlugin)
+[2K[1A[2K[G[9%] setup (compilation RequireIncludePlugin)
+[2K[1A[2K[G[9%] setup (compilation RequireEnsurePlugin)
+[2K[1A[2K[G[9%] setup (compilation RequireContextPlugin)
+[2K[1A[2K[G[9%] setup (compilation ImportPlugin)
+[2K[1A[2K[G[9%] setup (compilation ImportMetaContextPlugin)
+[2K[1A[2K[G[9%] setup (compilation SystemPlugin)
+[2K[1A[2K[G[9%] setup (compilation ImportMetaPlugin)
+[2K[1A[2K[G[9%] setup (compilation URLPlugin)
+[2K[1A[2K[G[9%] setup (compilation DefaultStatsFactoryPlugin)
+[2K[1A[2K[G[9%] setup (compilation DefaultStatsPresetPlugin)
+[2K[1A[2K[G[9%] setup (compilation DefaultStatsPrinterPlugin)
+[2K[1A[2K[G[9%] setup (compilation JavascriptMetaInfoPlugin)
+[2K[1A[2K[G[9%] setup (compilation EnsureChunkConditionsPlugin)
+[2K[1A[2K[G[9%] setup (compilation RemoveEmptyChunksPlugin)
+[2K[1A[2K[G[9%] setup (compilation MergeDuplicateChunksPlugin)
+[2K[1A[2K[G[9%] setup (compilation SideEffectsFlagPlugin)
+[2K[1A[2K[G[9%] setup (compilation FlagDependencyExportsPlugin)
+[2K[1A[2K[G[9%] setup (compilation NamedModuleIdsPlugin)
+[2K[1A[2K[G[9%] setup (compilation NamedChunkIdsPlugin)
+[2K[1A[2K[G[9%] setup (compilation DefinePlugin)
+[2K[1A[2K[G[9%] setup (compilation TemplatedPathPlugin)
+[2K[1A[2K[G[9%] setup (compilation RecordIdsPlugin)
+[2K[1A[2K[G[9%] setup (compilation WarnCaseSensitiveModulesPlugin)
+[2K[1A[2K[G[9%] setup (compilation EntryPlugin)
+[2K[1A[2K[G[9%] setup (compilation ProvidePlugin)
+[2K[1A[2K[G[9%] setup (compilation HotModuleReplacementPlugin)
+[2K[1A[2K[G[9%] setup (compilation ProgressPlugin)
+[2K[1A[2K[G[9%] setup (compilation ESLintWebpackPlugin_1)
+[2K[1A[2K[G[9%] setup (compilation)
+[2K[1A[2K[G[10%] building 
+[2K[1A[2K[G[10%] building (0/0 modules)
+[2K[1A[2K[G[10%] building (import loader babel-loader/lib/index.js)
+[2K[1A[2K[G[10%] building (0/5 modules)
+[2K[1A[2K[G[24%] building (12/21 modules)
+[2K[1A[2K[G[24%] building (import loader vue-loader/dist/index.js)
+[2K[1A[2K[G[24%] building (17/24 modules)
+[2K[1A[2K[G[24%] building (import loader vue-style-loader/index.js)
+[2K[1A[2K[G[24%] building (import loader css-loader/dist/cjs.js)
+[2K[1A[2K[G[24%] building (import loader postcss-loader/dist/cjs.js)
+[2K[1A[2K[G[24%] building (17/27 modules)
+[2K[1A[2K[G[24%] building (import loader vue-loader/dist/pitcher.js)
+[2K[1A[2K[G[24%] building (18/31 modules)
+[2K[1A[2K[G[24%] building (import loader vue-loader/dist/templateLoader.js)
+[2K[1A[2K[G[24%] building (18/32 modules)
+[2K[1A[2K[G[24%] building (import loader vue-loader/dist/stylePostLoader.js)
+[2K[1A[2K[G[24%] building (18/37 modules)
+[2K[1A[2K[G[38%] building (24/42 modules)
+[2K[1A[2K[G[51%] building (32/54 modules)
+[2K[1A[2K[G[51%] building (163/257 modules)
+[2K[1A[2K[G[65%] building (270/270 modules)
+[2K[1A[2K[G[65%] building 
+[2K[1A[2K[G[69%] building (finish)
+[2K[1A[2K[G[70%] sealing (finish module graph)
+[2K[1A[2K[G[70%] sealing (finish module graph ResolverCachePlugin)
+[2K[1A[2K[G[70%] sealing (finish module graph InferAsyncModulesPlugin)
+[2K[1A[2K[G[70%] sealing (finish module graph FlagDependencyExportsPlugin)
+[2K[1A[2K[G[70%] sealing (finish module graph ESLintWebpackPlugin_1)
+[2K[1A[2K[G[70%] sealing (finish module graph)
+[2K[1A[2K[G[71%] sealing (plugins)
+[2K[1A[2K[G[71%] sealing (plugins WarnCaseSensitiveModulesPlugin)
+[2K[1A[2K[G[71%] sealing (plugins)
+[2K[1A[2K[G[71%] sealing (dependencies optimization)
+[2K[1A[2K[G[71%] sealing (dependencies optimization SideEffectsFlagPlugin)
+[2K[1A[2K[G[71%] sealing (dependencies optimization)
+[2K[1A[2K[G[72%] sealing (after dependencies optimization)
+[2K[1A[2K[G[73%] sealing (chunk graph)
+[2K[1A[2K[G[73%] sealing (after chunk graph)
+[2K[1A[2K[G[74%] sealing (optimizing)
+[2K[1A[2K[G[74%] sealing (module optimization)
+[2K[1A[2K[G[75%] sealing (after module optimization)
+[2K[1A[2K[G[76%] sealing (chunk optimization)
+[2K[1A[2K[G[76%] sealing (chunk optimization EnsureChunkConditionsPlugin)
+[2K[1A[2K[G[76%] sealing (chunk optimization RemoveEmptyChunksPlugin)
+[2K[1A[2K[G[76%] sealing (chunk optimization MergeDuplicateChunksPlugin)
+[2K[1A[2K[G[76%] sealing (chunk optimization SplitChunksPlugin)
+[2K[1A[2K[G[76%] sealing (chunk optimization RemoveEmptyChunksPlugin)
+[2K[1A[2K[G[76%] sealing (chunk optimization)
+[2K[1A[2K[G[76%] sealing (after chunk optimization)
+[2K[1A[2K[G[77%] sealing (module and chunk tree optimization)
+[2K[1A[2K[G[77%] sealing (module and chunk tree optimization PersistentChildCompilerSinglet
+onPlugin)
+[2K[1A[2K[1A[2K[G[77%] sealing (module and chunk tree optimization)
+[2K[1A[2K[G[78%] sealing (after module and chunk tree optimization)
+[2K[1A[2K[G[78%] sealing (chunk modules optimization)
+[2K[1A[2K[G[79%] sealing (after chunk modules optimization)
+[2K[1A[2K[G[80%] sealing (module reviving)
+[2K[1A[2K[G[80%] sealing (module reviving RecordIdsPlugin)
+[2K[1A[2K[G[80%] sealing (module reviving)
+[2K[1A[2K[G[80%] sealing (before module ids)
+[2K[1A[2K[G[81%] sealing (module ids)
+[2K[1A[2K[G[81%] sealing (module ids NamedModuleIdsPlugin)
+[2K[1A[2K[G[81%] sealing (module ids)
+[2K[1A[2K[G[82%] sealing (module id optimization)
+[2K[1A[2K[G[82%] sealing (module id optimization)
+[2K[1A[2K[G[83%] sealing (chunk reviving)
+[2K[1A[2K[G[83%] sealing (chunk reviving RecordIdsPlugin)
+[2K[1A[2K[G[83%] sealing (chunk reviving)
+[2K[1A[2K[G[83%] sealing (before chunk ids)
+[2K[1A[2K[G[84%] sealing (chunk ids)
+[2K[1A[2K[G[84%] sealing (chunk ids NamedChunkIdsPlugin)
+[2K[1A[2K[G[84%] sealing (chunk ids)
+[2K[1A[2K[G[85%] sealing (chunk id optimization)
+[2K[1A[2K[G[85%] sealing (after chunk id optimization)
+[2K[1A[2K[G[86%] sealing (record modules)
+[2K[1A[2K[G[86%] sealing (record modules RecordIdsPlugin)
+[2K[1A[2K[G[86%] sealing (record modules)
+[2K[1A[2K[G[87%] sealing (record chunks)
+[2K[1A[2K[G[87%] sealing (record chunks RecordIdsPlugin)
+[2K[1A[2K[G[87%] sealing (record chunks)
+[2K[1A[2K[G[87%] sealing (module hashing)
+[2K[1A[2K[G[88%] sealing (code generation)
+[2K[1A[2K[G[89%] sealing (runtime requirements)
+[2K[1A[2K[G[89%] sealing (hashing)
+[2K[1A[2K[G[90%] sealing (after hashing)
+[2K[1A[2K[G[91%] sealing (record hash)
+[2K[1A[2K[G[91%] sealing (module assets processing)
+[2K[1A[2K[G[92%] sealing (chunk assets processing)
+[2K[1A[2K[G[92%] sealing (asset processing)
+[2K[1A[2K[G[92%] sealing (asset processing copy-webpack-plugin)
+[2K[1A[2K[G[92%] sealing (asset processing HotModuleReplacementPlugin)
+[2K[1A[2K[G[92%] sealing (asset processing ESLintWebpackPlugin_1)
+[2K[1A[2K[G[92%] sealing (asset processing PersistentChildCompilerSingletonPlugin)
+[2K[1A[2K[G[92%] sealing (asset processing HtmlWebpackPlugin)
+[2K[1A[2K[G[92%] sealing (asset processing)
+[2K[1A[2K[G[93%] sealing (after asset optimization)
+[2K[1A[2K[G[94%] sealing (recording)
+[2K[1A[2K[G[94%] sealing (recording HotModuleReplacementPlugin)
+[2K[1A[2K[G[94%] sealing (recording)
+[2K[1A[2K[G[94%] sealing (after seal)
+[2K[1A[2K[G[95%] emitting (emit)
+[2K[1A[2K[G[98%] emitting (after emit)
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[G ERROR  Failed to compile with 70 errors15:30:37
+
+[eslint] 
+E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue
+   23:56   error  Parsing error: Unterminated string constant. (1:11)    vue/no-parsing-error
+   42:25   error  Parsing error: missing-whitespace-between-attributes   vue/no-parsing-error
+   42:30   error  Parsing error: unexpected-character-in-attribute-name  vue/no-parsing-error
+   50:43   error  Parsing error: Unterminated string constant. (1:28)    vue/no-parsing-error
+   82:36   error  Parsing error: missing-whitespace-between-attributes   vue/no-parsing-error
+   82:48   error  Parsing error: unexpected-character-in-attribute-name  vue/no-parsing-error
+   85:19   error  Parsing error: x-invalid-end-tag                       vue/no-parsing-error
+  131:26   error  Parsing error: missing-whitespace-between-attributes   vue/no-parsing-error
+  131:41   error  Parsing error: unexpected-character-in-attribute-name  vue/no-parsing-error
+  259:112  error  Parsing error: missing-whitespace-between-attributes   vue/no-parsing-error
+  259:130  error  Parsing error: unexpected-character-in-attribute-name  vue/no-parsing-error
+  290:31   error  Parsing error: missing-whitespace-between-attributes   vue/no-parsing-error
+  290:37   error  Parsing error: unexpected-character-in-attribute-name  vue/no-parsing-error
+  290:85   error  Parsing error: x-invalid-end-tag                       vue/no-parsing-error
+  309:40   error  Parsing error: missing-whitespace-between-attributes   vue/no-parsing-error
+  309:52   error  Parsing error: unexpected-character-in-attribute-name  vue/no-parsing-error
+  309:54   error  Parsing error: duplicate-attribute                     vue/no-parsing-error
+  309:54   error  Duplicate attribute 'placeholder'                      vue/no-duplicate-attributes
+  313:40   error  Parsing error: missing-whitespace-between-attributes   vue/no-parsing-error
+  313:49   error  Parsing error: unexpected-character-in-attribute-name  vue/no-parsing-error
+  313:51   error  Parsing error: duplicate-attribute                     vue/no-parsing-error
+  313:51   error  Duplicate attribute 'placeholder'                      vue/no-duplicate-attributes
+  321:29   error  Parsing error: missing-whitespace-between-attributes   vue/no-parsing-error
+  321:33   error  Parsing error: unexpected-character-in-attribute-name  vue/no-parsing-error
+  332:54   error  Unexpected mustache. Use 'v-model' instead             vue/no-textarea-mustache
+
+E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehousePage.vue
+  81:15  error  'name' is assigned a value but never used  no-unused-vars
+
+E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue
+  96:14  error  Parsing error: Unterminated string constant. (13:14)
+
+✖ 27 problems (27 errors, 0 warnings)
+
+
+You may use special comments to disable some warnings.
+Use // eslint-disable-next-line to ignore the next line.
+Use /* eslint-disable */ to ignore all warnings in a file.
+ error  in ./src/components/AreaMapTest.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\AreaMapTest.vue:67:11
+65 |            <div class="strong">缂栬緫閫変腑鍖哄煙</div>
+66 |            <label>鍚嶇О <input v-model.trim="rooms[selectedRoomIndex].name" /></label>
+67 |            <button class="danger-btn" @click="deleteRoom(selectedRoomIndex)">鍒犻櫎姝ゅ尯鍩?/button>
+   |            ^
+68 |          </div>
+69 |        </div>
+
+
+ error  in ./src/components/AreaMapTest.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\AreaMapTest.vue:80:9
+78 |            </div>
+79 |          </div>
+80 |          <div v-if="selectedRoomIndex === null" class="muted">璇峰厛鍦ㄥ乏渚ч€夋嫨涓€涓尯鍩熴€?/div>
+   |          ^
+81 |          <div v-else>
+82 |            <div class="strong mb-2">褰撳墠鍖哄煙锛歿{ rooms[selectedRoomIndex].name }}</div>
+
+
+ error  in ./src/components/AreaMapTest.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\AreaMapTest.vue:160:9
+158|        <div class="json-actions mb-2">
+159|          <button class="btn-ghost" type="button" :disabled="loading" @click="exportAreaJson">涓嬭浇褰撳墠JSON</button>
+160|          <button class="btn-ghost" type="button" :disabled="loading" @click="applyPastedJson">绮樿创JSON骞跺簲鐢?/button>
+   |          ^
+161|        </div>
+162|        <textarea v-model.trim="pastedJson" class="json-text" placeholder="鍦ㄦ绮樿创 JSON..."></textarea>
+
+
+ error  in ./src/components/InitPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:81:24
+79 |            <input v-model.trim="createForm.name" placeholder="渚嬪锛氬閲? />
+80 |          </label>
+81 |          <div class="row">
+   |                         ^
+82 |            <button type="button" :disabled="creating || !createForm.name" @click="createHousehold">
+83 |              {{ creating ? '鍒涘缓涓?..' : '鍒涘缓' }}
+
+
+ error  in ./src/components/InitPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:2:3
+1  |  <template>
+2  |    <div class="page">
+   |    ^
+3  |      <div class="header">
+4  |        <h2>瀹跺涵閫夋嫨 / 鍒囨崲</h2>
+
+
+ error  in ./src/components/InitPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:30:9
+28 |        >
+29 |          <div class="card-title">鎺ョ榛樿瀹跺涵</div>
+30 |          <div class="card-sub">鍘嗗彶鏁版嵁锛歿{ status.default_items_count }} 鏉＄墿鍝?/div>
+   |          ^
+31 |          <div class="badge danger">{{ adopting ? '澶勭悊涓?..' : '鍙帴绠? }}</div>
+32 |        </button>
+
+
+ error  in ./src/components/InitPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:77:9
+75 |        <div class="modal">
+76 |          <div class="modal-title">鍒涘缓瀹跺涵</div>
+77 |          <label class="full">
+   |          ^
+78 |            瀹跺涵鍚嶇О
+79 |            <input v-model.trim="createForm.name" placeholder="渚嬪锛氬閲? />
+
+
+ error  in ./src/components/InitPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:136:11
+134|          <div class="row">
+135|            <button type="button" @click="copy(issuedToken)">澶嶅埗</button>
+136|            <button type="button" class="btn-ghost" @click="enterAfterIssued">鎴戝凡淇濆瓨锛岃繘鍏?/button>
+   |            ^
+137|          </div>
+138|        </div>
+
+
+ error  in ./src/components/InitPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Error parsing JavaScript expression: Unterminated string constant. (1:21)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:41:18
+39 |            <button class="card session" type="button" :disabled="loggingIn" @click="selectSession(s)">
+40 |              <div class="card-title">
+41 |                {{ s.household_name || '鏈懡鍚嶅搴? }}
+   |                   ^
+42 |                <span v-if="isCurrent(s)" class="badge">褰撳墠</span>
+43 |              </div>
+
+
+ error  in ./src/components/InitPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Error parsing JavaScript expression: Unterminated string constant. (1:21)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:62:18
+60 |            <button class="card session" type="button" :disabled="loggingIn" @click="selectSession(h)">
+61 |              <div class="card-title">
+62 |                {{ h.household_name || '鏈懡鍚嶅搴? }}
+   |                   ^
+63 |                <span v-if="isCurrent(h)" class="badge">褰撳墠</span>
+64 |              </div>
+
+
+ error  in ./src/components/InitPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Error parsing JavaScript expression: Unterminated string constant. (1:24)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:31:38
+29 |          <div class="card-title">鎺ョ榛樿瀹跺涵</div>
+30 |          <div class="card-sub">鍘嗗彶鏁版嵁锛歿{ status.default_items_count }} 鏉＄墿鍝?/div>
+31 |          <div class="badge danger">{{ adopting ? '澶勭悊涓?..' : '鍙帴绠? }}</div>
+   |                                       ^
+32 |        </button>
+33 |  
+
+
+ error  in ./src/components/LlmTestPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\LlmTestPage.vue:11:7
+9  |  
+10 |      <div class="frame">
+11 |        <div class="panel">
+   |        ^
+12 |          <div class="panel-title">鐘舵€?/div>
+13 |          <div class="row">
+
+
+ error  in ./src/components/LlmTestPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\LlmTestPage.vue:14:11
+12 |          <div class="panel-title">鐘舵€?/div>
+13 |          <div class="row">
+14 |            <button @click="fetchStatus">鍒锋柊鐘舵€?/button>
+   |            ^
+15 |          </div>
+16 |          <pre class="pre">{{ statusText }}</pre>
+
+
+ error  in ./src/components/SettingsPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:10:5
+8  |      </div>
+9  |  
+10 |      <div class="grid">
+   |      ^
+11 |        <div class="panel">
+12 |          <div class="panel-title">褰撳墠韬唤</div>
+
+
+ error  in ./src/components/SettingsPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:68:13
+66 |            </label>
+67 |            <details class="details">
+68 |              <summary>鐗╁搧涓庡綍鍏ュ瓧娈甸厤缃?/summary>
+   |              ^
+69 |              <div class="details-body">
+70 |                <label class="full">
+
+
+ error  in ./src/components/SettingsPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:91:17
+89 |              <div class="details-body">
+90 |                <div class="row">
+91 |                  <router-link class="link" to="/warehouse/map-test">鎵撳紑鍖哄煙璁剧疆娴嬭瘯椤?/router-link>
+   |                  ^
+92 |                </div>
+93 |                <label class="full">
+
+
+ error  in ./src/components/SettingsPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Error parsing JavaScript expression: Unterminated string constant. (1:26)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:40:50
+38 |            <li v-for="i in invites" :key="i.id" class="list-item">
+39 |              <div class="left">
+40 |                <div class="strong">#{{ i.id }} {{ i.revoked ? '锛堝凡鎾ら攢锛? : '' }}</div>
+   |                                                   ^
+41 |                <div class="muted">expires_at: {{ i.expires_at }}</div>
+42 |                <div class="muted">used: {{ i.used_count }}/{{ i.max_uses }}</div>
+
+
+ error  in ./src/components/SettingsPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Error parsing JavaScript expression: Unterminated string constant. (1:26)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:112:68
+110|            <li v-for="m in members" :key="m.id" class="list-item">
+111|              <div class="left">
+112|                <div class="strong">#{{ m.id }} role={{ m.role }} {{ m.revoked ? '锛堝凡鎾ら攢锛? : '' }}</div>
+   |                                                                     ^
+113|                <div class="muted">{{ m.created_at }}</div>
+114|              </div>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:42:30
+40 |              </label>
+41 |            </div>
+42 |            <label class="check">
+   |                               ^
+43 |              <input v-model="ocrUseAsItemImage" type="checkbox" />
+44 |              鍚屾椂淇濆瓨涓虹墿鍝佸浘鐗?          </label>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:82:48
+80 |                  <label>
+81 |                    澶х被
+82 |                    <select v-model="form.type_l1" @change="onTypeL1Change">
+   |                                                 ^
+83 |                      <option value="">鏈缃?/option>
+84 |                      <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:131:41
+129|                  </label>
+130|                </div>
+131|                <div v-if="form.image_path" class="image-preview">
+   |                                          ^
+132|                  <img :src="form.image_path" alt="item" />
+133|                  <button type="button" class="btn-ghost" @click="clearItemImage">娓呴櫎鍥剧墖</button>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:259:130
+257|                  </label>
+258|                  <label class="grow">
+259|                    璐ｄ换浜?                  <input v-model.trim="form.responsible_person" placeholder="鍙€? list="responsible-people" />
+   |                                                                                                                                   ^
+260|                    <datalist id="responsible-people">
+261|                      <option v-for="p in responsiblePeopleOptions" :key="p" :value="p"></option>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:290:37
+288|                  <input v-model.trim="p.k" placeholder="渚嬪锛氫繚淇湡" />
+289|                  <input v-model.trim="p.v" placeholder="渚嬪锛?骞? />
+290|                  <button type="button" class="btn-ghost" @click="removePair(idx)">绉婚櫎</button>
+   |                                      ^
+291|                </div>
+292|                <button type="button" class="btn-ghost" @click="addPair">鏂板涓€琛?/button>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:309:52
+307|                  <label>
+308|                    鏉＄爜
+309|                    <input v-model.trim="form.barcode" placeholder="鍙€? />
+   |                                                     ^
+310|                  </label>
+311|                  <label>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:313:49
+311|                  <label>
+312|                    鏍囩
+313|                    <input v-model.trim="form.tags" placeholder="鍘ㄦ埧,甯哥敤" />
+   |                                                  ^
+314|                  </label>
+315|                </div>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:321:33
+319|                  <textarea v-model.trim="form.notes" rows="2" placeholder="鍙€?></textarea>
+320|                </label>
+321|                <label class="full">
+   |                                  ^
+322|                  鎻忚堪
+323|                  <input v-model.trim="form.description" placeholder="鍙€? />
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Duplicate attribute.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:309:54
+307|                  <label>
+308|                    鏉＄爜
+309|                    <input v-model.trim="form.barcode" placeholder="鍙€? />
+   |                                                       ^
+310|                  </label>
+311|                  <label>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Duplicate attribute.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:313:51
+311|                  <label>
+312|                    鏍囩
+313|                    <input v-model.trim="form.tags" placeholder="鍘ㄦ埧,甯哥敤" />
+   |                                                    ^
+314|                  </label>
+315|                </div>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:1:1
+1  |  <template>
+   |  ^
+2  |    <div class="page" :class="{ embedded }">
+3  |      <div v-if="!embedded" class="header">
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:2:3
+1  |  <template>
+2  |    <div class="page" :class="{ embedded }">
+   |    ^
+3  |      <div v-if="!embedded" class="header">
+4  |        <h2>褰曞叆/绠＄悊</h2>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:16:5
+14 |      </div>
+15 |  
+16 |      <div class="grid" :class="{ single: embedded }">
+   |      ^
+17 |        <div class="panel">
+18 |          <div class="panel-title">蹇€熷綍鍏?/div>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:17:7
+15 |  
+16 |      <div class="grid" :class="{ single: embedded }">
+17 |        <div class="panel">
+   |        ^
+18 |          <div class="panel-title">蹇€熷綍鍏?/div>
+19 |  
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:18:9
+16 |      <div class="grid" :class="{ single: embedded }">
+17 |        <div class="panel">
+18 |          <div class="panel-title">蹇€熷綍鍏?/div>
+   |          ^
+19 |  
+20 |          <div v-if="embedded" class="action-card" ref="actionCard">
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:22:13
+20 |          <div v-if="embedded" class="action-card" ref="actionCard">
+21 |            <div class="action-card-status">
+22 |              <span class="action-card-label">鐘舵€?/span>
+   |              ^
+23 |              <span class="action-card-value">{{ hint || '褰曞叆鏂扮墿鍝? }}</span>
+24 |            </div>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:31:9
+29 |          </div>
+30 |  
+31 |          <div class="ocr">
+   |          ^
+32 |            <div class="ocr-title">鍥剧墖璇嗗埆褰曞叆</div>
+33 |            <div class="row">
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:68:9
+66 |          </div>
+67 |  
+68 |          <form class="form" @submit.prevent="quickCreate">
+   |          ^
+69 |            <div class="section fold color-core">
+70 |              <button class="section-toggle" type="button" @click="toggle('core')">
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:83:21
+81 |                    澶х被
+82 |                    <select v-model="form.type_l1" @change="onTypeL1Change">
+83 |                      <option value="">鏈缃?/option>
+   |                      ^
+84 |                      <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
+85 |                    </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:90:21
+88 |                    瀛愮被
+89 |                    <select v-model="form.type_l2">
+90 |                      <option value="">鏈缃?/option>
+   |                      ^
+91 |                      <option v-for="t in typeL2Options" :key="t" :value="t">{{ t }}</option>
+92 |                    </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:108:21
+106|                    鍗曚綅
+107|                    <select v-model="form.unit">
+108|                      <option value="">鏈缃?/option>
+   |                      ^
+109|                      <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
+110|                    </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:126:17
+124|                    <input type="file" accept="image/*" @change="onPickItemImage" />
+125|                  </label>
+126|                  <label class="grow">
+   |                  ^
+127|                    鍥剧墖鍦板潃
+128|                    <input v-model.trim="form.image_path" placeholder="涓婁紶鍚庤嚜鍔ㄥ～鍏? />
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:166:21
+164|                    鍖哄煙
+165|                    <select v-model="form.room" :disabled="locationFieldsDisabled" @change="onRoomChange">
+166|                      <option value="">鏈缃?/option>
+   |                      ^
+167|                      <option v-for="r in areaRoomOptions" :key="r" :value="r">{{ r }}</option>
+168|                    </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:174:23
+172|                      澧欓潰
+173|                      <select v-model="form.wall_side" :disabled="locationFieldsDisabled" @change="onWallChange">
+174|                        <option value="">鏈缃?/option>
+   |                        ^
+175|                        <option v-for="w in wallSideOptions" :key="w.value" :value="w.value">{{ w.label }}</option>
+176|                      </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:180:23
+178|                    <label class="grow">
+179|                      鏀剁撼浣?                    <select v-model="form.wall_slot" :disabled="locationFieldsDisabled">
+180|                        <option value="">鏈缃?/option>
+   |                        ^
+181|                        <option v-for="s in wallSlotOptions" :key="s" :value="s">{{ s }}</option>
+182|                      </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:187:21
+185|                  <label v-else class="grow">
+186|                    鏀剁撼浣?                  <select v-model="form.spot" :disabled="locationFieldsDisabled">
+187|                      <option value="">鏈缃?/option>
+   |                      ^
+188|                      <option v-for="s in spotOptions" :key="s" :value="s">{{ s }}</option>
+189|                    </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:201:15
+199|            <div class="section fold color-status">
+200|              <button class="section-toggle" type="button" @click="toggle('status')">
+201|                <span class="section-title">鐘舵€佸睘鎬т俊鎭?/span>
+   |                ^
+202|                <span class="toggle-text">{{ uiFold.status ? '灞曞紑' : '鏀惰捣' }}</span>
+203|              </button>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:208:21
+206|                  <label>
+207|                    浣跨敤鐘舵€?                  <select v-model="form.usage_status">
+208|                      <option value="">鏈缃?/option>
+   |                      ^
+209|                      <option v-for="s in usageStatusOptions" :key="s" :value="s">{{ s }}</option>
+210|                    </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:215:21
+213|                    鎵€鏈夋潈
+214|                    <select v-model="form.ownership">
+215|                      <option value="">鏈缃?/option>
+   |                      ^
+216|                      <option v-for="o in ownershipOptions" :key="o" :value="o">{{ o }}</option>
+217|                    </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:246:15
+244|            <div class="section fold color-dynamic">
+245|              <button class="section-toggle" type="button" @click="toggle('dynamic')">
+246|                <span class="section-title">鍔ㄦ€佺淮搴?/span>
+   |                ^
+247|                <span class="toggle-text">{{ uiFold.dynamic ? '灞曞紑' : '鏀惰捣' }}</span>
+248|              </button>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:254:21
+252|                    浣跨敤棰戠巼
+253|                    <select v-model="form.usage_frequency">
+254|                      <option value="">鏈缃?/option>
+   |                      ^
+255|                      <option v-for="f in usageFrequencyOptions" :key="f" :value="f">{{ f }}</option>
+256|                    </select>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:276:11
+274|            </div>
+275|  
+276|            <div class="section fold color-custom">
+   |            ^
+277|              <button class="section-toggle" type="button" @click="toggle('custom')">
+278|                <span class="section-title">鍏朵粬灞炴€э紙鍏佽鑷畾涔夛級</span>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:281:13
+279|                <span class="toggle-text">{{ uiFold.custom ? '灞曞紑' : '鏀惰捣' }}</span>
+280|              </button>
+281|              <div v-if="!uiFold.custom" class="section-body">
+   |              ^
+282|                <div class="kv-head">
+283|                  <div>閿?/div>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:292:15
+290|                  <button type="button" class="btn-ghost" @click="removePair(idx)">绉婚櫎</button>
+291|                </div>
+292|                <button type="button" class="btn-ghost" @click="addPair">鏂板涓€琛?/button>
+   |                ^
+293|              </div>
+294|            </div>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:296:11
+294|            </div>
+295|  
+296|            <div class="section fold">
+   |            ^
+297|              <button class="section-toggle" type="button" @click="toggle('other')">
+298|                <span class="section-title">鍏朵粬</span>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:301:13
+299|                <span class="toggle-text">{{ uiFold.other ? '灞曞紑' : '鏀惰捣' }}</span>
+300|              </button>
+301|              <div v-if="!uiFold.other" class="section-body">
+   |              ^
+302|                <div class="row">
+303|                  <label>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:317:15
+315|                </div>
+316|  
+317|                <label class="full">
+   |                ^
+318|                  澶囨敞
+319|                  <textarea v-model.trim="form.notes" rows="2" placeholder="鍙€?></textarea>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:319:17
+317|                <label class="full">
+318|                  澶囨敞
+319|                  <textarea v-model.trim="form.notes" rows="2" placeholder="鍙€?></textarea>
+   |                  ^
+320|                </label>
+321|                <label class="full">
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Error parsing JavaScript expression: Unterminated string constant. (1:9)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:23:48
+21 |            <div class="action-card-status">
+22 |              <span class="action-card-label">鐘舵€?/span>
+23 |              <span class="action-card-value">{{ hint || '褰曞叆鏂扮墿鍝? }}</span>
+   |                                                 ^
+24 |            </div>
+25 |            <div class="action-card-btns">
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Error parsing JavaScript expression: Unterminated string constant. (1:26)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:50:18
+48 |            <div class="row">
+49 |              <button type="button" :disabled="!ocrFile || ocrLoading" @click="runOcr">
+50 |                {{ ocrLoading ? '璇嗗埆涓?..' : '璇嗗埆骞跺～鍏? }}
+   |                   ^
+51 |              </button>
+52 |              <button type="button" class="btn-ghost" :disabled="ocrLoading" @click="clearOcr">
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Invalid end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:85:19
+83 |                      <option value="">鏈缃?/option>
+84 |                      <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
+85 |                    </select>
+   |                    ^
+86 |                  </label>
+87 |                  <label>
+
+
+ error  in ./src/components/WarehouseManagePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Invalid end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:290:85
+288|                  <input v-model.trim="p.k" placeholder="渚嬪锛氫繚淇湡" />
+289|                  <input v-model.trim="p.v" placeholder="渚嬪锛?骞? />
+290|                  <button type="button" class="btn-ghost" @click="removePair(idx)">绉婚櫎</button>
+   |                                                                                      ^
+291|                </div>
+292|                <button type="button" class="btn-ghost" @click="addPair">鏂板涓€琛?/button>
+
+
+ error  in ./src/components/WarehouseNotice.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseNotice.vue:32:26
+30 |              <input v-model.trim="draft.content" placeholder="渚嬪锛氱焊宸惧揩鐢ㄥ畬浜嗭紝鍛ㄦ湯涓€璧疯ˉ璐? />
+31 |            </label>
+32 |            <div class="row">
+   |                           ^
+33 |              <label class="check">
+34 |                <input v-model="draft.pinned" type="checkbox" />
+
+
+ error  in ./src/components/WarehouseNotice.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseNotice.vue:28:11
+26 |              </label>
+27 |            </div>
+28 |            <label class="full">
+   |            ^
+29 |              鍐呭
+30 |              <input v-model.trim="draft.content" placeholder="渚嬪锛氱焊宸惧揩鐢ㄥ畬浜嗭紝鍛ㄦ湯涓€璧疯ˉ璐? />
+
+
+ error  in ./src/components/WarehouseNotice.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Invalid end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseNotice.vue:40:9
+38 |              <button type="button" class="btn-ghost" @click="resetDraft">娓呯┖</button>
+39 |            </div>
+40 |          </form>
+   |          ^
+41 |        </div>
+42 |  
+
+
+ error  in ./src/components/WarehouseNotice.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Invalid end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseNotice.vue:64:3
+62 |        </div>
+63 |      </div>
+64 |    </div>
+   |    ^
+65 |  </template>
+66 |  
+
+
+ error  in ./src/components/WarehousePage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehousePage.vue:19:13
+17 |              <router-link class="nav-btn" to="/warehouse/outbound">鍑哄簱</router-link>
+18 |              <router-link class="nav-btn" to="/warehouse/items">鐗╁搧绠＄悊</router-link>
+19 |              <router-link class="nav-btn" to="/warehouse/manage">蹇€熷綍鍏?/router-link>
+   |              ^
+20 |              <router-link class="nav-btn" to="/warehouse/notice">鍏憡</router-link>
+21 |              <router-link class="nav-btn" to="/warehouse/user">鐢ㄦ埛绠＄悊</router-link>
+
+
+ error  in ./src/components/WarehouseUserPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue:28:35
+26 |                <select v-model="newUser.role">
+27 |                  <option value="绠＄悊鍛?>绠＄悊鍛?/option>
+28 |                  <option value="閲囪喘">閲囪喘</option>
+   |                                    ^
+29 |                  <option value="浣跨敤鑰?>浣跨敤鑰?/option>
+30 |                </select>
+
+
+ error  in ./src/components/WarehouseUserPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue:33:29
+31 |              </label>
+32 |            </div>
+33 |            <label class="full">
+   |                              ^
+34 |              澶囨敞
+35 |              <input v-model.trim="newUser.note" placeholder="鍙€夛紝渚嬪锛氳礋璐ｆ棩鐢ㄥ搧琛ヨ揣" />
+
+
+ error  in ./src/components/WarehouseUserPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue:19:11
+17 |          <div class="panel-title">瀹跺涵鎴愬憳</div>
+18 |          <form class="form" @submit.prevent="addUser">
+19 |            <div class="row">
+   |            ^
+20 |              <label>
+21 |                濮撳悕
+
+
+ error  in ./src/components/WarehouseUserPage.vue
+
+Module Error (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue:29:17
+27 |                  <option value="绠＄悊鍛?>绠＄悊鍛?/option>
+28 |                  <option value="閲囪喘">閲囪喘</option>
+29 |                  <option value="浣跨敤鑰?>浣跨敤鑰?/option>
+   |                  ^
+30 |                </select>
+31 |              </label>
+
+
+Build finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:37 by 0.000s
+[2K[1A[2K[G[1m[31mERROR[39m[22m in [1m./src/components/AreaMapTest.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\AreaMapTest.vue:67:11
+65 |            <div class="strong">缂栬緫閫変腑鍖哄煙</div>
+66 |            <label>鍚嶇О <input v-model.trim="rooms[selectedRoomIndex].name" /></label>
+67 |            <button class="danger-btn" @click="deleteRoom(selectedRoomIndex)">鍒犻櫎姝ゅ尯鍩?/button>
+   |            ^
+68 |          </div>
+69 |        </div>
+[39m[22m
+ @ ./src/router/index.js 47:19-57
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/AreaMapTest.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\AreaMapTest.vue:80:9
+78 |            </div>
+79 |          </div>
+80 |          <div v-if="selectedRoomIndex === null" class="muted">璇峰厛鍦ㄥ乏渚ч€夋嫨涓€涓尯鍩熴€?/div>
+   |          ^
+81 |          <div v-else>
+82 |            <div class="strong mb-2">褰撳墠鍖哄煙锛歿{ rooms[selectedRoomIndex].name }}</div>
+[39m[22m
+ @ ./src/router/index.js 47:19-57
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/AreaMapTest.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\AreaMapTest.vue:160:9
+158|        <div class="json-actions mb-2">
+159|          <button class="btn-ghost" type="button" :disabled="loading" @click="exportAreaJson">涓嬭浇褰撳墠JSON</button>
+160|          <button class="btn-ghost" type="button" :disabled="loading" @click="applyPastedJson">绮樿创JSON骞跺簲鐢?/button>
+   |          ^
+161|        </div>
+162|        <textarea v-model.trim="pastedJson" class="json-text" placeholder="鍦ㄦ绮樿创 JSON..."></textarea>
+[39m[22m
+ @ ./src/router/index.js 47:19-57
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/InitPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:81:24
+79 |            <input v-model.trim="createForm.name" placeholder="渚嬪锛氬閲? />
+80 |          </label>
+81 |          <div class="row">
+   |                         ^
+82 |            <button type="button" :disabled="creating || !createForm.name" @click="createHousehold">
+83 |              {{ creating ? '鍒涘缓涓?..' : '鍒涘缓' }}
+[39m[22m
+ @ ./src/router/index.js 17:19-54
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/InitPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:2:3
+1  |  <template>
+2  |    <div class="page">
+   |    ^
+3  |      <div class="header">
+4  |        <h2>瀹跺涵閫夋嫨 / 鍒囨崲</h2>
+[39m[22m
+ @ ./src/router/index.js 17:19-54
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/InitPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:30:9
+28 |        >
+29 |          <div class="card-title">鎺ョ榛樿瀹跺涵</div>
+30 |          <div class="card-sub">鍘嗗彶鏁版嵁锛歿{ status.default_items_count }} 鏉＄墿鍝?/div>
+   |          ^
+31 |          <div class="badge danger">{{ adopting ? '澶勭悊涓?..' : '鍙帴绠? }}</div>
+32 |        </button>
+[39m[22m
+ @ ./src/router/index.js 17:19-54
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/InitPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:77:9
+75 |        <div class="modal">
+76 |          <div class="modal-title">鍒涘缓瀹跺涵</div>
+77 |          <label class="full">
+   |          ^
+78 |            瀹跺涵鍚嶇О
+79 |            <input v-model.trim="createForm.name" placeholder="渚嬪锛氬閲? />
+[39m[22m
+ @ ./src/router/index.js 17:19-54
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/InitPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:136:11
+134|          <div class="row">
+135|            <button type="button" @click="copy(issuedToken)">澶嶅埗</button>
+136|            <button type="button" class="btn-ghost" @click="enterAfterIssued">鎴戝凡淇濆瓨锛岃繘鍏?/button>
+   |            ^
+137|          </div>
+138|        </div>
+[39m[22m
+ @ ./src/router/index.js 17:19-54
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/InitPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mError[39m[22m[1m parsing JavaScript expression: Unterminated string constant. (1:21)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:41:18
+39 |            <button class="card session" type="button" :disabled="loggingIn" @click="selectSession(s)">
+40 |              <div class="card-title">
+41 |                {{ s.household_name || '鏈懡鍚嶅搴? }}
+   |                   ^
+42 |                <span v-if="isCurrent(s)" class="badge">褰撳墠</span>
+43 |              </div>
+[39m[22m
+ @ ./src/router/index.js 17:19-54
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/InitPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mError[39m[22m[1m parsing JavaScript expression: Unterminated string constant. (1:21)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:62:18
+60 |            <button class="card session" type="button" :disabled="loggingIn" @click="selectSession(h)">
+61 |              <div class="card-title">
+62 |                {{ h.household_name || '鏈懡鍚嶅搴? }}
+   |                   ^
+63 |                <span v-if="isCurrent(h)" class="badge">褰撳墠</span>
+64 |              </div>
+[39m[22m
+ @ ./src/router/index.js 17:19-54
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/InitPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mError[39m[22m[1m parsing JavaScript expression: Unterminated string constant. (1:24)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\InitPage.vue:31:38
+29 |          <div class="card-title">鎺ョ榛樿瀹跺涵</div>
+30 |          <div class="card-sub">鍘嗗彶鏁版嵁锛歿{ status.default_items_count }} 鏉＄墿鍝?/div>
+31 |          <div class="badge danger">{{ adopting ? '澶勭悊涓?..' : '鍙帴绠? }}</div>
+   |                                       ^
+32 |        </button>
+33 |  
+[39m[22m
+ @ ./src/router/index.js 17:19-54
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/LlmTestPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\LlmTestPage.vue:11:7
+9  |  
+10 |      <div class="frame">
+11 |        <div class="panel">
+   |        ^
+12 |          <div class="panel-title">鐘舵€?/div>
+13 |          <div class="row">
+[39m[22m
+ @ ./src/router/index.js 41:19-57
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/LlmTestPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\LlmTestPage.vue:14:11
+12 |          <div class="panel-title">鐘舵€?/div>
+13 |          <div class="row">
+14 |            <button @click="fetchStatus">鍒锋柊鐘舵€?/button>
+   |            ^
+15 |          </div>
+16 |          <pre class="pre">{{ statusText }}</pre>
+[39m[22m
+ @ ./src/router/index.js 41:19-57
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/SettingsPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:10:5
+8  |      </div>
+9  |  
+10 |      <div class="grid">
+   |      ^
+11 |        <div class="panel">
+12 |          <div class="panel-title">褰撳墠韬唤</div>
+[39m[22m
+ @ ./src/router/index.js 44:19-58
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/SettingsPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:68:13
+66 |            </label>
+67 |            <details class="details">
+68 |              <summary>鐗╁搧涓庡綍鍏ュ瓧娈甸厤缃?/summary>
+   |              ^
+69 |              <div class="details-body">
+70 |                <label class="full">
+[39m[22m
+ @ ./src/router/index.js 44:19-58
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/SettingsPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:91:17
+89 |              <div class="details-body">
+90 |                <div class="row">
+91 |                  <router-link class="link" to="/warehouse/map-test">鎵撳紑鍖哄煙璁剧疆娴嬭瘯椤?/router-link>
+   |                  ^
+92 |                </div>
+93 |                <label class="full">
+[39m[22m
+ @ ./src/router/index.js 44:19-58
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/SettingsPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mError[39m[22m[1m parsing JavaScript expression: Unterminated string constant. (1:26)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:40:50
+38 |            <li v-for="i in invites" :key="i.id" class="list-item">
+39 |              <div class="left">
+40 |                <div class="strong">#{{ i.id }} {{ i.revoked ? '锛堝凡鎾ら攢锛? : '' }}</div>
+   |                                                   ^
+41 |                <div class="muted">expires_at: {{ i.expires_at }}</div>
+42 |                <div class="muted">used: {{ i.used_count }}/{{ i.max_uses }}</div>
+[39m[22m
+ @ ./src/router/index.js 44:19-58
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/SettingsPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mError[39m[22m[1m parsing JavaScript expression: Unterminated string constant. (1:26)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\SettingsPage.vue:112:68
+110|            <li v-for="m in members" :key="m.id" class="list-item">
+111|              <div class="left">
+112|                <div class="strong">#{{ m.id }} role={{ m.role }} {{ m.revoked ? '锛堝凡鎾ら攢锛? : '' }}</div>
+   |                                                                     ^
+113|                <div class="muted">{{ m.created_at }}</div>
+114|              </div>
+[39m[22m
+ @ ./src/router/index.js 44:19-58
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:42:30
+40 |              </label>
+41 |            </div>
+42 |            <label class="check">
+   |                               ^
+43 |              <input v-model="ocrUseAsItemImage" type="checkbox" />
+44 |              鍚屾椂淇濆瓨涓虹墿鍝佸浘鐗?          </label>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:82:48
+80 |                  <label>
+81 |                    澶х被
+82 |                    <select v-model="form.type_l1" @change="onTypeL1Change">
+   |                                                 ^
+83 |                      <option value="">鏈缃?/option>
+84 |                      <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:131:41
+129|                  </label>
+130|                </div>
+131|                <div v-if="form.image_path" class="image-preview">
+   |                                          ^
+132|                  <img :src="form.image_path" alt="item" />
+133|                  <button type="button" class="btn-ghost" @click="clearItemImage">娓呴櫎鍥剧墖</button>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:259:130
+257|                  </label>
+258|                  <label class="grow">
+259|                    璐ｄ换浜?                  <input v-model.trim="form.responsible_person" placeholder="鍙€? list="responsible-people" />
+   |                                                                                                                                   ^
+260|                    <datalist id="responsible-people">
+261|                      <option v-for="p in responsiblePeopleOptions" :key="p" :value="p"></option>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:290:37
+288|                  <input v-model.trim="p.k" placeholder="渚嬪锛氫繚淇湡" />
+289|                  <input v-model.trim="p.v" placeholder="渚嬪锛?骞? />
+290|                  <button type="button" class="btn-ghost" @click="removePair(idx)">绉婚櫎</button>
+   |                                      ^
+291|                </div>
+292|                <button type="button" class="btn-ghost" @click="addPair">鏂板涓€琛?/button>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:309:52
+307|                  <label>
+308|                    鏉＄爜
+309|                    <input v-model.trim="form.barcode" placeholder="鍙€? />
+   |                                                     ^
+310|                  </label>
+311|                  <label>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:313:49
+311|                  <label>
+312|                    鏍囩
+313|                    <input v-model.trim="form.tags" placeholder="鍘ㄦ埧,甯哥敤" />
+   |                                                  ^
+314|                  </label>
+315|                </div>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:321:33
+319|                  <textarea v-model.trim="form.notes" rows="2" placeholder="鍙€?></textarea>
+320|                </label>
+321|                <label class="full">
+   |                                  ^
+322|                  鎻忚堪
+323|                  <input v-model.trim="form.description" placeholder="鍙€? />
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mDuplicate[39m[22m[1m attribute.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:309:54
+307|                  <label>
+308|                    鏉＄爜
+309|                    <input v-model.trim="form.barcode" placeholder="鍙€? />
+   |                                                       ^
+310|                  </label>
+311|                  <label>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mDuplicate[39m[22m[1m attribute.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:313:51
+311|                  <label>
+312|                    鏍囩
+313|                    <input v-model.trim="form.tags" placeholder="鍘ㄦ埧,甯哥敤" />
+   |                                                    ^
+314|                  </label>
+315|                </div>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:1:1
+1  |  <template>
+   |  ^
+2  |    <div class="page" :class="{ embedded }">
+3  |      <div v-if="!embedded" class="header">
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:2:3
+1  |  <template>
+2  |    <div class="page" :class="{ embedded }">
+   |    ^
+3  |      <div v-if="!embedded" class="header">
+4  |        <h2>褰曞叆/绠＄悊</h2>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:16:5
+14 |      </div>
+15 |  
+16 |      <div class="grid" :class="{ single: embedded }">
+   |      ^
+17 |        <div class="panel">
+18 |          <div class="panel-title">蹇€熷綍鍏?/div>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:17:7
+15 |  
+16 |      <div class="grid" :class="{ single: embedded }">
+17 |        <div class="panel">
+   |        ^
+18 |          <div class="panel-title">蹇€熷綍鍏?/div>
+19 |  
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:18:9
+16 |      <div class="grid" :class="{ single: embedded }">
+17 |        <div class="panel">
+18 |          <div class="panel-title">蹇€熷綍鍏?/div>
+   |          ^
+19 |  
+20 |          <div v-if="embedded" class="action-card" ref="actionCard">
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:22:13
+20 |          <div v-if="embedded" class="action-card" ref="actionCard">
+21 |            <div class="action-card-status">
+22 |              <span class="action-card-label">鐘舵€?/span>
+   |              ^
+23 |              <span class="action-card-value">{{ hint || '褰曞叆鏂扮墿鍝? }}</span>
+24 |            </div>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:31:9
+29 |          </div>
+30 |  
+31 |          <div class="ocr">
+   |          ^
+32 |            <div class="ocr-title">鍥剧墖璇嗗埆褰曞叆</div>
+33 |            <div class="row">
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:68:9
+66 |          </div>
+67 |  
+68 |          <form class="form" @submit.prevent="quickCreate">
+   |          ^
+69 |            <div class="section fold color-core">
+70 |              <button class="section-toggle" type="button" @click="toggle('core')">
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:83:21
+81 |                    澶х被
+82 |                    <select v-model="form.type_l1" @change="onTypeL1Change">
+83 |                      <option value="">鏈缃?/option>
+   |                      ^
+84 |                      <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
+85 |                    </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:90:21
+88 |                    瀛愮被
+89 |                    <select v-model="form.type_l2">
+90 |                      <option value="">鏈缃?/option>
+   |                      ^
+91 |                      <option v-for="t in typeL2Options" :key="t" :value="t">{{ t }}</option>
+92 |                    </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:108:21
+106|                    鍗曚綅
+107|                    <select v-model="form.unit">
+108|                      <option value="">鏈缃?/option>
+   |                      ^
+109|                      <option v-for="u in units" :key="u" :value="u">{{ u }}</option>
+110|                    </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:126:17
+124|                    <input type="file" accept="image/*" @change="onPickItemImage" />
+125|                  </label>
+126|                  <label class="grow">
+   |                  ^
+127|                    鍥剧墖鍦板潃
+128|                    <input v-model.trim="form.image_path" placeholder="涓婁紶鍚庤嚜鍔ㄥ～鍏? />
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:166:21
+164|                    鍖哄煙
+165|                    <select v-model="form.room" :disabled="locationFieldsDisabled" @change="onRoomChange">
+166|                      <option value="">鏈缃?/option>
+   |                      ^
+167|                      <option v-for="r in areaRoomOptions" :key="r" :value="r">{{ r }}</option>
+168|                    </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:174:23
+172|                      澧欓潰
+173|                      <select v-model="form.wall_side" :disabled="locationFieldsDisabled" @change="onWallChange">
+174|                        <option value="">鏈缃?/option>
+   |                        ^
+175|                        <option v-for="w in wallSideOptions" :key="w.value" :value="w.value">{{ w.label }}</option>
+176|                      </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:180:23
+178|                    <label class="grow">
+179|                      鏀剁撼浣?                    <select v-model="form.wall_slot" :disabled="locationFieldsDisabled">
+180|                        <option value="">鏈缃?/option>
+   |                        ^
+181|                        <option v-for="s in wallSlotOptions" :key="s" :value="s">{{ s }}</option>
+182|                      </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:187:21
+185|                  <label v-else class="grow">
+186|                    鏀剁撼浣?                  <select v-model="form.spot" :disabled="locationFieldsDisabled">
+187|                      <option value="">鏈缃?/option>
+   |                      ^
+188|                      <option v-for="s in spotOptions" :key="s" :value="s">{{ s }}</option>
+189|                    </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:201:15
+199|            <div class="section fold color-status">
+200|              <button class="section-toggle" type="button" @click="toggle('status')">
+201|                <span class="section-title">鐘舵€佸睘鎬т俊鎭?/span>
+   |                ^
+202|                <span class="toggle-text">{{ uiFold.status ? '灞曞紑' : '鏀惰捣' }}</span>
+203|              </button>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:208:21
+206|                  <label>
+207|                    浣跨敤鐘舵€?                  <select v-model="form.usage_status">
+208|                      <option value="">鏈缃?/option>
+   |                      ^
+209|                      <option v-for="s in usageStatusOptions" :key="s" :value="s">{{ s }}</option>
+210|                    </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:215:21
+213|                    鎵€鏈夋潈
+214|                    <select v-model="form.ownership">
+215|                      <option value="">鏈缃?/option>
+   |                      ^
+216|                      <option v-for="o in ownershipOptions" :key="o" :value="o">{{ o }}</option>
+217|                    </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:246:15
+244|            <div class="section fold color-dynamic">
+245|              <button class="section-toggle" type="button" @click="toggle('dynamic')">
+246|                <span class="section-title">鍔ㄦ€佺淮搴?/span>
+   |                ^
+247|                <span class="toggle-text">{{ uiFold.dynamic ? '灞曞紑' : '鏀惰捣' }}</span>
+248|              </button>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:254:21
+252|                    浣跨敤棰戠巼
+253|                    <select v-model="form.usage_frequency">
+254|                      <option value="">鏈缃?/option>
+   |                      ^
+255|                      <option v-for="f in usageFrequencyOptions" :key="f" :value="f">{{ f }}</option>
+256|                    </select>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:276:11
+274|            </div>
+275|  
+276|            <div class="section fold color-custom">
+   |            ^
+277|              <button class="section-toggle" type="button" @click="toggle('custom')">
+278|                <span class="section-title">鍏朵粬灞炴€э紙鍏佽鑷畾涔夛級</span>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:281:13
+279|                <span class="toggle-text">{{ uiFold.custom ? '灞曞紑' : '鏀惰捣' }}</span>
+280|              </button>
+281|              <div v-if="!uiFold.custom" class="section-body">
+   |              ^
+282|                <div class="kv-head">
+283|                  <div>閿?/div>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:292:15
+290|                  <button type="button" class="btn-ghost" @click="removePair(idx)">绉婚櫎</button>
+291|                </div>
+292|                <button type="button" class="btn-ghost" @click="addPair">鏂板涓€琛?/button>
+   |                ^
+293|              </div>
+294|            </div>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:296:11
+294|            </div>
+295|  
+296|            <div class="section fold">
+   |            ^
+297|              <button class="section-toggle" type="button" @click="toggle('other')">
+298|                <span class="section-title">鍏朵粬</span>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:301:13
+299|                <span class="toggle-text">{{ uiFold.other ? '灞曞紑' : '鏀惰捣' }}</span>
+300|              </button>
+301|              <div v-if="!uiFold.other" class="section-body">
+   |              ^
+302|                <div class="row">
+303|                  <label>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:317:15
+315|                </div>
+316|  
+317|                <label class="full">
+   |                ^
+318|                  澶囨敞
+319|                  <textarea v-model.trim="form.notes" rows="2" placeholder="鍙€?></textarea>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:319:17
+317|                <label class="full">
+318|                  澶囨敞
+319|                  <textarea v-model.trim="form.notes" rows="2" placeholder="鍙€?></textarea>
+   |                  ^
+320|                </label>
+321|                <label class="full">
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mError[39m[22m[1m parsing JavaScript expression: Unterminated string constant. (1:9)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:23:48
+21 |            <div class="action-card-status">
+22 |              <span class="action-card-label">鐘舵€?/span>
+23 |              <span class="action-card-value">{{ hint || '褰曞叆鏂扮墿鍝? }}</span>
+   |                                                 ^
+24 |            </div>
+25 |            <div class="action-card-btns">
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mError[39m[22m[1m parsing JavaScript expression: Unterminated string constant. (1:26)
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:50:18
+48 |            <div class="row">
+49 |              <button type="button" :disabled="!ocrFile || ocrLoading" @click="runOcr">
+50 |                {{ ocrLoading ? '璇嗗埆涓?..' : '璇嗗埆骞跺～鍏? }}
+   |                   ^
+51 |              </button>
+52 |              <button type="button" class="btn-ghost" :disabled="ocrLoading" @click="clearOcr">
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mInvalid[39m[22m[1m end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:85:19
+83 |                      <option value="">鏈缃?/option>
+84 |                      <option v-for="t in typeL1Options" :key="t" :value="t">{{ t }}</option>
+85 |                    </select>
+   |                    ^
+86 |                  </label>
+87 |                  <label>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseManagePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mInvalid[39m[22m[1m end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue:290:85
+288|                  <input v-model.trim="p.k" placeholder="渚嬪锛氫繚淇湡" />
+289|                  <input v-model.trim="p.v" placeholder="渚嬪锛?骞? />
+290|                  <button type="button" class="btn-ghost" @click="removePair(idx)">绉婚櫎</button>
+   |                                                                                      ^
+291|                </div>
+292|                <button type="button" class="btn-ghost" @click="addPair">鏂板涓€琛?/button>
+[39m[22m
+ @ ./src/router/index.js 32:19-65
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseNotice.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseNotice.vue:32:26
+30 |              <input v-model.trim="draft.content" placeholder="渚嬪锛氱焊宸惧揩鐢ㄥ畬浜嗭紝鍛ㄦ湯涓€璧疯ˉ璐? />
+31 |            </label>
+32 |            <div class="row">
+   |                           ^
+33 |              <label class="check">
+34 |                <input v-model="draft.pinned" type="checkbox" />
+[39m[22m
+ @ ./src/router/index.js 38:40-82
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseNotice.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseNotice.vue:28:11
+26 |              </label>
+27 |            </div>
+28 |            <label class="full">
+   |            ^
+29 |              鍐呭
+30 |              <input v-model.trim="draft.content" placeholder="渚嬪锛氱焊宸惧揩鐢ㄥ畬浜嗭紝鍛ㄦ湯涓€璧疯ˉ璐? />
+[39m[22m
+ @ ./src/router/index.js 38:40-82
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseNotice.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mInvalid[39m[22m[1m end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseNotice.vue:40:9
+38 |              <button type="button" class="btn-ghost" @click="resetDraft">娓呯┖</button>
+39 |            </div>
+40 |          </form>
+   |          ^
+41 |        </div>
+42 |  
+[39m[22m
+ @ ./src/router/index.js 38:40-82
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseNotice.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: [1m[31mInvalid[39m[22m[1m end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseNotice.vue:64:3
+62 |        </div>
+63 |      </div>
+64 |    </div>
+   |    ^
+65 |  </template>
+66 |  
+[39m[22m
+ @ ./src/router/index.js 38:40-82
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehousePage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehousePage.vue:19:13
+17 |              <router-link class="nav-btn" to="/warehouse/outbound">鍑哄簱</router-link>
+18 |              <router-link class="nav-btn" to="/warehouse/items">鐗╁搧绠＄悊</router-link>
+19 |              <router-link class="nav-btn" to="/warehouse/manage">蹇€熷綍鍏?/router-link>
+   |              ^
+20 |              <router-link class="nav-btn" to="/warehouse/notice">鍏憡</router-link>
+21 |              <router-link class="nav-btn" to="/warehouse/user">鐢ㄦ埛绠＄悊</router-link>
+[39m[22m
+ @ ./src/router/index.js 23:19-59
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseUserPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue:28:35
+26 |                <select v-model="newUser.role">
+27 |                  <option value="绠＄悊鍛?>绠＄悊鍛?/option>
+28 |                  <option value="閲囪喘">閲囪喘</option>
+   |                                    ^
+29 |                  <option value="浣跨敤鑰?>浣跨敤鑰?/option>
+30 |                </select>
+[39m[22m
+ @ ./src/router/index.js 29:19-63
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseUserPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Attribute name cannot contain U+0022 ("), U+0027 ('), and U+003C (<).
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue:33:29
+31 |              </label>
+32 |            </div>
+33 |            <label class="full">
+   |                              ^
+34 |              澶囨敞
+35 |              <input v-model.trim="newUser.note" placeholder="鍙€夛紝渚嬪锛氳礋璐ｆ棩鐢ㄥ搧琛ヨ揣" />
+[39m[22m
+ @ ./src/router/index.js 29:19-63
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseUserPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue:19:11
+17 |          <div class="panel-title">瀹跺涵鎴愬憳</div>
+18 |          <form class="form" @submit.prevent="addUser">
+19 |            <div class="row">
+   |            ^
+20 |              <label>
+21 |                濮撳悕
+[39m[22m
+ @ ./src/router/index.js 29:19-63
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m./src/components/WarehouseUserPage.vue[39m[22m
+[1mModule [1m[31mError[39m[22m[1m (from ./node_modules/vue-loader/dist/index.js):
+
+VueCompilerError: Element is missing end tag.
+at E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue:29:17
+27 |                  <option value="绠＄悊鍛?>绠＄悊鍛?/option>
+28 |                  <option value="閲囪喘">閲囪喘</option>
+29 |                  <option value="浣跨敤鑰?>浣跨敤鑰?/option>
+   |                  ^
+30 |                </select>
+31 |              </label>
+[39m[22m
+ @ ./src/router/index.js 29:19-63
+ @ ./src/main.js 2:0-30 6:8-14
+
+[1m[31mERROR[39m[22m in [1m[eslint] 
+E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseManagePage.vue
+   23:56   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: Unterminated string constant. (1:11)    vue/no-parsing-[1m[31merror[39m[22m[1m
+   42:25   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: missing-whitespace-between-attributes   vue/no-parsing-[1m[31merror[39m[22m[1m
+   42:30   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31munexpected[39m[22m[1m-character-in-attribute-name  vue/no-parsing-[1m[31merror[39m[22m[1m
+   50:43   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: Unterminated string constant. (1:28)    vue/no-parsing-[1m[31merror[39m[22m[1m
+   82:36   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: missing-whitespace-between-attributes   vue/no-parsing-[1m[31merror[39m[22m[1m
+   82:48   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31munexpected[39m[22m[1m-character-in-attribute-name  vue/no-parsing-[1m[31merror[39m[22m[1m
+   85:19   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: x-[1m[31minvalid[39m[22m[1m-end-tag                       vue/no-parsing-[1m[31merror[39m[22m[1m
+  131:26   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: missing-whitespace-between-attributes   vue/no-parsing-[1m[31merror[39m[22m[1m
+  131:41   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31munexpected[39m[22m[1m-character-in-attribute-name  vue/no-parsing-[1m[31merror[39m[22m[1m
+  259:112  [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: missing-whitespace-between-attributes   vue/no-parsing-[1m[31merror[39m[22m[1m
+  259:130  [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31munexpected[39m[22m[1m-character-in-attribute-name  vue/no-parsing-[1m[31merror[39m[22m[1m
+  290:31   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: missing-whitespace-between-attributes   vue/no-parsing-[1m[31merror[39m[22m[1m
+  290:37   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31munexpected[39m[22m[1m-character-in-attribute-name  vue/no-parsing-[1m[31merror[39m[22m[1m
+  290:85   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: x-[1m[31minvalid[39m[22m[1m-end-tag                       vue/no-parsing-[1m[31merror[39m[22m[1m
+  309:40   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: missing-whitespace-between-attributes   vue/no-parsing-[1m[31merror[39m[22m[1m
+  309:52   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31munexpected[39m[22m[1m-character-in-attribute-name  vue/no-parsing-[1m[31merror[39m[22m[1m
+  309:54   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31mduplicate[39m[22m[1m-attribute                     vue/no-parsing-[1m[31merror[39m[22m[1m
+  309:54   [1m[31merror[39m[22m[1m  [1m[31mDuplicate[39m[22m[1m attribute 'placeholder'                      vue/no-[1m[31mduplicate[39m[22m[1m-attributes
+  313:40   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: missing-whitespace-between-attributes   vue/no-parsing-[1m[31merror[39m[22m[1m
+  313:49   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31munexpected[39m[22m[1m-character-in-attribute-name  vue/no-parsing-[1m[31merror[39m[22m[1m
+  313:51   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31mduplicate[39m[22m[1m-attribute                     vue/no-parsing-[1m[31merror[39m[22m[1m
+  313:51   [1m[31merror[39m[22m[1m  [1m[31mDuplicate[39m[22m[1m attribute 'placeholder'                      vue/no-[1m[31mduplicate[39m[22m[1m-attributes
+  321:29   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: missing-whitespace-between-attributes   vue/no-parsing-[1m[31merror[39m[22m[1m
+  321:33   [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: [1m[31munexpected[39m[22m[1m-character-in-attribute-name  vue/no-parsing-[1m[31merror[39m[22m[1m
+  332:54   [1m[31merror[39m[22m[1m  [1m[31mUnexpected[39m[22m[1m mustache. [1m[33mUse 'v-model' instead[39m[22m[1m             vue/no-textarea-mustache
+
+E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehousePage.vue
+  81:15  [1m[31merror[39m[22m[1m  'name' is assigned a value but never used  no-unused-vars
+
+E:\PersonalFiles\Coding\Warehouse\vue\src\components\WarehouseUserPage.vue
+  96:14  [1m[31merror[39m[22m[1m  Parsing [1m[31merror[39m[22m[1m: Unterminated string constant. (13:14)
+
+✖ 27 problems (27 errors, 0 warnings)
+[39m[22m
+
+webpack compiled with [1m[31m70 errors[39m[22m
+Build finished at 15:30:54 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:54 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:54 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:54 by 0.000s
+[2K[1A[2K[GBuild finished at 15:30:54 by 0.000s
+[2K[1A[2K[G��ֹ������������(Y/N)? 

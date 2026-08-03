@@ -12,7 +12,7 @@
         <div class="embed-title">出库</div>
         <div class="embed-actions">
           <router-link class="embed-link" to="/warehouse/outbound">全屏打开</router-link>
-          <button class="btn danger" type="button" :disabled="!canSave" @click="save">
+          <button class="btn-danger" type="button" :disabled="!canSave" @click="save">
             {{ saving ? '保存中...' : '保存出库' }}
           </button>
         </div>
@@ -51,7 +51,7 @@
 
       <div class="footer">
         <div class="muted">{{ saveSummary }}</div>
-        <button v-if="!embedded" class="btn danger" type="button" :disabled="!canSave" @click="save">
+        <button v-if="!embedded" class="btn-danger" type="button" :disabled="!canSave" @click="save">
           {{ saving ? '保存中...' : '保存出库' }}
         </button>
       </div>
@@ -346,23 +346,6 @@ export default {
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.15);
   outline: none;
-}
-
-.btn {
-  padding: 10px 12px;
-  border-radius: 10px;
-  border: none;
-  background: #111827;
-  color: white;
-  font-weight: 700;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-}
-
-.btn.danger {
-  background: #b00020;
 }
 
 .list {

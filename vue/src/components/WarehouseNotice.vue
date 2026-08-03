@@ -35,7 +35,7 @@
               置顶
             </label>
             <button type="submit">发布</button>
-            <button type="button" class="ghost-btn" @click="resetDraft">清空</button>
+            <button type="button" class="btn-ghost" @click="resetDraft">清空</button>
           </div>
         </form>
       </div>
@@ -54,8 +54,8 @@
             </div>
             <div class="muted">{{ n.content || '-' }}</div>
             <div class="ops">
-              <button class="small" @click="togglePin(n.id)">{{ n.pinned ? '取消置顶' : '置顶' }}</button>
-              <button class="small danger" @click="remove(n.id)">删除</button>
+              <button class="btn-ghost btn-sm" @click="togglePin(n.id)">{{ n.pinned ? '取消置顶' : '置顶' }}</button>
+              <button class="btn-danger btn-sm" @click="remove(n.id)">删除</button>
             </div>
           </li>
         </ul>
@@ -197,6 +197,7 @@ export default {
 
 .panel {
   background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 14px;
 }
@@ -238,13 +239,6 @@ select {
   align-items: center;
   gap: 8px;
   min-width: auto;
-}
-
-.ghost-btn {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 6px 10px;
-  border-radius: 8px;
 }
 
 .list {
@@ -311,11 +305,6 @@ select {
   margin-top: 10px;
   display: flex;
   gap: 8px;
-}
-
-.small {
-  padding: 6px 10px;
-  border-radius: 10px;
 }
 
 .danger {

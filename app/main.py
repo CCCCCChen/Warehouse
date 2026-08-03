@@ -1089,6 +1089,101 @@ def get_location_qrcode(
     return Response(content=buf.getvalue(), media_type="image/png")
 
 
+@app.post("/api/locations/qrcodes/batch")
+def batch_location_qrcodes(
+    body: dict,
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Batch generate QR code labels as a PDF (A4, 6 per page)."""
+    import qrcode
+    from io import BytesIO
+    from fastapi.responses import Response
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib.units import mm
+    from reportlab.pdfgen import canvas as pdf_canvas
+
+    member, household = member_household
+    ids = body.get("ids")
+    if not ids or not isinstance(ids, list):
+        raise HTTPException(status_code=400, detail="ids must be a non-empty list")
+    if len(ids) > 50:
+        raise HTTPException(status_code=400, detail="Maximum 50 ids allowed")
+
+    locations = db.query(models.Location).filter(
+        models.Location.id.in_(ids),
+        models.Location.household_id == household.id,
+    ).all()
+
+    if not locations:
+        raise HTTPException(status_code=400, detail="No matching locations found")
+
+    # sort by path for consistent label ordering
+    locations.sort(key=lambda l: l.path or "")
+
+    host = os.getenv("PUBLIC_HOST", "http://127.0.0.1:3030")
+
+    # generate QR images in memory
+    qr_data = []
+    qr_size = 45 * mm
+    for loc in locations:
+        content = f"{host}/location/{loc.id}?action=panel"
+        img = qrcode.make(content)
+        buf = BytesIO()
+        img.save(buf, format="PNG")
+        buf.seek(0)
+        name = loc.name or ""
+        # build display path from path field (strip IDs, show names or raw path)
+        ancestors = loc.path.strip("/").split("/") if loc.path else []
+        if ancestors:
+            display_path = " > ".join([name] + [f"({pid})" for pid in ancestors[:3]])
+        else:
+            display_path = name
+        qr_data.append((buf, name, display_path))
+
+    # build PDF
+    pdf_buf = BytesIO()
+    c = pdf_canvas.Canvas(pdf_buf, pagesize=A4)
+    page_w, page_h = A4  # 595.27 x 841.89 pt
+    margin_x = 15 * mm
+    margin_y = 15 * mm
+    cols = 3
+    rows = 2
+    cell_w = (page_w - 2 * margin_x) / cols
+    cell_h = (page_h - 2 * margin_y) / rows
+
+    for idx, (img_buf, name, display_path) in enumerate(qr_data):
+        page_idx = idx % (cols * rows)
+        col = page_idx % cols
+        row = rows - 1 - (page_idx // cols)  # top-to-bottom
+
+        x = margin_x + col * cell_w + cell_w / 2
+        y = margin_y + row * cell_h + cell_h / 2
+
+        # draw QR centered
+        qr_x = x - qr_size / 2
+        qr_y = y + 5 * mm
+        c.drawImage(img_buf, qr_x, qr_y, width=qr_size, height=qr_size)
+
+        # label text below QR
+        c.setFont("Helvetica-Bold", 8)
+        c.drawCentredString(x, qr_y - 4 * mm, name)
+        c.setFont("Helvetica", 6)
+        c.drawCentredString(x, qr_y - 8 * mm, display_path)
+
+        # new page after 6 labels
+        if (idx + 1) % (cols * rows) == 0 and idx + 1 < len(qr_data):
+            c.showPage()
+
+    c.save()
+    pdf_buf.seek(0)
+    return Response(
+        content=pdf_buf.getvalue(),
+        media_type="application/pdf",
+        headers={"Content-Disposition": "attachment; filename=location-qrcodes.pdf"},
+    )
+
+
 if __name__ == "__main__":
     host = os.getenv("HOST", "127.0.0.1")
     port = int(os.getenv("PORT", 18808))  # Default to 8000 if not set

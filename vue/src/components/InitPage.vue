@@ -3,8 +3,8 @@
     <div class="header">
       <h2>家庭选择 / 切换</h2>
       <div class="header-actions">
-        <button class="ghost-btn" type="button" @click="refresh">刷新</button>
-        <button class="ghost-btn" type="button" @click="clearAll">清空本机记录</button>
+        <button class="btn-ghost" type="button" @click="refresh">刷新</button>
+        <button class="btn-ghost" type="button" @click="clearAll">清空本机记录</button>
       </div>
     </div>
 
@@ -83,7 +83,7 @@
           <button type="button" :disabled="creating || !createForm.name" @click="createHousehold">
             {{ creating ? '创建中...' : '创建' }}
           </button>
-          <button type="button" class="ghost-btn" @click="closeCreate">取消</button>
+          <button type="button" class="btn-ghost" @click="closeCreate">取消</button>
         </div>
       </div>
     </div>
@@ -103,7 +103,7 @@
           <button type="button" :disabled="joining || !joinForm.household_id || !joinForm.invite_code" @click="joinHousehold">
             {{ joining ? '加入中...' : '加入' }}
           </button>
-          <button type="button" class="ghost-btn" @click="closeJoin">取消</button>
+          <button type="button" class="btn-ghost" @click="closeJoin">取消</button>
         </div>
       </div>
     </div>
@@ -120,8 +120,8 @@
           <button type="button" :disabled="loggingIn || !tokenForm.token" @click="confirmToken">
             {{ loggingIn ? '验证中...' : '进入' }}
           </button>
-          <button type="button" class="ghost-btn" @click="closeToken">取消</button>
-          <button type="button" class="ghost-btn" :disabled="!tokenForm.token" @click="copy(tokenForm.token)">复制</button>
+          <button type="button" class="btn-ghost" @click="closeToken">取消</button>
+          <button type="button" class="btn-ghost" :disabled="!tokenForm.token" @click="copy(tokenForm.token)">复制</button>
         </div>
       </div>
     </div>
@@ -134,7 +134,7 @@
         <div class="muted">Token 只在创建/加入时展示一次，请妥善保存。</div>
         <div class="row">
           <button type="button" @click="copy(issuedToken)">复制</button>
-          <button type="button" class="ghost-btn" @click="enterAfterIssued">我已保存，进入</button>
+          <button type="button" class="btn-ghost" @click="enterAfterIssued">我已保存，进入</button>
         </div>
       </div>
     </div>
@@ -480,13 +480,6 @@ export default {
 
 .card:hover {
   border-color: rgba(0, 0, 0, 0.24);
-}
-
-.ghost-btn {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 6px 10px;
-  border-radius: 8px;
 }
 
 .card.add,

@@ -3,10 +3,10 @@
     <div class="header">
       <h2>区域与墙面设置 (测试)</h2>
       <div class="header-actions">
-        <button class="ghost-btn" type="button" :disabled="loading" @click="loadFromServer">从服务器加载</button>
-        <button class="ghost-btn" type="button" :disabled="loading" @click="saveToServer">保存到服务器</button>
-        <button class="ghost-btn" type="button" :disabled="loading" @click="exportAreaJson">导出JSON</button>
-        <button class="ghost-btn" type="button" :disabled="loading" @click="triggerJsonPick">导入JSON</button>
+        <button class="btn-ghost" type="button" :disabled="loading" @click="loadFromServer">从服务器加载</button>
+        <button class="btn-ghost" type="button" :disabled="loading" @click="saveToServer">保存到服务器</button>
+        <button class="btn-ghost" type="button" :disabled="loading" @click="exportAreaJson">导出JSON</button>
+        <button class="btn-ghost" type="button" :disabled="loading" @click="triggerJsonPick">导入JSON</button>
         <router-link class="link" to="/warehouse">返回主页</router-link>
         <input ref="jsonInput" class="json-input" type="file" accept=".json,application/json" @change="onJsonPicked" />
       </div>
@@ -64,7 +64,7 @@
         <div v-if="selectedRoomIndex !== null" class="edit-box">
           <div class="strong">编辑选中区域</div>
           <label>名称 <input v-model.trim="rooms[selectedRoomIndex].name" /></label>
-          <button class="danger-btn" @click="deleteRoom(selectedRoomIndex)">删除此区域</button>
+          <button class="btn-danger" @click="deleteRoom(selectedRoomIndex)">删除此区域</button>
         </div>
       </div>
 
@@ -146,7 +146,7 @@
             <div v-if="selectedSpotIndex !== null" class="edit-box mt-2">
               <div class="strong">编辑收纳框</div>
               <label>名称 <input v-model.trim="currentWall.spots[selectedSpotIndex].name" /></label>
-              <button class="danger-btn" @click="deleteSpot(selectedSpotIndex)">删除此框</button>
+              <button class="btn-danger" @click="deleteSpot(selectedSpotIndex)">删除此框</button>
             </div>
           </div>
         </div>
@@ -157,8 +157,8 @@
       <div class="panel-title">JSON 导入/展示</div>
       <div class="muted mb-2">支持两种格式：1) 直接 rooms 数组；2) /api/config 返回对象（取 area_map 字段）。</div>
       <div class="json-actions mb-2">
-        <button class="ghost-btn" type="button" :disabled="loading" @click="exportAreaJson">下载当前JSON</button>
-        <button class="ghost-btn" type="button" :disabled="loading" @click="applyPastedJson">粘贴JSON并应用</button>
+        <button class="btn-ghost" type="button" :disabled="loading" @click="exportAreaJson">下载当前JSON</button>
+        <button class="btn-ghost" type="button" :disabled="loading" @click="applyPastedJson">粘贴JSON并应用</button>
       </div>
       <textarea v-model.trim="pastedJson" class="json-text" placeholder="在此粘贴 JSON..."></textarea>
       <div v-if="jsonError" class="hint danger">{{ jsonError }}</div>
@@ -939,14 +939,6 @@ export default {
   flex-wrap: wrap;
 }
 
-.ghost-btn {
-  padding: 8px 12px;
-  border-radius: 8px;
-  border: 1px solid rgba(0, 0, 0, 0.15);
-  background: rgba(255, 255, 255, 0.8);
-  cursor: pointer;
-}
-
 .link {
   padding: 8px 12px;
   background: #111827;
@@ -1083,16 +1075,6 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 10px;
-}
-
-.danger-btn {
-  background: #ef4444;
-  color: white;
-  border: none;
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  width: fit-content;
 }
 
 .wall-tabs {

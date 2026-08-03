@@ -3,7 +3,7 @@
     <div class="header">
       <h2>用户管理</h2>
       <div class="header-actions">
-        <router-link class="link ghost" to="/warehouse">主页</router-link>
+        <router-link class="btn-ghost" to="/warehouse">主页</router-link>
       </div>
     </div>
 
@@ -36,7 +36,7 @@
           </label>
           <div class="row">
             <button type="submit">添加</button>
-            <button type="button" class="ghost-btn" @click="resetNewUser">清空</button>
+            <button type="button" class="btn-ghost" @click="resetNewUser">清空</button>
           </div>
         </form>
 
@@ -52,8 +52,8 @@
               <div class="muted">{{ u.note || '-' }}</div>
             </div>
             <div class="right">
-              <button class="small" @click="setDefault(u.id)">设为默认</button>
-              <button class="small danger" @click="removeUser(u.id)">移除</button>
+              <button class="btn-ghost btn-sm" @click="setDefault(u.id)">设为默认</button>
+              <button class="btn-danger btn-sm" @click="removeUser(u.id)">移除</button>
             </div>
           </li>
         </ul>
@@ -74,7 +74,7 @@
             临期阈值（天）
             <input v-model.number="prefs.expiringDays" type="number" min="1" />
           </label>
-          <button class="save" @click="savePrefs">保存偏好</button>
+          <button class="btn" @click="savePrefs">保存偏好</button>
           <div v-if="hint" class="muted">{{ hint }}</div>
         </div>
       </div>
@@ -237,19 +237,6 @@ export default {
   margin-bottom: 12px;
 }
 
-.link {
-  display: inline-block;
-  padding: 10px 12px;
-  border-radius: 8px;
-  background: #1f6feb;
-  color: white;
-  text-decoration: none;
-}
-
-.link.ghost {
-  background: #111827;
-}
-
 .grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -258,6 +245,7 @@ export default {
 
 .panel {
   background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 10px;
   padding: 14px;
   margin-bottom: 20px;
@@ -293,13 +281,6 @@ select {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.15);
-}
-
-.ghost-btn {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 6px 10px;
-  border-radius: 8px;
 }
 
 .list {
@@ -356,11 +337,6 @@ select {
   color: rgba(0, 0, 0, 0.65);
 }
 
-.small {
-  padding: 6px 10px;
-  border-radius: 10px;
-}
-
 .danger {
   background: #b00020;
   color: white;
@@ -377,14 +353,6 @@ select {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-}
-
-.save {
-  background: #111827;
-  color: white;
-  border: none;
-  padding: 10px 12px;
-  border-radius: 10px;
 }
 
 @media (max-width: 900px) {

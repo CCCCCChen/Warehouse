@@ -1,6 +1,7 @@
 import { createApp } from 'vue'; // 从 'vue' 引入 createApp，而不是 Vue
 import router from './router';
 import App from '@/App.vue';
+import '@/styles/buttons.css';
 
 const app = createApp(App);  // 使用 createApp 创建 Vue 实例
 app.use(router);

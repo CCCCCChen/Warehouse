@@ -35,7 +35,7 @@
           <button :disabled="running || !prompt" @click="runTest">
             {{ running ? '调用中...' : '调用 /api/llm/test' }}
           </button>
-          <button class="ghost-btn" :disabled="running" @click="clearAll">清空</button>
+          <button class="btn-ghost" :disabled="running" @click="clearAll">清空</button>
         </div>
         <div v-if="hint" class="muted">{{ hint }}</div>
         <div class="panel-subtitle">返回值</div>
@@ -215,13 +215,6 @@ input {
   padding: 8px 10px;
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.15);
-}
-
-.ghost-btn {
-  background: transparent;
-  border: 1px solid rgba(0, 0, 0, 0.25);
-  padding: 6px 10px;
-  border-radius: 8px;
 }
 
 .muted {
