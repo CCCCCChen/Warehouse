@@ -6,6 +6,7 @@ import { getAuthToken } from '@/auth/storage';
 const routes = [
   { path: '/location/:id', component: () => import('@/components/LocationPanelPage.vue')},
   { path: '/warehouse/locations', component: () => import('@/components/LocationTreePage.vue')},
+  { path: '/warehouse/area-map', component: () => import('@/components/AreaMapTest.vue')},
   { path: '/', redirect: '/households' },
   { path: '/init', redirect: '/households' },
   { path: '/households', component: () => import('@/components/InitPage.vue')},
@@ -14,11 +15,11 @@ const routes = [
   { path: '/warehouse/items', component: () => import('@/components/ItemsPage.vue')},
   { path: '/warehouse/user', component: () => import('@/components/WarehouseUserPage.vue')},
   { path: '/warehouse/manage', component: () => import('@/components/WarehouseManagePage.vue')},
+  { path: '/warehouse/wizard', component: () => import('@/components/WarehouseWizardPage.vue')},
   { path: '/warehouse/outbound', component: () => import('@/components/WarehouseOutboundPage.vue')},
   { path: '/warehouse/notice', component: defineAsyncComponent(() => import('@/components/WarehouseNotice.vue'))},
   { path: '/warehouse/llm-test', component: () => import('@/components/LlmTestPage.vue')},
   { path: '/warehouse/settings', component: () => import('@/components/SettingsPage.vue')},
-  { path: '/warehouse/map-test', component: () => import('@/components/AreaMapTest.vue')},
   /* 
   { path: '/warehouse/search', component: defineAsyncComponent(() =>  import('@/components/Search.vue'))},
   { path: '/warehouse/data', component: defineAsyncComponent(() => import('@/components/Data.vue'))},

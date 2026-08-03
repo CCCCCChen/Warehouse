@@ -958,6 +958,92 @@ def import_locations_from_config(
     return {"imported": count, "tree": _build_location_tree(all_locs)}
 
 
+@app.post("/api/locations/sync-from-area-map")
+def sync_locations_from_area_map(
+    body: dict,
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Sync locations from area_map JSON without touching other config.
+    Deletes all existing locations for this household and recreates from the area_map.
+    Also writes coordinates for unit-level dots."""
+    import json
+    from uuid import uuid4
+
+    member, household = member_household
+    hid = household.id
+
+    areas = body.get("area_map", [])
+    if not isinstance(areas, list):
+        raise HTTPException(status_code=400, detail="area_map must be a list")
+
+    # Delete all existing locations for this household
+    db.query(models.Location).filter_by(household_id=hid).delete()
+    db.flush()
+
+    count = 0
+
+    for area in areas:
+        if not isinstance(area, dict):
+            continue
+        zone_name = str(area.get("name", "")).strip()
+        if not zone_name:
+            continue
+        zone_id = str(uuid4())
+        db.add(models.Location(
+            id=zone_id, name=zone_name, parent_id=None, level="zone",
+            zone_id=zone_id, path=f"/{zone_id}/", household_id=hid,
+        ))
+        db.flush()
+        count += 1
+
+        walls = area.get("walls", {}) if isinstance(area, dict) else {}
+        for wall_name, wall_data in walls.items():
+            if not isinstance(wall_data, dict):
+                continue
+            wall_id = str(uuid4())
+            wall_image = str(wall_data.get("image", "") or "")
+            db.add(models.Location(
+                id=wall_id, name=str(wall_name), parent_id=zone_id, level="wall",
+                zone_id=zone_id, path=f"/{zone_id}/{wall_id}/", household_id=hid,
+                map_image_url=wall_image or None,
+            ))
+            db.flush()
+            count += 1
+
+            # Handle dots (preferred) with fallback to legacy spots
+            dots = wall_data.get("dots") if isinstance(wall_data, dict) else None
+            if dots is None:
+                dots = wall_data.get("spots", []) if isinstance(wall_data, dict) else []
+            if not isinstance(dots, list):
+                dots = []
+            for dot in dots:
+                if not isinstance(dot, dict):
+                    continue
+                dot_name = str(dot.get("name", "")).strip()
+                if not dot_name:
+                    dot_name = "储物单元"
+                dot_id = str(uuid4())
+                coords = None
+                dx = dot.get("x")
+                dy = dot.get("y")
+                if dx is not None and dy is not None:
+                    coords = json.dumps({"x": dx, "y": dy})
+                db.add(models.Location(
+                    id=dot_id, name=dot_name, parent_id=wall_id, level="unit",
+                    zone_id=zone_id, path=f"/{zone_id}/{wall_id}/{dot_id}/", household_id=hid,
+                    coordinates=coords,
+                ))
+                count += 1
+
+    db.commit()
+
+    all_locs = db.query(models.Location).filter_by(household_id=hid).order_by(
+        models.Location.sort_order, models.Location.name
+    ).all()
+    return {"synced": count, "tree": _build_location_tree(all_locs)}
+
+
 @app.post("/api/locations", response_model=schemas.LocationOut)
 def create_location(
     loc: schemas.LocationCreate,

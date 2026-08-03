@@ -26,6 +26,12 @@
             <button type="button" class="btn-ghost" @click="$emit('close')">返回</button>
             <button type="button" class="btn-ghost" @click="reset">清空</button>
             <button type="button" class="btn" @click="quickCreate">保存</button>
+            <label class="check-inline" title="连续录入：保存后保留位置信息">
+              <input v-model="continuousMode" type="checkbox" /> 连续录入
+            </label>
+            <label class="check-inline" v-if="continuousMode" title="锁定分类：保存后保留分类信息">
+              <input v-model="keepCategory" type="checkbox" /> 锁定分类
+            </label>
           </div>
         </div>
 
@@ -75,14 +81,23 @@
               <router-link class="btn-ghost" to="/warehouse/items">返回</router-link>
               <button type="button" class="btn-ghost" @click="reset">清空</button>
               <button type="submit" class="btn">保存</button>
+              <button type="button" class="btn-ghost btn-fold-batch" @click="expandAll">全部展开</button>
+              <button type="button" class="btn-ghost btn-fold-batch" @click="collapseAll">全部折叠</button>
+              <label class="check-inline" title="连续录入：保存后保留位置信息">
+                <input v-model="continuousMode" type="checkbox" /> 连续录入
+              </label>
+              <label class="check-inline" v-if="continuousMode" title="锁定分类：保存后保留分类信息">
+                <input v-model="keepCategory" type="checkbox" /> 锁定分类
+              </label>
             </div>
           </div>
           <div class="section fold color-core">
             <button class="section-toggle" type="button" @click="toggle('core')">
               <span class="section-title">核心信息</span>
-              <span class="toggle-text">{{ uiFold.core ? '展开' : '收起' }}</span>
+              <span class="toggle-text">{{ uiExpanded.core ? '收起' : '展开' }}</span>
             </button>
-            <div v-if="!uiFold.core" class="section-body">
+          <transition name="collapse">
+            <div v-if="uiExpanded.core" class="section-body">
               <div class="row">
                 <label>
                   编码
@@ -146,14 +161,16 @@
                 <button type="button" class="btn-ghost" @click="clearItemImage">清除图片</button>
               </div>
             </div>
+          </transition>
           </div>
 
           <div class="section fold color-time">
             <button class="section-toggle" type="button" @click="toggle('time')">
               <span class="section-title">时间空间信息</span>
-              <span class="toggle-text">{{ uiFold.time ? '展开' : '收起' }}</span>
+              <span class="toggle-text">{{ uiExpanded.time ? '收起' : '展开' }}</span>
             </button>
-            <div v-if="!uiFold.time" class="section-body">
+          <transition name="collapse">
+            <div v-if="uiExpanded.time" class="section-body">
               <div class="row">
                 <label>
                   生产日期
@@ -209,14 +226,16 @@
                 </label>
               </div>
             </div>
+          </transition>
           </div>
 
           <div class="section fold color-status">
             <button class="section-toggle" type="button" @click="toggle('status')">
               <span class="section-title">状态属性信息</span>
-              <span class="toggle-text">{{ uiFold.status ? '展开' : '收起' }}</span>
+              <span class="toggle-text">{{ uiExpanded.status ? '收起' : '展开' }}</span>
             </button>
-            <div v-if="!uiFold.status" class="section-body">
+          <transition name="collapse">
+            <div v-if="uiExpanded.status" class="section-body">
               <div class="row">
                 <label>
                   使用状态
@@ -234,14 +253,16 @@
                 </label>
               </div>
             </div>
+          </transition>
           </div>
 
           <div class="section fold color-finance">
             <button class="section-toggle" type="button" @click="toggle('finance')">
               <span class="section-title">财务价值（非必填）</span>
-              <span class="toggle-text">{{ uiFold.finance ? '展开' : '收起' }}</span>
+              <span class="toggle-text">{{ uiExpanded.finance ? '收起' : '展开' }}</span>
             </button>
-            <div v-if="!uiFold.finance" class="section-body">
+          <transition name="collapse">
+            <div v-if="uiExpanded.finance" class="section-body">
               <div class="row">
                 <label>
                   价格
@@ -257,14 +278,16 @@
                 </label>
               </div>
             </div>
+          </transition>
           </div>
 
           <div class="section fold color-dynamic">
             <button class="section-toggle" type="button" @click="toggle('dynamic')">
               <span class="section-title">动态维度</span>
-              <span class="toggle-text">{{ uiFold.dynamic ? '展开' : '收起' }}</span>
+              <span class="toggle-text">{{ uiExpanded.dynamic ? '收起' : '展开' }}</span>
             </button>
-            <div v-if="!uiFold.dynamic" class="section-body">
+          <transition name="collapse">
+            <div v-if="uiExpanded.dynamic" class="section-body">
               <div class="row">
                 <label>
                   使用频率
@@ -290,14 +313,16 @@
                 </select>
               </label>
             </div>
+          </transition>
           </div>
 
           <div class="section fold color-custom">
             <button class="section-toggle" type="button" @click="toggle('custom')">
               <span class="section-title">其他属性（允许自定义）</span>
-              <span class="toggle-text">{{ uiFold.custom ? '展开' : '收起' }}</span>
+              <span class="toggle-text">{{ uiExpanded.custom ? '收起' : '展开' }}</span>
             </button>
-            <div v-if="!uiFold.custom" class="section-body">
+          <transition name="collapse">
+            <div v-if="uiExpanded.custom" class="section-body">
               <div class="kv-head">
                 <div>键</div>
                 <div>值</div>
@@ -310,14 +335,16 @@
               </div>
               <button type="button" class="btn-ghost" @click="addPair">新增一行</button>
             </div>
+          </transition>
           </div>
 
           <div class="section fold">
             <button class="section-toggle" type="button" @click="toggle('other')">
               <span class="section-title">其他</span>
-              <span class="toggle-text">{{ uiFold.other ? '展开' : '收起' }}</span>
+              <span class="toggle-text">{{ uiExpanded.other ? '收起' : '展开' }}</span>
             </button>
-            <div v-if="!uiFold.other" class="section-body">
+          <transition name="collapse">
+            <div v-if="uiExpanded.other" class="section-body">
               <div class="row">
                 <label>
                   品牌
@@ -342,6 +369,7 @@
                 <input v-model.trim="form.description" placeholder="可选" />
               </label>
             </div>
+          </transition>
           </div>
 
 <!--           <div class="form-sticky-bar" v-if="!embedded">
@@ -414,6 +442,9 @@ export default {
       locationPrefilled: false,
       locationPrefilledId: '',
       showBackTop: false,
+      householdId: '',
+      continuousMode: false,
+      keepCategory: JSON.parse(localStorage.getItem('wh_keep_category') || 'false'),
       ocrFile: null,
       ocrPreviewUrl: '',
       ocrLoading: false,
@@ -430,14 +461,14 @@ export default {
       spots: [...DEFAULT_SPOTS],
       responsiblePeople: ['我'],
       areaMap: [],
-      uiFold: {
-        core: false,
-        time: false,
-        status: true,
-        finance: true,
-        dynamic: true,
-        custom: true,
-        other: true,
+      uiExpanded: {
+        core: true,
+        time: true,
+        status: false,
+        finance: false,
+        dynamic: false,
+        custom: false,
+        other: false,
       },
       uploadingImage: false,
       customPairs: [{ k: '', v: '' }],
@@ -485,11 +516,20 @@ export default {
     if (!this.embedded) this.fetchMessage();
     this.fetchItems();
     this.prefillFromRoute();
+    this.fetchHouseholdId();
   },
   activated() {
     this.handleScroll();
   },
   mounted() {
+    if (!this.embedded && window.innerWidth < 768) {
+      const q = this.$route.query;
+      const params = new URLSearchParams();
+      for (const [k, v] of Object.entries(q)) { if (v != null) params.set(k, String(v)); }
+      const qs = params.toString();
+      this.$router.replace('/warehouse/wizard' + (qs ? '?' + qs : ''));
+      return;
+    }
     if (this.embedded) {
       window.addEventListener('scroll', this.handleScroll, true);
       this.$nextTick(() => this.handleScroll());
@@ -502,8 +542,14 @@ export default {
     '$route.query.location_id'() {
       this.prefillFromRoute();
     },
+    keepCategory(val) {
+      localStorage.setItem('wh_keep_category', JSON.stringify(val));
+    },
   },
   computed: {
+    foldPrefsKey() {
+      return `wh_fold_prefs_${this.householdId || 'default'}`;
+    },
     typeL1Options() {
       return Object.keys(this.typeTree || {});
     },
@@ -749,6 +795,7 @@ export default {
         this.form = { ...this.form, ...formPatch };
         this.locationPrefilled = true;
         this.locationPrefilledId = String(locId);
+        this.continuousMode = true;
       } catch (e) {
         console.error('Failed to prefill from location_id:', e);
       }
@@ -793,14 +840,43 @@ export default {
         recorded_at: '',
       };
       this.customPairs = [{ k: '', v: '' }];
-      this.uiFold.core = false;
-      this.uiFold.time = false;
-      this.uiFold.status = true;
-      this.uiFold.finance = true;
-      this.uiFold.dynamic = true;
-      this.uiFold.custom = true;
-      this.uiFold.other = true;
+      this.uiExpanded.core = true;
+      this.uiExpanded.time = true;
+      this.uiExpanded.status = false;
+      this.uiExpanded.finance = false;
+      this.uiExpanded.dynamic = false;
+      this.uiExpanded.custom = false;
+      this.uiExpanded.other = false;
       this.ensureWallDefaults();
+    },
+    resetFormForContinuous() {
+      // 保存位置字段和预填状态，保留连续模式
+      const keep = {
+        room: this.form.room,
+        spot: this.form.spot,
+        wall_side: this.form.wall_side,
+        wall_slot: this.form.wall_slot,
+        location_free: this.form.location_free,
+      };
+      if (this.keepCategory) {
+        keep.type_l1 = this.form.type_l1;
+        keep.type_l2 = this.form.type_l2;
+        keep.category = this.form.category;
+      }
+      const prefilled = this.locationPrefilled;
+      const prefilledId = this.locationPrefilledId;
+      this.reset();
+      this.form = { ...this.form, ...keep };
+      this.locationPrefilled = prefilled;
+      this.locationPrefilledId = prefilledId;
+      this.continuousMode = true;
+    },
+    _resetAfterSave() {
+      if (this.continuousMode) {
+        this.resetFormForContinuous();
+      } else {
+        this.reset();
+      }
     },
     onPickImage(e) {
       const f = (e.target && e.target.files && e.target.files[0]) || null;
@@ -914,10 +990,10 @@ export default {
       if (typeof next.value_score === 'string') next.value_score = Number(next.value_score) || null;
       if (typeof next.replacement_cycle_days === 'string') next.replacement_cycle_days = Number(next.replacement_cycle_days) || null;
       this.customPairs = this.parseCustomPairs(next.custom_json);
-      this.uiFold.status = !(next.usage_status || next.ownership);
-      this.uiFold.finance = !(next.price != null || next.value_score != null || next.replacement_cycle_days != null);
-      this.uiFold.dynamic = !(next.usage_frequency || (next.related_item_ids_arr && next.related_item_ids_arr.length > 0) || next.responsible_person);
-      this.uiFold.custom = !(next.custom_json && String(next.custom_json).trim());
+      this.uiExpanded.status = !!(next.usage_status || next.ownership);
+      this.uiExpanded.finance = !!(next.price != null || next.value_score != null || next.replacement_cycle_days != null);
+      this.uiExpanded.dynamic = !!(next.usage_frequency || (next.related_item_ids_arr && next.related_item_ids_arr.length > 0) || next.responsible_person);
+      this.uiExpanded.custom = !!(next.custom_json && String(next.custom_json).trim());
       this.form = next;
       return applied;
     },
@@ -959,7 +1035,40 @@ export default {
       }
     },
     toggle(key) {
-      this.uiFold[key] = !this.uiFold[key];
+      this.uiExpanded[key] = !this.uiExpanded[key];
+      this.saveFoldPrefs();
+    },
+    saveFoldPrefs() {
+      const key = this.foldPrefsKey;
+      localStorage.setItem(key, JSON.stringify(this.uiExpanded));
+    },
+    loadFoldPrefs() {
+      try {
+        const raw = localStorage.getItem(this.foldPrefsKey);
+        if (raw) {
+          const obj = JSON.parse(raw);
+          for (const k of Object.keys(this.uiExpanded)) {
+            if (typeof obj[k] === 'boolean') this.uiExpanded[k] = obj[k];
+          }
+        }
+      } catch (e) { /* ignore */ }
+    },
+    async fetchHouseholdId() {
+      try {
+        const res = await api.get('/api/me');
+        if (res.data && res.data.household_id) {
+          this.householdId = res.data.household_id;
+          this.loadFoldPrefs();
+        }
+      } catch (e) { /* ignore */ }
+    },
+    expandAll() {
+      for (const k of Object.keys(this.uiExpanded)) this.uiExpanded[k] = true;
+      this.saveFoldPrefs();
+    },
+    collapseAll() {
+      for (const k of Object.keys(this.uiExpanded)) this.uiExpanded[k] = false;
+      this.saveFoldPrefs();
     },
     onTypeL1Change() {
       const l1 = this.form.type_l1 || '';
@@ -1077,9 +1186,9 @@ export default {
         this.$emit('saved');
         await this.fetchItems();
         if (this.embedded) {
-          setTimeout(() => this.reset(), 2000);
+          setTimeout(() => this._resetAfterSave(), 2000);
         } else {
-          this.reset();
+          this._resetAfterSave();
         }
       } catch (e) {
         console.error('Failed to create item:', e);
@@ -1368,6 +1477,17 @@ textarea {
   margin: 8px 0 0;
 }
 
+.check-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: 12px;
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  white-space: nowrap;
+}
+
 
 
 .section {
@@ -1550,5 +1670,29 @@ textarea {
   .grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* P2-5 collapse transition */
+.collapse-enter-active,
+.collapse-leave-active {
+  transition: max-height 0.35s ease, opacity 0.3s ease;
+  overflow: hidden;
+}
+.collapse-enter-from,
+.collapse-leave-to {
+  max-height: 0;
+  opacity: 0;
+}
+.collapse-enter-to,
+.collapse-leave-from {
+  max-height: 3000px;
+  opacity: 1;
+}
+
+/* P2-6 batch fold buttons */
+.btn-fold-batch {
+  font-size: 12px;
+  margin-left: 4px;
 }
 </style>

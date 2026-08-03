@@ -84,6 +84,7 @@
               title="新建子位置"
             >+ 子级</button>
             <button class="btn-ghost btn-sm" @click="downloadQR(node.id)" title="下载二维码">QR</button>
+            <router-link class="btn-ghost btn-sm" to="/warehouse/area-map" title="区域与墙面标注">标注</router-link>
             <button class="btn-ghost btn-sm" @click="startEdit(node)" title="重命名">重命名</button>
             <button class="btn-danger btn-sm" @click="deleteNode(node)" title="删除">删除</button>
           </span>

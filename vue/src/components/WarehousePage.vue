@@ -26,7 +26,7 @@
         <div class="nav-group">
           <div class="nav-group-title">测试</div>
           <div class="nav-group-actions">
-            <router-link class="btn-ghost" to="/warehouse/map-test">区域设置</router-link>
+            <router-link class="btn-ghost" to="/warehouse/locations">区域设置</router-link>
             <router-link class="btn-ghost" to="/warehouse/llm-test">LLM</router-link>
           </div>
         </div>
