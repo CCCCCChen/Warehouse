@@ -89,6 +89,9 @@
             <summary>区域管理配置</summary>
             <div class="details-body">
               <div class="row">
+                <router-link class="link" to="/warehouse/locations">打开位置管理</router-link>
+              </div>
+              <div class="row">
                 <router-link class="link" to="/warehouse/map-test">打开区域设置测试页</router-link>
               </div>
               <label class="full">

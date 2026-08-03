@@ -712,22 +712,24 @@ export default {
       const locId = this.$route.query.location_id;
       if (!locId || this.embedded) return;
       try {
-        const res = await api.get(`/api/locations/${locId}`);
+        const res = await api.get(`/api/public/locations/${locId}`);
         const loc = res.data;
         if (!loc || !loc.path) return;
         const ancestors = loc.path.split('/').filter(Boolean);
-        // Fetch full ancestor chain for name lookup
-        const ancRes = await api.get(`/api/locations?zone_id=${ancestors[0]}`);
+        // Fetch all locations to build name→id map (includes zone nodes)
+        const ancRes = await api.get('/api/locations');
         // Walk tree to find path segments
         const nameMap = {};
-        const walk = (nodes, p) => {
+        const walk = (nodes) => {
+          if (!nodes) return;
           nodes.forEach(n => {
             nameMap[n.id] = n.name;
-            if (n.children) walk(n.children, p);
+            if (n.children) walk(n.children);
           });
         };
-        if (ancRes.data && typeof ancRes.data === 'object') {
-          walk(ancRes.data.children || ancRes.data.tree || [], nameMap);
+        if (ancRes.data) {
+          const rootNodes = Array.isArray(ancRes.data) ? ancRes.data : [ancRes.data];
+          walk(rootNodes);
         }
         // ancestors[0]=zone, [1]=wall, [2]=unit, [3]=sub
         const zoneName = nameMap[ancestors[0]] || ancestors[0];
@@ -737,7 +739,7 @@ export default {
 
         const formPatch = { room: zoneName };
         if (this.areaMapEnabled) {
-          const wallSide = WALL_TYPES.find(w => w.label === wallName);
+          const wallSide = WALL_TYPES.find(w => w.value === wallName || w.label === wallName);
           formPatch.wall_side = wallSide ? wallSide.value : 'north';
           formPatch.wall_slot = unitName;
         } else {

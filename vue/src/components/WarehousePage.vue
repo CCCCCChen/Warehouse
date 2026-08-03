@@ -5,6 +5,7 @@
       <div class="nav-main">
         <router-link class="btn-ghost" to="/households">切换家庭</router-link>
         <router-link class="btn-ghost" to="/warehouse/settings">设置中心</router-link>
+        <button class="btn" type="button" @click="showScanner = true">扫一扫</button>
         <button class="btn" type="button" @click="navOpen = !navOpen">
           {{ navOpen ? '收起' : '展开' }}
         </button>
@@ -51,6 +52,7 @@
         <DataComponent />
       </div>
     </div>
+    <QRScannerDialog v-if="showScanner" @close="showScanner = false" />
   </div>
 </template>
 
@@ -60,6 +62,7 @@ import DashboardNoticeTile from './DashboardNoticeTile.vue';
 import ItemsEmbeddedTile from './ItemsEmbeddedTile.vue';
 import WarehouseOutboundPage from './WarehouseOutboundPage.vue';
 import DataComponent from './Data.vue';
+import QRScannerDialog from './QRScannerDialog.vue';
 
 export default {
   name: 'WarehousePage',
@@ -67,12 +70,14 @@ export default {
     DashboardNoticeTile,
     ItemsEmbeddedTile,
     WarehouseOutboundPage,
-    DataComponent
+    DataComponent,
+    QRScannerDialog,
   },
   data() {
     return {
       msg: 'Hello, Warehouse Page!',
       navOpen: false,
+      showScanner: false,
     };
   },
   created() {

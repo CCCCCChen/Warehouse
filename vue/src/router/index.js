@@ -5,6 +5,7 @@ import { getAuthToken } from '@/auth/storage';
 
 const routes = [
   { path: '/location/:id', component: () => import('@/components/LocationPanelPage.vue')},
+  { path: '/warehouse/locations', component: () => import('@/components/LocationTreePage.vue')},
   { path: '/', redirect: '/households' },
   { path: '/init', redirect: '/households' },
   { path: '/households', component: () => import('@/components/InitPage.vue')},
@@ -35,7 +36,7 @@ router.beforeEach((to) => {
   if (to.path.startsWith('/warehouse')) {
     const token = getAuthToken();
     if (!token) {
-      return { path: '/households' };
+      return { path: '/households', query: { redirect: to.fullPath } };
     }
   }
   return true;

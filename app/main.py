@@ -875,6 +875,89 @@ def get_locations(
     return _build_location_tree(all_locs)
 
 
+@app.post("/api/locations/import-from-config")
+def import_locations_from_config(
+    db: Session = Depends(get_db),
+    member_household: tuple = Depends(get_current_member),
+):
+    """Delete all existing locations for this household and re-import from HouseholdConfig area_map / rooms."""
+    import json
+    from app.defaults import default_extended_config_json
+
+    member, household = member_household
+    hid = household.id
+
+    # Delete all existing locations for this household
+    db.query(models.Location).filter_by(household_id=hid).delete()
+    db.flush()
+
+    config = db.query(models.HouseholdConfig).filter_by(household_id=hid).first()
+    defaults = default_extended_config_json()
+
+    rooms_raw = config.rooms_json if config and config.rooms_json else defaults.get("rooms_json", "[]")
+    area_raw = config.area_map_json if config and config.area_map_json else defaults.get("area_map_json", "[]")
+
+    try:
+        rooms: list = json.loads(rooms_raw) if isinstance(rooms_raw, str) else rooms_raw
+    except (json.JSONDecodeError, TypeError):
+        rooms = []
+    try:
+        areas: list = json.loads(area_raw) if isinstance(area_raw, str) else area_raw
+    except (json.JSONDecodeError, TypeError):
+        areas = []
+
+    count = 0
+
+    # Build zone-level locations from rooms list
+    zone_name_to_id: dict[str, str] = {}
+    for room_name in rooms:
+        name = str(room_name).strip() if room_name else ""
+        if not name:
+            continue
+        loc_id = str(uuid4())
+        db.add(models.Location(
+            id=loc_id, name=name, parent_id=None, level="zone",
+            zone_id=loc_id, path=f"/{loc_id}/", household_id=hid,
+        ))
+        zone_name_to_id[name] = loc_id
+        count += 1
+    db.flush()
+
+    # Build wall-level and unit-level from area_map_json
+    for area in areas:
+        zone_name = str(area.get("name", "")).strip() if isinstance(area, dict) else ""
+        zone_id = zone_name_to_id.get(zone_name)
+        if not zone_id:
+            continue
+        walls = area.get("walls", {}) if isinstance(area, dict) else {}
+        for wall_name, wall_data in walls.items():
+            wall_id = str(uuid4())
+            db.add(models.Location(
+                id=wall_id, name=str(wall_name), parent_id=zone_id, level="wall",
+                zone_id=zone_id, path=f"/{zone_id}/{wall_id}/", household_id=hid,
+            ))
+            db.flush()
+            count += 1
+
+            spots = wall_data.get("spots", []) if isinstance(wall_data, dict) else []
+            for spot in spots:
+                spot_name = spot.get("name", str(spot)) if isinstance(spot, dict) else str(spot)
+                spot_id = str(uuid4())
+                db.add(models.Location(
+                    id=spot_id, name=str(spot_name), parent_id=wall_id, level="unit",
+                    zone_id=zone_id, path=f"/{zone_id}/{wall_id}/{spot_id}/", household_id=hid,
+                ))
+                count += 1
+
+    db.commit()
+
+    # Re-fetch full tree to return
+    all_locs = db.query(models.Location).filter_by(household_id=hid).order_by(
+        models.Location.sort_order, models.Location.name
+    ).all()
+    return {"imported": count, "tree": _build_location_tree(all_locs)}
+
+
 @app.post("/api/locations", response_model=schemas.LocationOut)
 def create_location(
     loc: schemas.LocationCreate,
