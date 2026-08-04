@@ -110,17 +110,11 @@ export default {
       this.cameraReady = false;
       this.scanning = false;
       try {
-        let stream = null;
-        try {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } },
-          });
-        } catch (e) {
-          stream = await navigator.mediaDevices.getUserMedia({
-            video: { width: { ideal: 640 }, height: { ideal: 480 } },
-          });
-        }
-        this.stream = stream;
+        const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+        const constraints = isMobile
+          ? { video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } } }
+          : { video: { width: { ideal: 640 }, height: { ideal: 480 } } };
+        this.stream = await navigator.mediaDevices.getUserMedia(constraints);
         this.$refs.video.srcObject = this.stream;
         await this.$refs.video.play();
         this.cameraReady = true;
@@ -128,8 +122,8 @@ export default {
       } catch (e) {
         if (e.name === 'NotAllowedError') {
           this.cameraError = '摄像头权限被拒绝，请允许访问摄像头或使用「导入图片」';
-        } else if (e.name === 'NotFoundError') {
-          this.cameraError = '未找到摄像头，请使用「导入图片」';
+        } else if (e.name === 'NotFoundError' || e.name === 'NotReadableError') {
+          this.cameraError = '未找到摄像头或摄像头被占用，请使用「导入图片」';
         } else {
           this.cameraError = `摄像头启动失败: ${e.message}`;
         }

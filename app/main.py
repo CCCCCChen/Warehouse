@@ -1270,6 +1270,7 @@ def batch_location_qrcodes(
     from fastapi.responses import Response
     from reportlab.lib.pagesizes import A4
     from reportlab.lib.units import mm
+    from reportlab.lib.utils import ImageReader
     from reportlab.pdfgen import canvas as pdf_canvas
 
     member, household = member_household
@@ -1292,25 +1293,50 @@ def batch_location_qrcodes(
 
     host = os.getenv("PUBLIC_HOST", "http://127.0.0.1:3030")
 
+    # resolve parent IDs to names for display paths
+    all_parent_ids = set()
+    for loc in locations:
+        if loc.path:
+            for pid in loc.path.strip("/").split("/"):
+                all_parent_ids.add(pid)
+    parent_map = {}
+    if all_parent_ids:
+        parent_locs = db.query(models.Location).filter(
+            models.Location.id.in_(list(all_parent_ids))
+        ).all()
+        parent_map = {pl.id: (pl.name, pl.level) for pl in parent_locs}
+
     # generate QR images in memory
     qr_data = []
     qr_size = 45 * mm
     for loc in locations:
         content = f"{host}/location/{loc.id}?action=panel"
         img = qrcode.make(content)
-        buf = BytesIO()
-        img.save(buf, format="PNG")
-        buf.seek(0)
         name = loc.name or ""
-        # build display path from path field (strip IDs, show names or raw path)
+        # build display path: zone - wall - slot
         ancestors = loc.path.strip("/").split("/") if loc.path else []
-        if ancestors:
-            display_path = " > ".join([name] + [f"({pid})" for pid in ancestors[:3]])
-        else:
-            display_path = name
-        qr_data.append((buf, name, display_path))
+        # collect (name, level) from ancestors + self
+        all_parts = []
+        for pid in ancestors:
+            entry = parent_map.get(pid)
+            if entry:
+                all_parts.append(entry)
+            else:
+                all_parts.append((pid, ''))
+        all_parts.append((name, loc.level))
+        # extract by level
+        zone_name = next((n for n, l in all_parts if l == 'zone'), '')
+        wall_name = next((n for n, l in all_parts if l == 'wall'), '')
+        slot_name = next((n for n, l in all_parts if l == 'unit'), '')
+        qr_data.append((img, zone_name, wall_name, slot_name))
 
     # build PDF
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
+    font_dir = os.path.join(os.path.dirname(__file__), 'fonts')
+    pdfmetrics.registerFont(TTFont('NotoSansSC', os.path.join(font_dir, 'NotoSansSC-Regular.ttf')))
+    pdfmetrics.registerFont(TTFont('NotoSansSC-Bold', os.path.join(font_dir, 'NotoSansSC-Bold.ttf')))
+
     pdf_buf = BytesIO()
     c = pdf_canvas.Canvas(pdf_buf, pagesize=A4)
     page_w, page_h = A4  # 595.27 x 841.89 pt
@@ -1321,7 +1347,7 @@ def batch_location_qrcodes(
     cell_w = (page_w - 2 * margin_x) / cols
     cell_h = (page_h - 2 * margin_y) / rows
 
-    for idx, (img_buf, name, display_path) in enumerate(qr_data):
+    for idx, (img, zone_name, wall_name, slot_name) in enumerate(qr_data):
         page_idx = idx % (cols * rows)
         col = page_idx % cols
         row = rows - 1 - (page_idx // cols)  # top-to-bottom
@@ -1332,13 +1358,15 @@ def batch_location_qrcodes(
         # draw QR centered
         qr_x = x - qr_size / 2
         qr_y = y + 5 * mm
-        c.drawImage(img_buf, qr_x, qr_y, width=qr_size, height=qr_size)
+        c.drawImage(ImageReader(img.convert('RGB')), qr_x, qr_y, width=qr_size, height=qr_size)
 
-        # label text below QR
-        c.setFont("Helvetica-Bold", 8)
-        c.drawCentredString(x, qr_y - 4 * mm, name)
-        c.setFont("Helvetica", 6)
-        c.drawCentredString(x, qr_y - 8 * mm, display_path)
+        # label text below QR: 区域 / 墙面 / 收纳位
+        text_x = x - qr_size / 2
+        line_y = qr_y - 8 * mm
+        c.setFont("NotoSansSC", 8)
+        c.drawString(text_x, line_y, f"区域：    {zone_name or '-'}")
+        c.drawString(text_x, line_y - 7 * mm, f"墙面：    {wall_name or '-'}")
+        c.drawString(text_x, line_y - 14 * mm, f"收纳位：{slot_name or '-'}")
 
         # new page after 6 labels
         if (idx + 1) % (cols * rows) == 0 and idx + 1 < len(qr_data):
