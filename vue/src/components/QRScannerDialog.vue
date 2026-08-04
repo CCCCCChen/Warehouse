@@ -110,9 +110,17 @@ export default {
       this.cameraReady = false;
       this.scanning = false;
       try {
-        this.stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } },
-        });
+        let stream = null;
+        try {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: 'environment', width: { ideal: 640 }, height: { ideal: 480 } },
+          });
+        } catch (e) {
+          stream = await navigator.mediaDevices.getUserMedia({
+            video: { width: { ideal: 640 }, height: { ideal: 480 } },
+          });
+        }
+        this.stream = stream;
         this.$refs.video.srcObject = this.stream;
         await this.$refs.video.play();
         this.cameraReady = true;
